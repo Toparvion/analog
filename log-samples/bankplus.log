@@ -1,0 +1,1100 @@
+02.10.14 00:00:02 DEBUG      net.bull.javamelody - Obsolete files deleted. JavaMelody disk usage: 11766 KB
+02.10.14 00:00:02 DEBUG      net.bull.javamelody - Obsolete files deleted. JavaMelody disk usage: 11766 KB
+02.10.14 00:00:02 DEBUG      net.bull.javamelody - Obsolete files deleted. JavaMelody disk usage: 11766 KB
+02.10.14 00:00:02 DEBUG      net.bull.javamelody - Obsolete files deleted. JavaMelody disk usage: 11766 KB
+02.10.14 00:00:02 DEBUG      net.bull.javamelody - Obsolete files deleted. JavaMelody disk usage: 11766 KB
+02.10.14 00:00:02 DEBUG      net.bull.javamelody - Obsolete files deleted. JavaMelody disk usage: 11766 KB
+02.10.14 09:12:45 DEBUG    /personal/pub/Entrance  com.ftc.bankplus.SessionObject - Setup current site to pdkem
+02.10.14 09:12:45 DEBUG   SCT:148cea18683 /personal/pub/Entrance pdkem com.ftc.bankplus.lite.web.customer.euroset.pub.LoginUtils - Новости на странице входа (pdkem): положили в кэш
+02.10.14 09:12:49 WARN    SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.lite.web.customer.sclub.util.SClubUtils - Ошибка определения поставщика денежных переводов
+java.lang.RuntimeException: Отсутствует агент для ДП в БД
+	at com.ftc.bankplus.lite.web.customer.sclub.util.SClubUtils.getAgetnId(SClubUtils.java:670)
+	at com.ftc.bankplus.client.zkdp.ZKDPManager.loadCardInfo(ZKDPManager.java:207)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at com.ftc.bankplus.web.guice.LazyInitProxyFactory$JdkHandler.invoke(LazyInitProxyFactory.java:153)
+	at com.ftc.bankplus.web.guice.$Proxy140.loadCardInfo(Unknown Source)
+	at com.ftc.bankplus.lite.web.customer.euroset.pub.LoginUtils.isCardExchangeConfirmationRequired(LoginUtils.java:182)
+	at com.ftc.bankplus.lite.web.customer.uni.util.UniBehavior.isCardExchangeConfirmationRequired(UniBehavior.java:59)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at net.bull.javamelody.MonitoringProxy.invoke(MonitoringProxy.java:158)
+	at net.bull.javamelody.JdbcWrapper$DelegatingInvocationHandler.invoke(JdbcWrapper.java:259)
+	at com.sun.proxy.$Proxy135.isCardExchangeConfirmationRequired(Unknown Source)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at com.ftc.bankplus.web.guice.LazyInitProxyFactory$JdkHandler.invoke(LazyInitProxyFactory.java:153)
+	at com.ftc.bankplus.web.guice.$Proxy141.isCardExchangeConfirmationRequired(Unknown Source)
+	at com.ftc.bankplus.lite.web.pub.LoginPage$LoginForm.isCardExchangeRequired(LoginPage.java:540)
+	at com.ftc.bankplus.lite.web.pub.LoginPage$LoginForm.onSubmit(LoginPage.java:450)
+	at org.apache.wicket.markup.html.form.Form.delegateSubmit(Form.java:1595)
+	at org.apache.wicket.markup.html.form.Form.process(Form.java:960)
+	at com.ftc.bankplus.lite.web.pub.LoginPage$LoginForm$2.onRequest(LoginPage.java:333)
+	at org.apache.wicket.request.target.component.listener.BehaviorRequestTarget.processEvents(BehaviorRequestTarget.java:157)
+	at org.apache.wicket.request.AbstractRequestCycleProcessor.processEvents(AbstractRequestCycleProcessor.java:92)
+	at org.apache.wicket.RequestCycle.processEventsAndRespond(RequestCycle.java:1249)
+	at org.apache.wicket.RequestCycle.step(RequestCycle.java:1328)
+	at org.apache.wicket.RequestCycle.steps(RequestCycle.java:1435)
+	at org.apache.wicket.RequestCycle.request(RequestCycle.java:542)
+	at org.apache.wicket.protocol.http.WicketFilter.doGet(WicketFilter.java:486)
+	at org.apache.wicket.protocol.http.WicketFilter.doFilter(WicketFilter.java:319)
+	at com.google.inject.servlet.FilterDefinition.doFilter(FilterDefinition.java:129)
+	at com.google.inject.servlet.FilterChainInvocation.doFilter(FilterChainInvocation.java:59)
+	at com.google.inject.servlet.FilterDefinition.doFilter(FilterDefinition.java:134)
+	at com.google.inject.servlet.FilterChainInvocation.doFilter(FilterChainInvocation.java:59)
+	at com.ftc.bankplus.servlets.SiteFilter.doFilterWork(SiteFilter.java:70)
+	at com.ftc.bankplus.servlets.DBAwareFilter.doFilter(DBAwareFilter.java:36)
+	at com.google.inject.servlet.FilterDefinition.doFilter(FilterDefinition.java:129)
+	at com.google.inject.servlet.FilterChainInvocation.doFilter(FilterChainInvocation.java:59)
+	at com.ftc.bankplus.servlets.SiteDetectFilter.doFilterWork(SiteDetectFilter.java:44)
+	at com.ftc.bankplus.servlets.DBAwareFilter.doFilter(DBAwareFilter.java:36)
+	at com.google.inject.servlet.FilterDefinition.doFilter(FilterDefinition.java:129)
+	at com.google.inject.servlet.FilterChainInvocation.doFilter(FilterChainInvocation.java:59)
+	at com.google.inject.servlet.FilterDefinition.doFilter(FilterDefinition.java:134)
+	at com.google.inject.servlet.FilterChainInvocation.doFilter(FilterChainInvocation.java:59)
+	at com.ftc.bankplus.servlets.ConnectionFilter.doFilterWork(ConnectionFilter.java:26)
+	at com.ftc.bankplus.servlets.DBAwareFilter.doFilter(DBAwareFilter.java:36)
+	at com.google.inject.servlet.FilterDefinition.doFilter(FilterDefinition.java:129)
+	at com.google.inject.servlet.FilterChainInvocation.doFilter(FilterChainInvocation.java:59)
+	at com.ftc.bankplus.servlets.LoggerContext.doFilter(LoggerContext.java:27)
+	at com.google.inject.servlet.FilterDefinition.doFilter(FilterDefinition.java:129)
+	at com.google.inject.servlet.FilterChainInvocation.doFilter(FilterChainInvocation.java:59)
+	at net.bull.javamelody.MonitoringFilter.doFilter(MonitoringFilter.java:206)
+	at net.bull.javamelody.MonitoringFilter.doFilter(MonitoringFilter.java:179)
+	at com.google.inject.servlet.FilterDefinition.doFilter(FilterDefinition.java:129)
+	at com.google.inject.servlet.FilterChainInvocation.doFilter(FilterChainInvocation.java:59)
+	at com.google.inject.servlet.ManagedFilterPipeline.dispatch(ManagedFilterPipeline.java:122)
+	at com.google.inject.servlet.GuiceFilter.doFilter(GuiceFilter.java:110)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:215)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:188)
+	at com.ftc.bankplus.servlets.SetCharacterEncodingFilter.doFilter(SetCharacterEncodingFilter.java:156)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:215)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:188)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:213)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:172)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:581)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:127)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:117)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:108)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:174)
+	at org.apache.jk.server.JkCoyoteHandler.invoke(JkCoyoteHandler.java:200)
+	at org.apache.jk.common.HandlerRequest.invoke(HandlerRequest.java:291)
+	at org.apache.jk.common.ChannelSocket.invoke(ChannelSocket.java:775)
+	at org.apache.jk.common.ChannelSocket.processConnection(ChannelSocket.java:704)
+	at org.apache.jk.common.ChannelSocket$SocketConnection.runIt(ChannelSocket.java:897)
+	at org.apache.tomcat.util.threads.ThreadPool$ControlRunnable.run(ThreadPool.java:689)
+	at java.lang.Thread.run(Thread.java:662)
+02.10.14 09:12:49 ERROR   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.lite.web.customer.uni.util.UniBehavior - Не удалось определить признак необходимости подтверждения замены: Отсутствует агент для ДП в БД
+ Значение признака принято равным 'false'.
+02.10.14 09:12:49 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.lite.web.pub.LoginPage - Getting card exchange required flag from DP.
+02.10.14 09:12:49 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.dao.LoginDao - Пользователь уже авторизовывался ранее: true
+02.10.14 09:12:49 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.SessionObject - liteLogin - start forward
+02.10.14 09:12:49 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.lite.client.LiteClient - Action: login, login: 2960178959723
+02.10.14 09:12:49 INFO    SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.dse.DseClient - Отправка запроса http://angara.ftc.ru:9014/mdse/lite
+02.10.14 09:12:49 INFO    SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.dse.DseClient - Получен ответ, код: 200
+02.10.14 09:12:49 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.lite.client.LiteClient - Action done: login, login: 2960178959723
+02.10.14 09:12:49 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.SessionObject - liteLogin - profile processed
+02.10.14 09:12:49 INFO    SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.SessionObject - login user (lite): 2960178959723 (userId: 2171336768)
+02.10.14 09:12:49 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.utilites.StringUtil - Строка для разбора даты: 2014-10-02T09:10:17
+02.10.14 09:12:49 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.utilites.StringUtil - Результат разбора: Thu Oct 02 09:10:17 NOVT 2014
+02.10.14 09:12:49 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.SessionObject - loadUserProperties for user 2171336768 - loading...
+02.10.14 09:12:49 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.SessionObject - BPC test
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.SessionObject - BPC test, liteBonusEnabled: true, liteDPEnabled: true
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.SessionObject - loadUserProperties for 2171336768 - loaded...
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.lite.web.customer.sclub.model.OrdersBasket - constructor passwordExpirationDateString = 2014-10-02T09:12:50.009+07:00
+02.10.14 09:12:50 INFO    SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.loyalty.LoyaltyClient - UpdateBonusHistory for EAN 2960178959723: added to queue (queue size: 1, core pool size: 1)
+02.10.14 09:12:50 DEBUG   EAN:2960178959723 /personal/ pdkem com.ftc.bankplus.loyalty.BonusHistoryUpdatingTask - EAN:2960178959723 last sync date: 2014-10-02 09:10:18.0
+02.10.14 09:12:50 INFO    EAN:2960178959723 /personal/ pdkem com.ftc.bankplus.loyalty.LoyaltyClient - Получение информации о всех операциях по entityId=2960178959723
+02.10.14 09:12:50 DEBUG   EAN:2960178959723 /personal/ pdkem com.ftc.bankplus.loyalty.LoyaltyClient - sending request
+02.10.14 09:12:50 INFO    EAN:2960178959723 /personal/ pdkem com.ftc.bankplus.loyalty.LoyaltyClient -  access point: https://ias.demo.korona.net/repsite/api/cdas/v2
+pan=2960178959723&tx_history=20&memberId=34729&net=34731&tx_history_date=2014-10-02T07:10:18&tx_history_date_end=2014-10-02T09:12:50
+02.10.14 09:12:50 DEBUG   EAN:2960178959723 /personal/ pdkem com.ftc.bankplus.loyalty.LoyaltyClient - open connection (timeout 60000 ms) to https://ias.demo.korona.net/repsite/api/cdas/v2
+02.10.14 09:12:50 INFO    SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - Работа с CALM-WS запрещена настройками приложения (см. bankplus.properties и siteInfo-*.properties). Асинхронная загрузка запущена не будет.
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - Construction start
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create PromoBannerInHeadPanel
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create PollBannerInHeadPanel
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create headPanel
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - --------------------------------------------------
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - ------------Log calculateBalances start-----------
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - номер штрих-кода карты = 2960178959723
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - у пользователя нет кредита
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - баланс будет равен балансу на карте = 170.54
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - -------------Итого начало-----------
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - баланс = 170.54
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - -------------Итого конец-----------
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - ------------Log calculateBalances finish-----------
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - ---------------------------------------------------
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create paymentOrdersPanel
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create horizontalMenu
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.uni.HorizontalMenuPanel - get account
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.uni.HorizontalMenuPanel - check credit
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.uni.HorizontalMenuPanel - create items
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.components.RefillLink - RefillLink конструктор
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.components.RefillLink - пополнение карты = true
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create infoPanel
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create feedback link
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create promoPanel
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:12:50 DEBUG   EAN:2960178959723 /personal/ pdkem com.ftc.bankplus.loyalty.LoyaltyClient - server response code: 200, message: OK
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:12:50 DEBUG   EAN:2960178959723 /personal/ pdkem com.ftc.bankplus.loyalty.LoyaltyClient - answer received
+02.10.14 09:12:50 INFO    EAN:2960178959723 /personal/ pdkem com.ftc.bankplus.loyalty.LoyaltyClient - <?xml version='1.0' encoding='UTF-8'?>
+
+<response xmlns="http://ftc.ru/loyalty/api/standard-response/generic/1.x">
+<code>OK</code>
+<message>Операция выполнена успешно</message>
+<payload>
+
+
+<card xmlns="http://ftc.ru/loyalty/api/cdas-payload/generic/1.x">
+  <card-number>7787780178959723</card-number>
+  <net>34731</net>
+  <owner>
+    <first-name>ВАСИЛИЙ</first-name>
+    <patronymic-name/>
+    <last-name>ПОПКОВА</last-name>
+    <email/>
+  </owner>
+  <card-state>ACTIVE</card-state>
+  <card-role>M</card-role>
+  <operations>
+  </operations>
+  <account-set-id>945065</account-set-id>
+  <attributes>
+  </attributes>
+  <deal-types>
+  </deal-types>
+</card>
+
+</payload>
+</response>
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create promoBanner
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create promoAction
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - try to find a poll
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PollManager - ---getPoll start --- account id = 2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PollManager - Account retrieved: 2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PollManager - try to find personal poll for user accountId = 2171336801
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PollManager - personal list.isEmpty = true
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PollManager - try to find avaliable for all
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PollManager - list for all isEmpty = true
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PollManager - return poll null
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - find poll = null
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - --- bindAndSetVisiblePoll start --- poll = null
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - pollPanel and PollBanner will be unvisible
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - --- bindAndSetVisiblePoll finish ---
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create footer
+02.10.14 09:12:50 DEBUG   EAN:2960178959723 /personal/ pdkem com.ftc.bankplus.loyalty.BonusHistoryUpdatingTask - Дата последней успешной выгрузки бонусов сохранена: Thu Oct 02 09:12:50 NOVT 2014
+02.10.14 09:12:50 INFO    EAN:2960178959723 /personal/ pdkem com.ftc.bankplus.loyalty.BonusHistoryUpdatingTask - Обработаны операции, время работы потока: 0,293 cек. (из них 0,000 сек. - техническая пауза)
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - Construction end
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - Construction start
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create emailConfirmPanel
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create refillLinkPanel, mainLinksPanel
+02.10.14 09:12:50 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create nearestAutoPaysPanel
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - add components
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create RestrictionsInfoPanel
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create myPaymentQuickPayPanel
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create mainPromoPanel 
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create lastOperationContainer
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.model.lite.PayPassOrder - constructor passwordExpirationDateString = 2014-10-02T09:12:52.485+07:00
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create menuPanel, searchPanel
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - Construction end
+02.10.14 09:12:52 TRACE   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.service.news.NewsService - Временная директория: /pub/home/upc/applications/upcManualTesting/catalina_base/temp/newscache/pdkem/
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:12:52 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:12:52 INFO    SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.behavior.UpcPropertiesFactory - Loading properties files from file:/pub/home/upc/applications/upcManualTesting/deployment/war_upc/WEB-INF/classes/com/ftc/bankplus/lite/web/customer/sclub/web/my_payments/NearestAutoPaysPanel.properties
+02.10.14 09:12:53 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 1]]; index: 0; primaryKey: 1
+02.10.14 09:12:53 INFO    SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.behavior.UpcPropertiesFactory - Loading properties files from file:/pub/home/upc/applications/upcManualTesting/deployment/war_upc/WEB-INF/classes/com/ftc/bankplus/lite/web/customer/sclub/web/account/LastOpsPanel.properties
+02.10.14 09:12:53 INFO    SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.behavior.UpcPropertiesFactory - Loading properties files from file:/pub/home/upc/applications/upcManualTesting/deployment/war_upc/WEB-INF/classes/com/ftc/bankplus/lite/web/customer/sclub/web/history/HistoryTableItem.properties
+02.10.14 09:12:53 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 2]]; index: 1; primaryKey: 2
+02.10.14 09:12:53 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 3]]; index: 2; primaryKey: 3
+02.10.14 09:12:53 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 4]]; index: 3; primaryKey: 4
+02.10.14 09:12:54 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 5]]; index: 4; primaryKey: 5
+02.10.14 09:12:54 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171521590) is about to detach.
+02.10.14 09:12:54 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171522351) is about to detach.
+02.10.14 09:12:54 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171531947) is about to detach.
+02.10.14 09:12:54 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171532010) is about to detach.
+02.10.14 09:12:54 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171537528) is about to detach.
+02.10.14 09:12:55 DEBUG   SCT:148cea18683 /personal/_pageNotFoundError404 pdkem com.ftc.bankplus.lite.web.pub.NotFoundPage - try to get Base
+02.10.14 09:12:55 DEBUG   SCT:148cea18683 /personal/_pageNotFoundError404 pdkem com.ftc.bankplus.lite.web.pub.NotFoundPage - base = 
+02.10.14 09:12:55 DEBUG   SCT:148cea18683 /personal/_pageNotFoundError404 pdkem com.ftc.bankplus.lite.web.pub.NotFoundPage - pathSkin = /lite/skins/pdkem/
+02.10.14 09:12:55 DEBUG   SCT:148cea18683 /personal/_pageNotFoundError404 pdkem com.ftc.bankplus.lite.web.pub.NotFoundPage - Страница не найдена. skinCode = pdkem. Предыдущая страница https://angara.ftc.ru/personal/main
+02.10.14 09:13:21 DEBUG   SCT:148cea18683 /personal/pub/Entrance pdkem com.ftc.bankplus.lite.web.customer.euroset.pub.LoginUtils - Новости на странице входа (pdkem): взяли из кэша
+02.10.14 09:13:30 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.lite.web.pub.LoginPage - Getting card exchange required flag from cache.
+02.10.14 09:13:30 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.dao.LoginDao - Пользователь уже авторизовывался ранее: true
+02.10.14 09:13:30 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.SessionObject - liteLogin - start forward
+02.10.14 09:13:30 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.lite.client.LiteClient - Action: login, login: 2960178959723
+02.10.14 09:13:30 INFO    SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.dse.DseClient - Отправка запроса http://angara.ftc.ru:9014/mdse/lite
+02.10.14 09:13:30 INFO    SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.dse.DseClient - Получен ответ, код: 200
+02.10.14 09:13:30 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.lite.client.LiteClient - Action done: login, login: 2960178959723
+02.10.14 09:13:30 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.SessionObject - liteLogin - profile processed
+02.10.14 09:13:30 INFO    SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.SessionObject - login user (lite): 2960178959723 (userId: 2171336768)
+02.10.14 09:13:30 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.utilites.StringUtil - Строка для разбора даты: 2014-10-02T09:12:49
+02.10.14 09:13:30 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.utilites.StringUtil - Результат разбора: Thu Oct 02 09:12:49 NOVT 2014
+02.10.14 09:13:30 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.SessionObject - loadUserProperties for user 2171336768 - loading...
+02.10.14 09:13:30 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.SessionObject - BPC test
+02.10.14 09:13:30 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.SessionObject - BPC test, liteBonusEnabled: true, liteDPEnabled: true
+02.10.14 09:13:30 DEBUG   SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.SessionObject - loadUserProperties for 2171336768 - loaded...
+02.10.14 09:13:30 INFO    SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.loyalty.LoyaltyClient - UpdateBonusHistory for EAN 2960178959723: added to queue (queue size: 1, core pool size: 1)
+02.10.14 09:13:30 DEBUG   EAN:2960178959723 /personal/ pdkem com.ftc.bankplus.loyalty.BonusHistoryUpdatingTask - EAN:2960178959723 last sync date: 2014-10-02 09:12:50.0
+02.10.14 09:13:30 INFO    EAN:2960178959723 /personal/ pdkem com.ftc.bankplus.loyalty.LoyaltyClient - Получение информации о всех операциях по entityId=2960178959723
+02.10.14 09:13:30 DEBUG   EAN:2960178959723 /personal/ pdkem com.ftc.bankplus.loyalty.LoyaltyClient - sending request
+02.10.14 09:13:30 INFO    SCT:148cea18683 /personal/ pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - Работа с CALM-WS запрещена настройками приложения (см. bankplus.properties и siteInfo-*.properties). Асинхронная загрузка запущена не будет.
+02.10.14 09:13:30 INFO    EAN:2960178959723 /personal/ pdkem com.ftc.bankplus.loyalty.LoyaltyClient -  access point: https://ias.demo.korona.net/repsite/api/cdas/v2
+pan=2960178959723&tx_history=20&memberId=34729&net=34731&tx_history_date=2014-10-02T07:12:50&tx_history_date_end=2014-10-02T09:13:30
+02.10.14 09:13:30 DEBUG   EAN:2960178959723 /personal/ pdkem com.ftc.bankplus.loyalty.LoyaltyClient - open connection (timeout 60000 ms) to https://ias.demo.korona.net/repsite/api/cdas/v2
+02.10.14 09:13:30 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - Construction start
+02.10.14 09:13:30 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create PromoBannerInHeadPanel
+02.10.14 09:13:30 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create PollBannerInHeadPanel
+02.10.14 09:13:30 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create headPanel
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - --------------------------------------------------
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - ------------Log calculateBalances start-----------
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - номер штрих-кода карты = 2960178959723
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - у пользователя нет кредита
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - баланс будет равен балансу на карте = 170.54
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - -------------Итого начало-----------
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - баланс = 170.54
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - -------------Итого конец-----------
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - ------------Log calculateBalances finish-----------
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - ---------------------------------------------------
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create paymentOrdersPanel
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create horizontalMenu
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.uni.HorizontalMenuPanel - get account
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.uni.HorizontalMenuPanel - check credit
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.uni.HorizontalMenuPanel - create items
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.components.RefillLink - RefillLink конструктор
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.components.RefillLink - пополнение карты = true
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create infoPanel
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create feedback link
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create promoPanel
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:13:31 DEBUG   EAN:2960178959723 /personal/ pdkem com.ftc.bankplus.loyalty.LoyaltyClient - server response code: 200, message: OK
+02.10.14 09:13:31 DEBUG   EAN:2960178959723 /personal/ pdkem com.ftc.bankplus.loyalty.LoyaltyClient - answer received
+02.10.14 09:13:31 INFO    EAN:2960178959723 /personal/ pdkem com.ftc.bankplus.loyalty.LoyaltyClient - <?xml version='1.0' encoding='UTF-8'?>
+
+<response xmlns="http://ftc.ru/loyalty/api/standard-response/generic/1.x">
+<code>OK</code>
+<message>Операция выполнена успешно</message>
+<payload>
+
+
+<card xmlns="http://ftc.ru/loyalty/api/cdas-payload/generic/1.x">
+  <card-number>7787780178959723</card-number>
+  <net>34731</net>
+  <owner>
+    <first-name>ВАСИЛИЙ</first-name>
+    <patronymic-name/>
+    <last-name>ПОПКОВА</last-name>
+    <email/>
+  </owner>
+  <card-state>ACTIVE</card-state>
+  <card-role>M</card-role>
+  <operations>
+  </operations>
+  <account-set-id>945065</account-set-id>
+  <attributes>
+  </attributes>
+  <deal-types>
+  </deal-types>
+</card>
+
+</payload>
+</response>
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create promoBanner
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create promoAction
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - try to find a poll
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PollManager - ---getPoll start --- account id = 2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PollManager - Account retrieved: 2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PollManager - try to find personal poll for user accountId = 2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PollManager - personal list.isEmpty = true
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PollManager - try to find avaliable for all
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PollManager - list for all isEmpty = true
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PollManager - return poll null
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - find poll = null
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - --- bindAndSetVisiblePoll start --- poll = null
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - pollPanel and PollBanner will be unvisible
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - --- bindAndSetVisiblePoll finish ---
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create footer
+02.10.14 09:13:31 DEBUG   EAN:2960178959723 /personal/ pdkem com.ftc.bankplus.loyalty.BonusHistoryUpdatingTask - Дата последней успешной выгрузки бонусов сохранена: Thu Oct 02 09:13:30 NOVT 2014
+02.10.14 09:13:31 INFO    EAN:2960178959723 /personal/ pdkem com.ftc.bankplus.loyalty.BonusHistoryUpdatingTask - Обработаны операции, время работы потока: 0,263 cек. (из них 0,000 сек. - техническая пауза)
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - Construction end
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - Construction start
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create emailConfirmPanel
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create refillLinkPanel, mainLinksPanel
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create nearestAutoPaysPanel
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - add components
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create RestrictionsInfoPanel
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create myPaymentQuickPayPanel
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create mainPromoPanel 
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create lastOperationContainer
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.model.lite.PayPassOrder - constructor passwordExpirationDateString = 2014-10-02T09:13:31.278+07:00
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create menuPanel, searchPanel
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - Construction end
+02.10.14 09:13:31 TRACE   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.service.news.NewsService - Временная директория: /pub/home/upc/applications/upcManualTesting/catalina_base/temp/newscache/pdkem/
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 1]]; index: 0; primaryKey: 1
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 2]]; index: 1; primaryKey: 2
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 3]]; index: 2; primaryKey: 3
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 4]]; index: 3; primaryKey: 4
+02.10.14 09:13:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 5]]; index: 4; primaryKey: 5
+02.10.14 09:13:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171521590) is about to detach.
+02.10.14 09:13:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171522351) is about to detach.
+02.10.14 09:13:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171531947) is about to detach.
+02.10.14 09:13:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171532010) is about to detach.
+02.10.14 09:13:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171537528) is about to detach.
+02.10.14 09:13:32 DEBUG   SCT:148cea18683 /personal/_pageNotFoundError404 pdkem com.ftc.bankplus.lite.web.pub.NotFoundPage - try to get Base
+02.10.14 09:13:32 DEBUG   SCT:148cea18683 /personal/_pageNotFoundError404 pdkem com.ftc.bankplus.lite.web.pub.NotFoundPage - base = 
+02.10.14 09:13:32 DEBUG   SCT:148cea18683 /personal/_pageNotFoundError404 pdkem com.ftc.bankplus.lite.web.pub.NotFoundPage - pathSkin = /lite/skins/pdkem/
+02.10.14 09:13:32 DEBUG   SCT:148cea18683 /personal/_pageNotFoundError404 pdkem com.ftc.bankplus.lite.web.pub.NotFoundPage - Страница не найдена. skinCode = pdkem. Предыдущая страница https://angara.ftc.ru/personal/main
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - Construction start
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create PromoBannerInHeadPanel
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create PollBannerInHeadPanel
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create headPanel
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.util.UpcUtils - --------------------------------------------------
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.util.UpcUtils - ------------Log calculateBalances start-----------
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.util.UpcUtils - номер штрих-кода карты = 2960178959723
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.util.UpcUtils - у пользователя нет кредита
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.util.UpcUtils - баланс будет равен балансу на карте = 170.54
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.util.UpcUtils - -------------Итого начало-----------
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.util.UpcUtils - баланс = 170.54
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.util.UpcUtils - -------------Итого конец-----------
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.util.UpcUtils - ------------Log calculateBalances finish-----------
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.util.UpcUtils - ---------------------------------------------------
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create paymentOrdersPanel
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create horizontalMenu
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.uni.HorizontalMenuPanel - get account
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.uni.HorizontalMenuPanel - check credit
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.uni.HorizontalMenuPanel - create items
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.components.RefillLink - RefillLink конструктор
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.components.RefillLink - пополнение карты = true
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create infoPanel
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create feedback link
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create promoPanel
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create promoBanner
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create promoAction
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - try to find a poll
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PollManager - ---getPoll start --- account id = 2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PollManager - Account retrieved: 2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PollManager - try to find personal poll for user accountId = 2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PollManager - personal list.isEmpty = true
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PollManager - try to find avaliable for all
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PollManager - list for all isEmpty = true
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PollManager - return poll null
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - find poll = null
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - --- bindAndSetVisiblePoll start --- poll = null
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - pollPanel and PollBanner will be unvisible
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - --- bindAndSetVisiblePoll finish ---
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create footer
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - Construction end
+02.10.14 09:13:38 TRACE   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.service.news.NewsService - Временная директория: /pub/home/upc/applications/upcManualTesting/catalina_base/temp/newscache/pdkem/
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:13:38 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - Construction start
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create PromoBannerInHeadPanel
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create PollBannerInHeadPanel
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create headPanel
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - --------------------------------------------------
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - ------------Log calculateBalances start-----------
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - номер штрих-кода карты = 2960178959723
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - у пользователя нет кредита
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - баланс будет равен балансу на карте = 170.54
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - -------------Итого начало-----------
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - баланс = 170.54
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - -------------Итого конец-----------
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - ------------Log calculateBalances finish-----------
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.util.UpcUtils - ---------------------------------------------------
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create paymentOrdersPanel
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create horizontalMenu
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.uni.HorizontalMenuPanel - get account
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.uni.HorizontalMenuPanel - check credit
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.uni.HorizontalMenuPanel - create items
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.components.RefillLink - RefillLink конструктор
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.components.RefillLink - пополнение карты = true
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create infoPanel
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create feedback link
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create promoPanel
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:14:31 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create promoBanner
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create promoAction
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - try to find a poll
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PollManager - ---getPoll start --- account id = 2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PollManager - Account retrieved: 2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PollManager - try to find personal poll for user accountId = 2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PollManager - personal list.isEmpty = true
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PollManager - try to find avaliable for all
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PollManager - list for all isEmpty = true
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PollManager - return poll null
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - find poll = null
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - --- bindAndSetVisiblePoll start --- poll = null
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - pollPanel and PollBanner will be unvisible
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - --- bindAndSetVisiblePoll finish ---
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create footer
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - Construction end
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - Construction start
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create emailConfirmPanel
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create refillLinkPanel, mainLinksPanel
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create nearestAutoPaysPanel
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - add components
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create RestrictionsInfoPanel
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create myPaymentQuickPayPanel
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create mainPromoPanel 
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create lastOperationContainer
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.model.lite.PayPassOrder - constructor passwordExpirationDateString = 2014-10-02T09:14:32.184+07:00
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - create menuPanel, searchPanel
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.MainPage - Construction end
+02.10.14 09:14:32 TRACE   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.service.news.NewsService - Временная директория: /pub/home/upc/applications/upcManualTesting/catalina_base/temp/newscache/pdkem/
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 1]]; index: 0; primaryKey: 1
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 2]]; index: 1; primaryKey: 2
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 3]]; index: 2; primaryKey: 3
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 4]]; index: 3; primaryKey: 4
+02.10.14 09:14:32 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 5]]; index: 4; primaryKey: 5
+02.10.14 09:14:33 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171521590) is about to detach.
+02.10.14 09:14:33 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171522351) is about to detach.
+02.10.14 09:14:33 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171531947) is about to detach.
+02.10.14 09:14:33 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171532010) is about to detach.
+02.10.14 09:14:33 DEBUG   SCT:148cea18683 /personal/main pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171537528) is about to detach.
+02.10.14 09:14:33 DEBUG   SCT:148cea18683 /personal/_pageNotFoundError404 pdkem com.ftc.bankplus.lite.web.pub.NotFoundPage - try to get Base
+02.10.14 09:14:33 DEBUG   SCT:148cea18683 /personal/_pageNotFoundError404 pdkem com.ftc.bankplus.lite.web.pub.NotFoundPage - base = 
+02.10.14 09:14:33 DEBUG   SCT:148cea18683 /personal/_pageNotFoundError404 pdkem com.ftc.bankplus.lite.web.pub.NotFoundPage - pathSkin = /lite/skins/pdkem/
+02.10.14 09:14:33 DEBUG   SCT:148cea18683 /personal/_pageNotFoundError404 pdkem com.ftc.bankplus.lite.web.pub.NotFoundPage - Страница не найдена. skinCode = pdkem. Предыдущая страница https://angara.ftc.ru/personal/main
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - Construction start
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create PromoBannerInHeadPanel
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create PollBannerInHeadPanel
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create headPanel
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.util.UpcUtils - --------------------------------------------------
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.util.UpcUtils - ------------Log calculateBalances start-----------
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.util.UpcUtils - номер штрих-кода карты = 2960178959723
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.util.UpcUtils - у пользователя нет кредита
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.util.UpcUtils - баланс будет равен балансу на карте = 170.54
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.util.UpcUtils - -------------Итого начало-----------
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.util.UpcUtils - баланс = 170.54
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.util.UpcUtils - -------------Итого конец-----------
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.util.UpcUtils - ------------Log calculateBalances finish-----------
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.util.UpcUtils - ---------------------------------------------------
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create paymentOrdersPanel
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create horizontalMenu
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.uni.HorizontalMenuPanel - get account
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.uni.HorizontalMenuPanel - check credit
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.uni.HorizontalMenuPanel - create items
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.components.RefillLink - RefillLink конструктор
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.components.RefillLink - пополнение карты = true
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create infoPanel
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create feedback link
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create promoPanel
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create promoBanner
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create promoAction
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - try to find a poll
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PollManager - ---getPoll start --- account id = 2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PollManager - Account retrieved: 2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PollManager - try to find personal poll for user accountId = 2171336801
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PollManager - personal list.isEmpty = true
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PollManager - try to find avaliable for all
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PollManager - list for all isEmpty = true
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PollManager - return poll null
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - find poll = null
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - --- bindAndSetVisiblePoll start --- poll = null
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - pollPanel and PollBanner will be unvisible
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - --- bindAndSetVisiblePoll finish ---
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create footer
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - Construction end
+02.10.14 09:21:30 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.model.lite.PayPassOrder - constructor passwordExpirationDateString = 2014-10-02T09:21:30.833+07:00
+02.10.14 09:21:31 TRACE   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.service.news.NewsService - Временная директория: /pub/home/upc/applications/upcManualTesting/catalina_base/temp/newscache/pdkem/
+02.10.14 09:21:31 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:21:31 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:21:31 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:21:31 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:21:31 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:21:31 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:21:31 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:21:31 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:21:31 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:21:31 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:21:31 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:21:31 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:21:31 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:21:31 DEBUG   SCT:148cea18683 /personal/history pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:21:31 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 1]]; index: 0; primaryKey: 1
+02.10.14 09:21:31 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 2]]; index: 1; primaryKey: 2
+02.10.14 09:21:31 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 3]]; index: 2; primaryKey: 3
+02.10.14 09:21:31 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 4]]; index: 3; primaryKey: 4
+02.10.14 09:21:31 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 5]]; index: 4; primaryKey: 5
+02.10.14 09:21:31 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 6]]; index: 5; primaryKey: 6
+02.10.14 09:21:31 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 7]]; index: 6; primaryKey: 7
+02.10.14 09:21:32 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 8]]; index: 7; primaryKey: 8
+02.10.14 09:21:32 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 9]]; index: 8; primaryKey: 9
+02.10.14 09:21:32 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 10]]; index: 9; primaryKey: 10
+02.10.14 09:21:32 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 11]]; index: 10; primaryKey: 11
+02.10.14 09:21:32 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 12]]; index: 11; primaryKey: 12
+02.10.14 09:21:32 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 13]]; index: 12; primaryKey: 13
+02.10.14 09:21:32 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 14]]; index: 13; primaryKey: 14
+02.10.14 09:21:32 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 15]]; index: 14; primaryKey: 15
+02.10.14 09:21:32 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 16]]; index: 15; primaryKey: 16
+02.10.14 09:21:32 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 17]]; index: 16; primaryKey: 17
+02.10.14 09:21:32 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 18]]; index: 17; primaryKey: 18
+02.10.14 09:21:32 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 19]]; index: 18; primaryKey: 19
+02.10.14 09:21:32 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 20]]; index: 19; primaryKey: 20
+02.10.14 09:21:33 INFO    SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.behavior.UpcPropertiesFactory - Loading properties files from file:/pub/home/upc/applications/upcManualTesting/deployment/war_upc/WEB-INF/classes/com/ftc/bankplus/lite/web/customer/sclub/web/components/CommentAjaxEditableLabel.properties
+02.10.14 09:21:33 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171362980) is about to detach.
+02.10.14 09:21:33 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171363489) is about to detach.
+02.10.14 09:21:33 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171374825) is about to detach.
+02.10.14 09:21:33 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171374829) is about to detach.
+02.10.14 09:21:33 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171408872) is about to detach.
+02.10.14 09:21:33 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171445625) is about to detach.
+02.10.14 09:21:33 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171446437) is about to detach.
+02.10.14 09:21:33 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171446567) is about to detach.
+02.10.14 09:21:33 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171448093) is about to detach.
+02.10.14 09:21:33 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171448181) is about to detach.
+02.10.14 09:21:33 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171448388) is about to detach.
+02.10.14 09:21:33 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171449094) is about to detach.
+02.10.14 09:21:33 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171449193) is about to detach.
+02.10.14 09:21:33 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171497073) is about to detach.
+02.10.14 09:21:33 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171521557) is about to detach.
+02.10.14 09:21:33 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171521590) is about to detach.
+02.10.14 09:21:33 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171522351) is about to detach.
+02.10.14 09:21:33 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171531947) is about to detach.
+02.10.14 09:21:33 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171532010) is about to detach.
+02.10.14 09:21:33 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171537528) is about to detach.
+02.10.14 09:21:50 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.model.lite.PayPassOrder - constructor passwordExpirationDateString = 2014-10-02T09:21:50.699+07:00
+02.10.14 09:21:51 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 21]]; index: 0; primaryKey: 21
+02.10.14 09:21:51 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 22]]; index: 1; primaryKey: 22
+02.10.14 09:21:51 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 23]]; index: 2; primaryKey: 23
+02.10.14 09:21:51 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 24]]; index: 3; primaryKey: 24
+02.10.14 09:21:51 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 25]]; index: 4; primaryKey: 25
+02.10.14 09:21:51 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 26]]; index: 5; primaryKey: 26
+02.10.14 09:21:51 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 27]]; index: 6; primaryKey: 27
+02.10.14 09:21:51 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 28]]; index: 7; primaryKey: 28
+02.10.14 09:21:51 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 29]]; index: 8; primaryKey: 29
+02.10.14 09:21:51 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 30]]; index: 9; primaryKey: 30
+02.10.14 09:21:51 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 31]]; index: 10; primaryKey: 31
+02.10.14 09:21:51 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 32]]; index: 11; primaryKey: 32
+02.10.14 09:21:51 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 33]]; index: 12; primaryKey: 33
+02.10.14 09:21:51 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 34]]; index: 13; primaryKey: 34
+02.10.14 09:21:51 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 35]]; index: 14; primaryKey: 35
+02.10.14 09:21:51 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 36]]; index: 15; primaryKey: 36
+02.10.14 09:21:51 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 37]]; index: 16; primaryKey: 37
+02.10.14 09:21:52 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 38]]; index: 17; primaryKey: 38
+02.10.14 09:21:52 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 39]]; index: 18; primaryKey: 39
+02.10.14 09:21:52 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171362946) is about to detach.
+02.10.14 09:21:52 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171362964) is about to detach.
+02.10.14 09:21:52 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171362980) is about to detach.
+02.10.14 09:21:52 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171363489) is about to detach.
+02.10.14 09:21:52 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171408872) is about to detach.
+02.10.14 09:21:52 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171445625) is about to detach.
+02.10.14 09:21:52 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171446437) is about to detach.
+02.10.14 09:21:52 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171446567) is about to detach.
+02.10.14 09:21:52 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171448093) is about to detach.
+02.10.14 09:21:52 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171448181) is about to detach.
+02.10.14 09:21:52 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171448388) is about to detach.
+02.10.14 09:21:52 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171449094) is about to detach.
+02.10.14 09:21:52 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171449193) is about to detach.
+02.10.14 09:21:52 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171521557) is about to detach.
+02.10.14 09:21:52 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171521590) is about to detach.
+02.10.14 09:21:52 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171522351) is about to detach.
+02.10.14 09:21:52 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171531947) is about to detach.
+02.10.14 09:21:52 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171532010) is about to detach.
+02.10.14 09:21:52 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171537528) is about to detach.
+02.10.14 09:21:54 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 40]]; index: 0; primaryKey: 40
+02.10.14 09:21:54 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 41]]; index: 1; primaryKey: 41
+02.10.14 09:21:54 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.HistoryDataView - Item: [MarkupContainer [Component id = 42]]; index: 2; primaryKey: 42
+02.10.14 09:21:54 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171374825) is about to detach.
+02.10.14 09:21:54 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171374829) is about to detach.
+02.10.14 09:21:54 DEBUG   SCT:148cea18683 /personal/history pdkem com.ftc.bankplus.lite.web.customer.sclub.web.history.OperationLoadableModel - OperationModel (id=2171497073) is about to detach.
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - Construction start
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create PromoBannerInHeadPanel
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create PollBannerInHeadPanel
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create headPanel
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.util.UpcUtils - --------------------------------------------------
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.util.UpcUtils - ------------Log calculateBalances start-----------
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.util.UpcUtils - номер штрих-кода карты = 2960178959723
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.util.UpcUtils - у пользователя нет кредита
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.util.UpcUtils - баланс будет равен балансу на карте = 170.54
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.util.UpcUtils - -------------Итого начало-----------
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.util.UpcUtils - баланс = 170.54
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.util.UpcUtils - -------------Итого конец-----------
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.util.UpcUtils - ------------Log calculateBalances finish-----------
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.util.UpcUtils - ---------------------------------------------------
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create paymentOrdersPanel
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create horizontalMenu
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.uni.HorizontalMenuPanel - get account
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.uni.HorizontalMenuPanel - check credit
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.uni.HorizontalMenuPanel - create items
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.web.components.RefillLink - RefillLink конструктор
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.web.components.RefillLink - пополнение карты = true
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create infoPanel
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create feedback link
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create promoPanel
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create promoBanner
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create promoAction
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - try to find a poll
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PollManager - ---getPoll start --- account id = 2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PollManager - Account retrieved: 2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PollManager - try to find personal poll for user accountId = 2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PollManager - personal list.isEmpty = true
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PollManager - try to find avaliable for all
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PollManager - list for all isEmpty = true
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PollManager - return poll null
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - find poll = null
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - --- bindAndSetVisiblePoll start --- poll = null
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - pollPanel and PollBanner will be unvisible
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - --- bindAndSetVisiblePoll finish ---
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create footer
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - Construction end
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.utilites.NetUtil - init KeyManager with algorithm SunX509
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.utilites.NetUtil - load keystore JKS /pub/home/upc/applications/upcManualTesting/src/projects/conf/keystore/jira.keystore
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.utilites.NetUtil - init TrustManager with algorithm PKIX
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.jira.JiraRestService - Текст отправляемого запроса 
+project = EUROSET AND summary ~ 2960178959723 ORDER BY created ASC
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - >> "GET /rest/api/latest/search?jql=project+%3D+EUROSET+AND+summary+%7E+2960178959723+ORDER+BY+created+ASC&maxResults=1024&startAt=0 HTTP/1.1[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - >> "Authorization: Basic RmFrdHVyYTpGMjNpZTIxOWVqaw==[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - >> "User-Agent: Jakarta Commons-HttpClient/3.1[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - >> "Host: jira.korona.net[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - >> "[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - << "HTTP/1.1 200 OK[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - << "HTTP/1.1 200 OK[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - << "Date: Thu, 02 Oct 2014 02:21:58 GMT[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - << "X-AREQUESTID: 561x78606x11[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - << "Set-Cookie: JSESSIONID=CF02922F7FA9AAFCF43050A8E7C2A74F; Path=/; Secure; HttpOnly[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - << "Set-Cookie: crowd.token_key=""; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/; HttpOnly[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - << "X-Seraph-LoginReason: OUT[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - << "Set-Cookie: crowd.token_key=l0iGFmZwqkfWsunEp6adxw00; Path=/; HttpOnly[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - << "X-Seraph-LoginReason: OK[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - << "Set-Cookie: atlassian.xsrf.token=A2WT-VDQA-YDSI-K0Y3|7b891837f61a99532af29a670a7146e5e46fc1aa|lin; Path=/[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - << "X-ASESSIONID: 10m841z[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - << "X-AUSERNAME: Faktura[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - << "Cache-Control: no-cache, no-store, no-transform[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - << "Content-Type: application/json;charset=UTF-8[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - << "X-UA-Compatible: IE=Edge,chrome=1[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - << "Transfer-Encoding: chunked[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - << "[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.content - << "3"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.content - << "5"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.content - << "[\r]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.content - << "[\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.content - << "{"startAt":0,"maxResults":1000,"total":0,"issues":[]}"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.content - << "[\r]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.content - << "[\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.content - << "0"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.content - << "[\r]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.content - << "[\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.content - << "[\r]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.content - << "[\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem httpclient.wire.header - << "[\r][\n]"
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.jira.JiraRestService - Текст ответа 
+SearchResult{startIndex=0, maxResults=1000, total=0, issues=[]}
+02.10.14 09:21:58 INFO    SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.web.claim.ClaimBasePage - Время выполнения запроса getIssueFromJqlSearch: 0
+02.10.14 09:21:58 TRACE   SCT:148cea18683 /personal/submit-claim pdkem com.ftc.bankplus.lite.web.customer.sclub.service.news.NewsService - Временная директория: /pub/home/upc/applications/upcManualTesting/catalina_base/temp/newscache/pdkem/
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:21:58 DEBUG   SCT:148cea18683 /personal/submit-claim pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:22:09 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - Construction start
+02.10.14 09:22:09 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create PromoBannerInHeadPanel
+02.10.14 09:22:09 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create PollBannerInHeadPanel
+02.10.14 09:22:09 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create headPanel
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.util.UpcUtils - --------------------------------------------------
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.util.UpcUtils - ------------Log calculateBalances start-----------
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.util.UpcUtils - номер штрих-кода карты = 2960178959723
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.util.UpcUtils - у пользователя нет кредита
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.util.UpcUtils - баланс будет равен балансу на карте = 170.54
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.util.UpcUtils - -------------Итого начало-----------
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.util.UpcUtils - баланс = 170.54
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.util.UpcUtils - -------------Итого конец-----------
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.util.UpcUtils - ------------Log calculateBalances finish-----------
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.util.UpcUtils - ---------------------------------------------------
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create paymentOrdersPanel
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create horizontalMenu
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.uni.HorizontalMenuPanel - get account
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.uni.HorizontalMenuPanel - check credit
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.uni.HorizontalMenuPanel - create items
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.components.RefillLink - RefillLink конструктор
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.components.RefillLink - пополнение карты = true
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create infoPanel
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create feedback link
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create promoPanel
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create promoBanner
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create promoAction
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - try to find a poll
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PollManager - ---getPoll start --- account id = 2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PollManager - Account retrieved: 2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PollManager - try to find personal poll for user accountId = 2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PollManager - personal list.isEmpty = true
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PollManager - try to find avaliable for all
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PollManager - list for all isEmpty = true
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PollManager - return poll null
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - find poll = null
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - --- bindAndSetVisiblePoll start --- poll = null
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - pollPanel and PollBanner will be unvisible
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.util.CommonBehavior - --- bindAndSetVisiblePoll finish ---
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - create footer
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.web.basepage.SClubPage - Construction end
+02.10.14 09:22:10 TRACE   SCT:148cea18683 /personal/lock-card pdkem com.ftc.bankplus.lite.web.customer.sclub.service.news.NewsService - Временная директория: /pub/home/upc/applications/upcManualTesting/catalina_base/temp/newscache/pdkem/
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Cals promo action for account id: 2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Account retrieved: 2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Loaded participation for account: 2171336801, participations: []
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Participation [] is empty.
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load ean ranged actions for the account:2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - There is no any ean ranged actions for the account:2171336801
+02.10.14 09:22:10 DEBUG   SCT:148cea18683 /personal/lock-card pdkem ru.ftc.upc.bus.PromoActionManager - Load promo-actions for all for the bpc programm: 14854166
