@@ -1,4 +1,4 @@
-package ru.ftc.upc.testing.analog.rest;
+package ru.ftc.upc.testing.analog.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +13,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.ftc.upc.testing.analog.rest.AnaLogUtils.detectMessageType;
-import static ru.ftc.upc.testing.analog.rest.AnaLogUtils.distinguishXml;
+import static ru.ftc.upc.testing.analog.service.AnaLogUtils.detectMessageType;
+import static ru.ftc.upc.testing.analog.service.AnaLogUtils.distinguishXml;
 
 @RestController
 public class MainController {

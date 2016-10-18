@@ -1,4 +1,4 @@
-package ru.ftc.upc.testing.analog.rest;
+package ru.ftc.upc.testing.analog.service;
 
 import org.apache.log4j.Logger;
 import org.w3c.tidy.Tidy;

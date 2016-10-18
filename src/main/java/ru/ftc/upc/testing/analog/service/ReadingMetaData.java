@@ -1,4 +1,4 @@
-package ru.ftc.upc.testing.analog.rest;
+package ru.ftc.upc.testing.analog.service;
 
 import java.io.Serializable;
 
