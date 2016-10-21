@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.ftc.upc.testing.analog.model.Line;
+import ru.ftc.upc.testing.analog.model.LogChoice;
 import ru.ftc.upc.testing.analog.model.Part;
 
 import javax.servlet.http.HttpSession;
@@ -59,5 +60,15 @@ public class MainController {
     }
 
     return new Part(parsedLines);
+  }
+
+  @RequestMapping("/choices")
+  public List<LogChoice> choices() {
+    List<LogChoice> choices = new ArrayList<>();
+    choices.add(new LogChoice("Логи UPC-1", "log-samples\\bankplus.log"));
+    choices.add(new LogChoice("Логи UPC-1", "log-samples\\logSample.log", true));
+    choices.add(new LogChoice("Логи UPC-2", "log-samples\\core.log"));
+    choices.add(new LogChoice("Логи UPC-2", "log-samples\\pppinfo.log"));
+    return choices;
   }
 }

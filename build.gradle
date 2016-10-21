@@ -15,7 +15,7 @@ apply plugin: 'spring-boot'
 
 jar {
 	baseName = 'analog'
-	version = '0.0.1-SNAPSHOT'
+	version = '0.7-SNAPSHOT'
 }
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -30,8 +30,11 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web')
 //	compile('org.springframework.boot:spring-boot-starter-websocket')
 	compile("org.springframework.boot:spring-boot-starter-actuator")
-	runtime('com.h2database:h2')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
-
+	compile group: 'org.springframework.integration', name: 'spring-integration-file', version: '4.3.4.RELEASE'
 	compile group: 'net.sf.jtidy', name: 'jtidy', version: 'r938'
+    compile 'org.webjars:angularjs:1.5.8'
+
+	runtime('com.h2database:h2')
+
+	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
