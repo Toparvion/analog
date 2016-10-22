@@ -124,7 +124,6 @@ function setNewLogFileName() {
 		$consolePanel.empty();
 		currentLogFileName = logFileName;
 	}
-    $('title').html(currentLogFileName.substring(currentLogFileName.lastIndexOf("\\")+1) + ' - АнаЛог');
 	// loadData();
 }
 

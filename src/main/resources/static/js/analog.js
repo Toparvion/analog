@@ -1,17 +1,22 @@
-angular.module("AnaLog", [])
-.controller("choicesControler", function ($scope, $http) {
+var app = angular.module("AnaLog", []);
+app.run(function ($rootScope) {
+    $rootScope.watchingLog = "АнаЛог (загрузка...)";
+});
+app.controller("choicesController", function ($scope, $rootScope, $http) {
     $http.get("/choices")
         .then(function(response) {
-            console.log(response.data);
             $scope.choices = response.data;
-            angular.forEach($scope.choices, function (value) {
-                if (value.selectedByDefault) {
-                    $scope.selectedChoice = value.path;
+            for (var i in $scope.choices) {
+                var choice = $scope.choices[i];
+                if (choice.selectedByDefault) {
+                    $scope.selectedChoice = choice;
+                    $rootScope.watchingLog = choice.fileName + " - АнаЛог";
+                    break;
                 }
-            });
-            // $scope.myWelcome = response.data;
-            $scope.logChoice = function () {
-                console.log("New choice: " + $scope.selectedChoice)
+            }
+            $scope.onLogChange = function () {
+                console.log("New choice: " + $scope.selectedChoice.path)
+                $rootScope.watchingLog = $scope.selectedChoice.fileName + " - АнаЛог";
             }
         });
 });
