@@ -1,0 +1,88 @@
+body {
+    background-color: #2b2b2b;
+}
+
+.TRACE {
+    color: #bcbbba;
+}
+.DEBUG {
+    color: #696969;
+}
+.INFO {
+    color: #3a9546;
+}
+.WARN {
+    color: #de891b;
+}
+.ERROR {
+    color: rgba(255, 7, 0, 0.65);
+}
+.FATAL {
+    color: #de0000;
+    font-weight: bold;
+}
+
+/* ����� ��������, ����� �� ������������ � ����������� ������ � HLJS
+.XML {
+    color: #ffffff;
+    background-color: #009900;
+    font-weight: bold;
+}
+*/
+
+.UNKNOWN {
+    color: #808080;
+    font-style: italic;
+}
+
+#consolePanel {
+    font-family: Courier New, monospace;
+    font-size: 13px;
+    background-color: #1d1f21;
+}
+
+#controlPanel {
+    position: fixed;
+    top: 0;
+    right: 2%;
+    text-align: center;
+    color: #505050;
+
+    padding: 5px;
+    -moz-border-radius: 0 0 10px 10px;
+    -webkit-border-radius: 0 0 10px 10px;
+    border-radius: 0 0 10px 10px;
+    border: 1px solid #000000;
+
+    background: url("../img/console_background_wood.jpg") repeat scroll left center rgba(0, 0, 0, 0);
+
+    font-family: calibri, serif, arial;
+}
+
+#controlPanel button {
+    display: inline-block;
+}
+
+#controlPanel form {
+    display: inline-block;
+}
+
+#loader {
+    width: 16px;
+    display: inline-block;
+}
+
+.loading {
+    background: url(../img/preloader.gif) no-repeat left top;
+}
+
+#substrate {
+  bottom: 0;
+  height: auto;
+  max-height: 35%;
+  opacity: 0.25;
+  position: fixed;
+  right: 0;
+  width: auto;
+  z-index: -1;
+}

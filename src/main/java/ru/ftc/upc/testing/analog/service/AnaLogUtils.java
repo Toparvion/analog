@@ -18,7 +18,6 @@ import static java.lang.String.format;
 
 /**
  * Created with IntelliJ IDEA.
- * Developer: Plizga
  * Date: 02.10.14
  * Time: 9:58
  */
