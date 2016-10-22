@@ -7,7 +7,7 @@
     <script src="js/highlight.pack.js" type="text/javascript"></script>
     <script src="js/main.js" type="text/javascript"></script>
 
-    <script src="webjars/angularjs/1.5.8/angular.js"></script>
+    <script src="webjars/angularjs/1.5.8/angular.min.js"></script>
     <script src="js/analog.js" type="text/javascript"></script>
 
     <link rel="stylesheet" href="css/highlight-js/github-gist.css">
@@ -30,7 +30,7 @@
     <select id="combobox" name="logFileName" onchange="setNewLogFileName();"
             ng-controller="choicesController"
             ng-options="choice.fileName group by choice.group for choice in choices"
-            ng-model="selectedChoice"
+            ng-model="selectedLog"
             ng-change="onLogChange()">
         <!--choice.path as ...-->
         <!--<option disabled="disabled">-&#45;&#45;&#45;&#45;&#45;&#45; Отладочные логи -&#45;&#45;&#45;&#45;&#45;&#45;</option>-->
