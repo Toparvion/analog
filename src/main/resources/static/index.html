@@ -2,13 +2,14 @@
 <html lang="en" ng-app="AnaLog">
 <head>
     <meta charset="UTF-8">
-    <title ng-bind="watchingLog">АнаЛог v0.7 (загрузка...)</title>
+    <title ng-bind="watchingLog">АнаЛог v0.7</title>
     <script src="js/jquery-1.8.2.min.js" type="text/javascript"></script>
     <script src="js/highlight.pack.js" type="text/javascript"></script>
     <script src="js/main.js" type="text/javascript"></script>
 
-    <script src="webjars/angularjs/1.5.8/angular.min.js"></script>
+    <script src="webjars/angularjs/1.5.8/angular.js"></script>
     <script src="js/analog.js" type="text/javascript"></script>
+    <script src="js/services.js" type="text/javascript"></script>
 
     <link rel="stylesheet" href="css/highlight-js/github-gist.css">
     <link rel="stylesheet" href="css/main.css" type="text/css"/>
@@ -32,12 +33,6 @@
             ng-options="choice.fileName group by choice.group for choice in choices"
             ng-model="selectedLog"
             ng-change="onLogChange()">
-        <!--choice.path as ...-->
-        <!--<option disabled="disabled">-&#45;&#45;&#45;&#45;&#45;&#45; Отладочные логи -&#45;&#45;&#45;&#45;&#45;&#45;</option>-->
-        <!--<option value="log-samples/bankplus.log">log-samples/bankplus.log</option>-->
-        <!--<option value="log-samples/core.log">log-samples/core.log</option>-->
-        <!--<option value="log-samples/logSample.log">log-samples/logSample.log</option>-->
-        <!--<option value="log-samples/pppinfo.log">log-samples/pppinfo.log</option>-->
     </select>
     <label>
         <select id="encoding" name="encoding" onchange="setNewLogFileName();">

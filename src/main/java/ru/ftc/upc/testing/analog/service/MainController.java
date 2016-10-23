@@ -63,12 +63,13 @@ public class MainController {
   }
 
   @RequestMapping("/choices")
-  public List<LogChoice> choices() {
+  public List<LogChoice> choices() throws InterruptedException {
     List<LogChoice> choices = new ArrayList<>();
     choices.add(new LogChoice("Логи UPC-1", "log-samples\\bankplus.log"));
     choices.add(new LogChoice("Логи UPC-1", "log-samples\\logSample.log", true));
     choices.add(new LogChoice("Логи UPC-2", "log-samples\\core.log"));
     choices.add(new LogChoice("Логи UPC-2", "log-samples\\pppinfo.log"));
+//    Thread.sleep(2000L);
     return choices;
   }
 }
