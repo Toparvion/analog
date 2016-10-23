@@ -67,8 +67,9 @@ public class MainController {
     List<LogChoice> choices = new ArrayList<>();
     choices.add(new LogChoice("Логи UPC-1", "log-samples\\bankplus.log"));
     choices.add(new LogChoice("Логи UPC-1", "log-samples\\logSample.log", true));
-    choices.add(new LogChoice("Логи UPC-2", "log-samples\\core.log"));
-    choices.add(new LogChoice("Логи UPC-2", "log-samples\\pppinfo.log"));
+    choices.add(new LogChoice("Логи UPC-2", "log-samples/core.log"));
+    choices.add(new LogChoice("Логи UPC-2", "log-samples/pppinfo.log"));
+    choices.add(new LogChoice("Логи UPC-2", "nearby.log"));
 //    Thread.sleep(2000L);
     return choices;
   }

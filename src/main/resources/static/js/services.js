@@ -24,7 +24,9 @@ function ChoicesService($http, $location, $log, $rootScope, $window) {
                         // теперь попытаемся выяснить, есть ли указанный лог среди известных на сервера
                         for (var i in choices) {
                             var knownChoice = choices[i];
-                            if (knownChoice.path == proposedLogPath) {
+                            // next replacements allow us to correctly compare paths from different OS
+                            if (knownChoice.path.replace(new RegExp("\\\\",'g'), "/")
+                                == proposedLogPath.replace(new RegExp("\\\\", 'g'), "/")) {
                                 $log.log("Proposed log is known in group: " + knownChoice.group);
                                 selectedChoice = knownChoice;       // такой лог известен; просто выбираем его
                                 break;
@@ -35,7 +37,7 @@ function ChoicesService($http, $location, $log, $rootScope, $window) {
                             $log.log("Proposed log is unknown and therefore will be added as separate group.");
                             selectedChoice = {
                                 group: "Указан через URL",
-                                fileName: proposedLogPath.substring(proposedLogPath.lastIndexOf("\\") + 1),
+                                fileName: extractFileName(proposedLogPath),
                                 path: proposedLogPath
                             };
                             choices.push(selectedChoice);

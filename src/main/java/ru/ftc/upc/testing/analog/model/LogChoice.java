@@ -1,6 +1,6 @@
 package ru.ftc.upc.testing.analog.model;
 
-import java.io.File;
+import ru.ftc.upc.testing.analog.util.Util;
 
 /**
  * @author Toparvion
@@ -18,7 +18,7 @@ public class LogChoice {
   public LogChoice(String group, String path, boolean selectedByDefault) {
     this.group = group;
     this.path = path;
-    this.fileName = path.substring(path.lastIndexOf(File.separatorChar)+1);
+    this.fileName = Util.extractFileName(path);
     this.selectedByDefault = selectedByDefault;
   }
 
