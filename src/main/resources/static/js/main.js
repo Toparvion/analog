@@ -40,7 +40,7 @@ function init() {
     currentLogFileName = $select.val();
 
     setNewLogFileName();
-	setInterval(renderNextMessage, 150);
+	// setInterval(renderNextMessage, 150);
 
     watcher = {};
     watcher.socket = null;

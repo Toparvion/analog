@@ -26,7 +26,7 @@ public class AnaLogUtils {
   // шаблоны разбора
   private static final Pattern MESSAGE_LEVEL_EXTRACTOR = Pattern.compile("^[\\S ]*(TRACE|DEBUG|INFO|WARN|ERROR|FATAL)");
   private static final Pattern XML_OPEN_EXTRACTOR = Pattern.compile("<((?:\\w[\\w-]*:)?\\w[\\w-]*).*>");
-  private static final Pattern WHOLE_XML_EXCTRACTOR = Pattern.compile("^<((?:\\w[\\w-]*:)?\\w[\\w-]*).*>.*</\\1>$", Pattern.DOTALL);
+  private static final Pattern WHOLE_XML_EXTRACTOR = Pattern.compile("^<((?:\\w[\\w-]*:)?\\w[\\w-]*).*>.*</\\1>$", Pattern.DOTALL);
   // общие настройки
   private static final long SHOWN_LOG_MAX_SIZE = 32768L;
   private static final int LINE_SEPARATOR_LENGTH = System.getProperty("line.separator").length();
@@ -35,7 +35,7 @@ public class AnaLogUtils {
     String result = inputString.replaceAll("\"", "&quot;");
     result = result.replaceAll("<", "&lt;");
     result = result.replaceAll(">", "&gt;");
-    result = result.replaceAll("\r?\n", "\\\\n");
+    result = result.replaceAll("\r?\n", "\n");
     return result;
   }
 
@@ -151,7 +151,7 @@ public class AnaLogUtils {
     if (levelMatcher.find()) {
       return levelMatcher.group(1);
     }
-    Matcher xmlMatcher = WHOLE_XML_EXCTRACTOR.matcher(curLine);
+    Matcher xmlMatcher = WHOLE_XML_EXTRACTOR.matcher(curLine);
     if (xmlMatcher.find()) {
       return "XML";
     }
@@ -159,7 +159,8 @@ public class AnaLogUtils {
   }
 
   public static List<String> getRawLines(String inputFileName,
-                                         String encoding, ReadingMetaData readingMetaData,
+                                         String encoding,
+                                         ReadingMetaData readingMetaData,
                                          Long prependingSnippetSizePercent) throws Exception {
     // проверяем наличие указанного файла
     File inputFile = new File(inputFileName);

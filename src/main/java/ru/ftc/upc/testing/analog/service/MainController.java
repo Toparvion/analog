@@ -23,7 +23,7 @@ public class MainController {
 
   @RequestMapping("/provide")
   public Part provide(@RequestParam("log") String inputFileName,
-                      @RequestParam(name = "prependingSnippetSizePercent", required = false) Long pssp,
+                      @RequestParam(name = "prependingSize", required = false) Long prependingSize,
                       @RequestParam(required = false, defaultValue = "UTF-8") String encoding,
                       HttpSession session) {
     log.info("Session id: {}", (session == null) ? "(n/a)" : session.getId());
@@ -33,7 +33,7 @@ public class MainController {
     // получаем сырой набор строк из файла
     List<String> rawLines;
     try {
-      rawLines = AnaLogUtils.getRawLines(inputFileName, encoding, readingMetaData, pssp);
+      rawLines = AnaLogUtils.getRawLines(inputFileName, encoding, readingMetaData, prependingSize);
 
     } catch (FileNotFoundException e) {
       log.warn("Ошибка при чтении заданного файла: " + e.getMessage());
@@ -69,7 +69,6 @@ public class MainController {
     choices.add(new LogChoice("Логи UPC-1", "log-samples\\logSample.log", true));
     choices.add(new LogChoice("Логи UPC-2", "log-samples/core.log"));
     choices.add(new LogChoice("Логи UPC-2", "log-samples/pppinfo.log"));
-    choices.add(new LogChoice("Логи UPC-2", "nearby.log"));
 //    Thread.sleep(2000L);
     return choices;
   }
