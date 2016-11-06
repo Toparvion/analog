@@ -1,6 +1,7 @@
 package ru.ftc.upc.testing.analog.service;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.tidy.Tidy;
 
 import javax.servlet.http.HttpSession;
@@ -22,7 +23,8 @@ import static java.lang.String.format;
  * Time: 9:58
  */
 public class AnaLogUtils {
-  private static final Logger logger = Logger.getLogger(AnaLogUtils.class);
+  private static final Logger log = LoggerFactory.getLogger(AnaLogUtils.class);
+  private static final Logger tidyLog = LoggerFactory.getLogger(Tidy.class);
   // шаблоны разбора
   private static final Pattern MESSAGE_LEVEL_EXTRACTOR = Pattern.compile("^[\\S ]*(TRACE|DEBUG|INFO|WARN|ERROR|FATAL)");
   private static final Pattern XML_OPEN_EXTRACTOR = Pattern.compile("<((?:\\w[\\w-]*:)?\\w[\\w-]*).*>");
@@ -131,15 +133,23 @@ public class AnaLogUtils {
     tidy.setXmlTags(true);
     tidy.setXmlOut(true);
     tidy.setIndentAttributes(false);
-//    tidy.setSmartIndent(true);
+    // tidy.setSmartIndent(true); // excess
     tidy.setWraplen(150);
     tidy.setWrapAttVals(true);
+    tidy.setErrout(new PrintWriter(new StringWriter() /* <- just a stub, isn't used actually */) {
+      @Override
+      public void write(String s) {
+        tidyLog.info(s);      // we consider Tidy as auxiliary component so that its warnings are info for us
+      }
+    });
+    // tidy.setOnlyErrors(true);    // leads to undesirable Tidy behavior and therefore is turned off
+
     final StringReader inputReader = new StringReader(rawSourceXml);
     tidy.parse(inputReader, outputWriter);
     String prettyPrintedSourceXml = outputWriter.toString();
     inputReader.close();
     if ("".equals(prettyPrintedSourceXml)) {
-      logger.warn(String.format("Failed to pretty print XML started with '%s'. Falling back to raw string.",
+      log.warn(String.format("Failed to pretty print XML started with '%s'. Falling back to raw string.",
               rawSourceXml.substring(0, Math.max(rawSourceXml.length(), 19))));
       return rawSourceXml;
     }
@@ -189,7 +199,7 @@ public class AnaLogUtils {
         prependingCounter = (fileActualSize - SHOWN_LOG_MAX_SIZE) > 0L
                 ? (fileActualSize - SHOWN_LOG_MAX_SIZE)
                 : 0L;
-        logger.warn("Prepending counter was not initialized; has been computed as " + prependingCounter);
+        log.warn("Prepending counter was not initialized; has been computed as " + prependingCounter);
       } else {
         prependingCounter = readingMetaData.getPrependingCounter();
       }
@@ -243,7 +253,7 @@ public class AnaLogUtils {
 
       FileInputStream fis = new FileInputStream(inputFile);
       long skip = fis.skip(readCharsCounter);
-      logger.debug(format("Required skip value: %d, actual skip value: %d, difference: %d", readCharsCounter, skip, (readCharsCounter-skip)));
+      log.debug(format("Required skip value: %d, actual skip value: %d, difference: %d", readCharsCounter, skip, (readCharsCounter-skip)));
       Scanner scanner = new Scanner(fis, encoding);
       while (scanner.hasNextLine()) {
         String nextLine = scanner.nextLine();
@@ -269,7 +279,7 @@ public class AnaLogUtils {
       session.close(new CloseReason(code, message));
 
     } catch (IOException e) {
-      logger.error("Не получилось закрыть сессию webSocket'а: ", e);
+      log.error("Не получилось закрыть сессию webSocket'а: ", e);
     }
   }
 

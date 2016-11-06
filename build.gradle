@@ -28,7 +28,6 @@ repositories {
 dependencies {
 	compile('org.springframework.boot:spring-boot-devtools')
 	compile('org.springframework.boot:spring-boot-starter-web')
-//	compile('org.springframework.boot:spring-boot-starter-websocket')
 	compile("org.springframework.boot:spring-boot-starter-actuator")
 	compile group: 'org.springframework.integration', name: 'spring-integration-file', version: '4.3.4.RELEASE'
 	compile group: 'net.sf.jtidy', name: 'jtidy', version: 'r938'
