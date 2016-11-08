@@ -2,24 +2,35 @@ package ru.ftc.upc.testing.analog.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.ftc.upc.testing.analog.model.ChoiceGroup;
 import ru.ftc.upc.testing.analog.model.Line;
 import ru.ftc.upc.testing.analog.model.LogChoice;
 import ru.ftc.upc.testing.analog.model.Part;
+import ru.ftc.upc.testing.analog.util.Util;
 
 import javax.servlet.http.HttpSession;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
 import static ru.ftc.upc.testing.analog.service.AnaLogUtils.detectMessageType;
 import static ru.ftc.upc.testing.analog.service.AnaLogUtils.distinguishXml;
 
 @RestController
 public class MainController {
   private static final Logger log = LoggerFactory.getLogger(MainController.class);
+
+  private final List<ChoiceGroup> choices;
+
+  @Autowired
+  public MainController(ChoicesProperties choicesProperties) {
+    this.choices = choicesProperties.getChoices();
+  }
 
   @RequestMapping("/provide")
   public Part provide(@RequestParam("log") String inputFileName,
@@ -64,12 +75,8 @@ public class MainController {
 
   @RequestMapping("/choices")
   public List<LogChoice> choices() throws InterruptedException {
-    List<LogChoice> choices = new ArrayList<>();
-    choices.add(new LogChoice("Логи UPC-1", "log-samples\\bankplus.log"));
-    choices.add(new LogChoice("Логи UPC-1", "log-samples\\logSample.log", true));
-    choices.add(new LogChoice("Логи UPC-2", "log-samples/core.log"));
-    choices.add(new LogChoice("Логи UPC-2", "log-samples/pppinfo.log"));
-//    Thread.sleep(2000L);
-    return choices;
+    return choices.stream()
+            .flatMap(Util::flattenGroup)
+            .collect(toList());
   }
 }

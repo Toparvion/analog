@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title ng-bind="watchingLog">АнаЛог v0.7</title>
-    <script src="js/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="webjars/jquery/1.8.2/jquery.min.js" type="text/javascript"></script>
     <!--<script src="js/jquery-smooth-scroll.js" type="text/javascript"></script>-->
-    <script src="js/highlight.pack.js" type="text/javascript"></script>
+    <script src="webjars/highlightjs/9.7.0/highlight.min.js" type="text/javascript"></script>
     <!--<script src="js/main.js" type="text/javascript"></script>-->
 
     <script src="webjars/angularjs/1.5.8/angular.js"></script>
@@ -15,8 +15,8 @@
     <script src="js/rendering-service.js" type="text/javascript"></script>
     <script src="js/utils.js" type="text/javascript"></script>
 
-    <link rel="stylesheet" href="css/highlight-js/github-gist.css">
-    <link rel="stylesheet" href="css/main.css" type="text/css"/>
+    <link rel="stylesheet" href="webjars/highlightjs/9.7.0/styles/github-gist.css">
+    <link rel="stylesheet" href="css/main.css" type="text/css"/> <!-- This should go after link to HLJS style sheet -->
 </head>
 <body>
 <div id="controlPanel" ng-controller="controlPanelController">

@@ -86,3 +86,7 @@ body {
   width: auto;
   z-index: -1;
 }
+
+.hljs {
+    background: none;
+}

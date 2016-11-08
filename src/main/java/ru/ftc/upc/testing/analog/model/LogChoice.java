@@ -1,24 +1,19 @@
 package ru.ftc.upc.testing.analog.model;
 
-import ru.ftc.upc.testing.analog.util.Util;
-
 /**
  * @author Toparvion
  */
+@SuppressWarnings("unused")   // getters are user by Jackson during JSON serializing
 public class LogChoice {
   private final String group;
   private final String path;
   private final String fileName;
   private final boolean selectedByDefault;
 
-  public LogChoice(String group, String path) {
-    this(group, path, false);
-  }
-
-  public LogChoice(String group, String path, boolean selectedByDefault) {
+  public LogChoice(String group, String path, String fileName, boolean selectedByDefault) {
     this.group = group;
     this.path = path;
-    this.fileName = Util.extractFileName(path);
+    this.fileName = fileName;
     this.selectedByDefault = selectedByDefault;
   }
 
