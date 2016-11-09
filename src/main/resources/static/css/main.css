@@ -1,6 +1,6 @@
-body {
-    background-color: #2b2b2b;
-}
+/*body {*/
+    /*background-color: #ffffff;*/
+/*}*/
 
 .TRACE {
     color: #bcbbba;
@@ -22,7 +22,7 @@ body {
     font-weight: bold;
 }
 
-/* ����� ��������, ����� �� ������������ � ����������� ������ � HLJS
+/*
 .XML {
     color: #ffffff;
     background-color: #009900;
@@ -38,7 +38,7 @@ body {
 #consolePanel {
     font-family: Courier New, monospace;
     font-size: 13px;
-    background-color: #1d1f21;
+    /*background-color: #1d1f21;*/
 }
 
 #controlPanel {
@@ -87,6 +87,7 @@ body {
   z-index: -1;
 }
 
+/* The next definition prevents highlighted code sections from overlapping the substrate. */
 .hljs {
     background: none;
 }

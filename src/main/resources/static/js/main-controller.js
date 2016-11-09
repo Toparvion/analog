@@ -1,6 +1,6 @@
 app = angular.module("AnaLog", []);
 
-app.run(function ($rootScope) { $rootScope.watchingLog = "АнаЛог v0.7 (загрузка...)"; });
+app.run(function ($rootScope) { $rootScope.watchingLog = "АнаЛог v0.6 (загрузка...)"; });
 
 app.controller('controlPanelController', function ($scope, $rootScope,
                                                    choicesService, providerService, renderingService,

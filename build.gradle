@@ -15,7 +15,14 @@ apply plugin: 'spring-boot'
 
 jar {
 	baseName = 'analog'
-	version = '0.7-SNAPSHOT'
+	version = '0.6'
+	manifest {
+        attributes(
+            "Implementation-Title": "AnaLog",
+            "Implementation-Version": version,
+            "Implementation-Vendor": "Toparvion"
+        )
+    }
 }
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -24,18 +31,17 @@ repositories {
 	mavenCentral()
 }
 
-
 dependencies {
 	compile('org.springframework.boot:spring-boot-devtools')
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compile("org.springframework.boot:spring-boot-starter-actuator")
-	compile group: 'org.springframework.integration', name: 'spring-integration-file', version: '4.3.4.RELEASE'
+//	compile group: 'org.springframework.integration', name: 'spring-integration-file', version: '4.3.4.RELEASE'
 	compile group: 'net.sf.jtidy', name: 'jtidy', version: 'r938'
     compile 'org.webjars:angularjs:1.5.8'
     compile group: 'org.webjars', name: 'highlightjs', version: '9.7.0'
 	compile group: 'org.webjars', name: 'jquery', version: '1.8.2'
 
-	runtime('com.h2database:h2')
+//	runtime('com.h2database:h2')
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }

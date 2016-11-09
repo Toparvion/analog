@@ -4,16 +4,7 @@ spring:
     admin:
       enabled: true
 
-server:
-  port: 8080
-
-choices:
-  - group: Логи UPC-1
-    paths:
-      - log-samples\bankplus.log
-      - log-samples\logSample.log (selected by default)
-
-  - group: Логи UPC-2
-    paths:
-      - log-samples/core.log
-      - log-samples/pppinfo.log
+logging:
+  level:
+    root: info
+    ru.ftc.upc.testing.analog: trace
