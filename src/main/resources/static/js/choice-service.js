@@ -1,13 +1,6 @@
 /**
  * A service responsible for providing the application with log choice options (choices).
  *
- * @param $http
- * @param $location
- * @param $log
- * @param $rootScope
- * @param $window
- * @returns {Function}
- * @constructor
  */
 function ChoicesService($http, $location, $log, $rootScope, $window) {
     return function (callbackWhenReady) {
@@ -37,7 +30,7 @@ function ChoicesService($http, $location, $log, $rootScope, $window) {
                             $log.log("Proposed log is unknown and therefore will be added as separate group.");
                             selectedChoice = {
                                 group: "Указан через URL",
-                                fileName: extractFileName(proposedLogPath),
+                                title: extractFileName(proposedLogPath),
                                 path: proposedLogPath
                             };
                             choices.push(selectedChoice);

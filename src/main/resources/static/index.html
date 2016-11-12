@@ -30,9 +30,9 @@
         <input type="checkbox" name="watchToggler" onchange="toggleWatching();" disabled="disabled"/>Следить
     </label>
 -->
-    <label for="combobox">&nbsp;&nbsp;Файл:&nbsp;</label>
+    <label for="combobox" title="{{selectedLog.path}}">&nbsp;&nbsp;Файл:&nbsp;</label>
     <select id="combobox" name="logFileName"
-            ng-options="choice.fileName group by choice.group for choice in choices"
+            ng-options="choice.title group by choice.group for choice in choices"
             ng-model="selectedLog"
             ng-change="onLogChange()">
     </select>

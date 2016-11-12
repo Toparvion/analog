@@ -10,7 +10,7 @@ app.controller('controlPanelController', function ($scope, $rootScope,
     choicesService(function (choices, selectedChoice) {
         $scope.choices = choices;
         $scope.selectedLog = selectedChoice;
-        $rootScope.watchingLog = selectedChoice.fileName + " - АнаЛог";
+        $rootScope.watchingLog = selectedChoice.title + " - АнаЛог";
         $scope.updateNow();
     });
     $scope.encoding = 'utf8';
@@ -19,7 +19,7 @@ app.controller('controlPanelController', function ($scope, $rootScope,
     // $scope.$watch('onAir', $scope.toggleOnAir);
     $scope.onLogChange = function () {
         $log.log("New choice: " + $scope.selectedLog.path);
-        $rootScope.watchingLog = $scope.selectedLog.fileName + " - АнаЛог";
+        $rootScope.watchingLog = $scope.selectedLog.title + " - АнаЛог";
         $location.search("log", $scope.selectedLog.path);
         renderingService.clearQueue();
         $scope.onAir = false;
