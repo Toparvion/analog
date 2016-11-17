@@ -14,7 +14,7 @@ apply plugin: 'java'
 apply plugin: 'spring-boot'
 
 jar {
-	baseName = 'analog'
+    archiveName = 'analog.jar'
 	version = '0.6'
 	manifest {
         attributes(
@@ -37,6 +37,7 @@ dependencies {
 	compile("org.springframework.boot:spring-boot-starter-actuator")
 //	compile group: 'org.springframework.integration', name: 'spring-integration-file', version: '4.3.4.RELEASE'
 	compile group: 'net.sf.jtidy', name: 'jtidy', version: 'r938'
+	compile group: 'net.bull.javamelody', name: 'javamelody-core', version: '1.61.0'
     compile 'org.webjars:angularjs:1.5.8'
     compile group: 'org.webjars', name: 'highlightjs', version: '9.7.0'
 	compile group: 'org.webjars', name: 'jquery', version: '1.8.2'

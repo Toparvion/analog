@@ -253,7 +253,9 @@ public class AnaLogUtils {
 
       FileInputStream fis = new FileInputStream(inputFile);
       long skip = fis.skip(readCharsCounter);
-      log.debug(format("Required skip value: %d, actual skip value: %d, difference: %d", readCharsCounter, skip, (readCharsCounter-skip)));
+      if ((readCharsCounter-skip) != 0) {
+        log.trace(format("Required skip value: %d, actual skip value: %d, difference: %d", readCharsCounter, skip, (readCharsCounter-skip)));
+      }
       Scanner scanner = new Scanner(fis, encoding);
       while (scanner.hasNextLine()) {
         String nextLine = scanner.nextLine();
@@ -283,7 +285,7 @@ public class AnaLogUtils {
     }
   }
 
-  public static ReadingMetaData retrieveMetaData(HttpSession session, String inputFileName) {
+  static ReadingMetaData retrieveMetaData(HttpSession session, String inputFileName) {
     // восстанавливаем данные о предыдущем чтении
     ReadingMetaData readingMetaData = (ReadingMetaData) session.getAttribute(inputFileName);
     if (readingMetaData == null) {

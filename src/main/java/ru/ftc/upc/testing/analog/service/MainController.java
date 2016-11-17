@@ -37,7 +37,6 @@ public class MainController {
                       @RequestParam(name = "prependingSize", required = false) Long prependingSize,
                       @RequestParam(required = false, defaultValue = "UTF-8") String encoding,
                       HttpSession session) {
-    log.info("Session id: {}", (session == null) ? "(n/a)" : session.getId());
     // получаем данные о предыдущем чтении
     ReadingMetaData readingMetaData = AnaLogUtils.retrieveMetaData(session, inputFileName);
 
@@ -54,7 +53,9 @@ public class MainController {
       log.error("Internal application error: ", e);
       throw new RuntimeException(e);
     }
-    log.debug("Raw lines read: {}", rawLines.size());
+    if (!rawLines.isEmpty()) {
+      log.trace("Raw lines read: {}", rawLines.size());
+    }
 
     List<Line> parsedLines = new ArrayList<>();
     for (int i = 0; i < rawLines.size(); i++) {
@@ -74,7 +75,7 @@ public class MainController {
   }
 
   @RequestMapping("/choices")
-  public List<LogChoice> choices() throws InterruptedException {
+  public List<LogChoice> choices() {
     return choices.stream()
             .flatMap(Util::flattenGroup)
             .collect(toList());
