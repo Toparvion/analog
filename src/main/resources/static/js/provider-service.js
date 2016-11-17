@@ -1,5 +1,5 @@
 function ProviderService($http, $window, renderingService) {
-    return function (logPath, encoding, prependingSize) {
+    return function (logPath, encoding, errorCallback, prependingSize) {
         var params = {
             log: logPath,
             encoding: encoding
@@ -17,9 +17,12 @@ function ProviderService($http, $window, renderingService) {
                     }
                 },
                 function fail(response) {
-                    $window.alert('Не удалось загрузить лог с сервера: '
-                        + response.status + ' ' + response.statusText
-                        + '\n' + response.data.error + '\n' + response.data.message);
+                    errorCallback();
+                    var message = 'Не удалось загрузить лог с сервера: ' + response.status + ' ' + response.statusText;
+                    if (response.data) {
+                        message += '\n' + response.data.error + '\n' + response.data.message;
+                    }
+                    $window.alert(message);
                 });
     }
 }

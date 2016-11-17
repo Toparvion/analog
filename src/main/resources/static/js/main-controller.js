@@ -22,12 +22,11 @@ app.controller('controlPanelController', function ($scope, $rootScope,
         $rootScope.watchingLog = $scope.selectedLog.title + " - АнаЛог";
         $location.search("log", $scope.selectedLog.path);
         renderingService.clearQueue();
-        $scope.onAir = false;
-        $scope.toggleOnAir();
+        $scope.stopOnAir();
         $scope.updateNow($scope.selectedLog);
     };
     $scope.updateNow = function () {
-        providerService($scope.selectedLog.path, $scope.encoding)
+        providerService($scope.selectedLog.path, $scope.encoding, $scope.stopOnAir)
     };
     $scope.toggleOnAir = function () {
         $log.log("Turning onAir to: " + $scope.onAir);
@@ -35,10 +34,10 @@ app.controller('controlPanelController', function ($scope, $rootScope,
             onAirPromise = $interval($scope.updateNow, 1000);
             $scope.updateNow();    // in order not to wait for the first interval triggering
         } else {
-            $scope.stopOnAir();
+            $scope.disableOnAirPoller();
         }
     };
-    $scope.stopOnAir = function() {
+    $scope.disableOnAirPoller = function() {
         if (angular.isDefined(onAirPromise)) {
             $interval.cancel(onAirPromise);
             onAirPromise = undefined;
@@ -46,16 +45,23 @@ app.controller('controlPanelController', function ($scope, $rootScope,
         }
     };
     $scope.$on('$destroy', function() {
-        $scope.stopOnAir();
+        $scope.disableOnAirPoller();
     });
     $scope.prepend = function () {
         if ($scope.onAir == true) {
             $scope.onAir = false;
             $scope.toggleOnAir();
         }
-        providerService($scope.selectedLog.path, $scope.encoding, $scope.prependingSize);
+        providerService($scope.selectedLog.path, $scope.encoding, $scope.stopOnAir, $scope.prependingSize);
     };
     $scope.clear = function () {
         renderingService.clearQueue();
+    };
+    $scope.stopOnAir = function () {
+        if ($scope.onAir == false) {
+            return;
+        }
+        $scope.onAir = false;
+        $scope.toggleOnAir();
     }
 });
