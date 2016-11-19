@@ -1,8 +1,7 @@
 /**
- * A service responsible for providing the application with log choice options (choices).
- *
+ * A service responsible for providing the application with log choice options (aka choices).
  */
-function ChoicesService($http, $location, $log, $rootScope, $window) {
+function ChoicesService($http, $location, $log, $window) {
     return function (callbackWhenReady) {
 
         $http.get("/choices")
@@ -11,16 +10,14 @@ function ChoicesService($http, $location, $log, $rootScope, $window) {
                     var selectedChoice = undefined;
 
                     // сначала проверим, был ли указан путь к логу в URL
-                    if (!angular.equals($location.search(), {}) && $location.search().log) {
-                        var proposedLogPath = $location.search().log;
-                        $log.log("Found proposed log path in URL: " + proposedLogPath);
+                    if ($location.path()) {
+                        var proposedLogPath = $location.path().replace(new RegExp("^/"), "");
+                        $log.log("Proposed log path found in URL: " + proposedLogPath);
                         // теперь попытаемся выяснить, есть ли указанный лог среди известных на сервере
                         for (var i in choices) {
                             var knownChoice = choices[i];
-                            // next replacements allow us to correctly compare paths from different OS
-                            if (knownChoice.path.replace(new RegExp("\\\\",'g'), "/")
-                                == proposedLogPath.replace(new RegExp("\\\\", 'g'), "/")) {
-                                $log.log("Proposed log is known in group: " + knownChoice.group);
+                            if (arePathsEqual(knownChoice.path, proposedLogPath)) {
+                                $log.log("Proposed log is known within group: " + knownChoice.group);
                                 selectedChoice = knownChoice;       // такой лог известен; просто выбираем его
                                 break;
                             }
@@ -42,7 +39,7 @@ function ChoicesService($http, $location, $log, $rootScope, $window) {
                             var choice = choices[j];
                             if (choice.selectedByDefault) {
                                 selectedChoice = choice;
-                                $location.search("log", choice.path);
+                                $location.path(choice.path);
                                 break;
                             }
                         }
@@ -52,12 +49,14 @@ function ChoicesService($http, $location, $log, $rootScope, $window) {
                     callbackWhenReady(choices, selectedChoice);
                 },
                 function fail(response) {
-                    $window.alert('Не удалось загрузить варианты логов с сервера: '
-                        + response.status + ' ' + response.statusText
-                        + '\n' + response.data.error + '\n' + response.data.message);
+                    var message = 'Не удалось загрузить варианты логов с сервера: ' + response.status + ' ' + response.statusText;
+                    if (response.data) {
+                        message += '\n' + response.data.error + '\n' + response.data.message;
+                    }
+                    $window.alert(message);
                 }
 
-                );
+            );
     };
 }
 

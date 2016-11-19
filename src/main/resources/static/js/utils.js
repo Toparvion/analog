@@ -5,6 +5,11 @@ function extractFileName(path) {
     return path.substring(lastSlashPosition + 1);
 }
 
+function arePathsEqual(path1, path2) {
+    // the following replacements allow us to correctly compare paths from different OS'es
+    return (path1.toLowerCase().replace(new RegExp("\\\\", 'g'), "/") == path2.toLowerCase().replace(new RegExp("\\\\", 'g'), "/"));
+}
+
 function prepareMessages(responseData) {
     var preparedMessages = [];
     angular.forEach(responseData.items, function (item) {

@@ -6,36 +6,22 @@ app.controller('controlPanelController', function ($scope, $rootScope,
                                                    choicesService, providerService, renderingService,
                                                    $location, $log, $interval) {
     var onAirPromise;
-
-    choicesService(function (choices, selectedChoice) {
-        $scope.choices = choices;
-        $scope.selectedLog = selectedChoice;
-        $rootScope.watchingLog = selectedChoice.title + " - АнаЛог";
-        $scope.updateNow();
-    });
     $scope.encoding = 'utf8';
     $scope.onAir = false;
     $scope.prependingSize = "1";
-    // $scope.$watch('onAir', $scope.toggleOnAir);
+
+    initChoicesAndLog();
+
     $scope.onLogChange = function () {
         $log.log("New choice: " + $scope.selectedLog.path);
         $rootScope.watchingLog = $scope.selectedLog.title + " - АнаЛог";
-        $location.search("log", $scope.selectedLog.path);
+        $location.path($scope.selectedLog.path);
+        $scope.onAir = false;
         renderingService.clearQueue();
-        $scope.stopOnAir();
-        $scope.updateNow($scope.selectedLog);
+        $scope.updateLog($scope.selectedLog);
     };
-    $scope.updateNow = function () {
+    $scope.updateLog = function () {
         providerService($scope.selectedLog.path, $scope.encoding, $scope.stopOnAir)
-    };
-    $scope.toggleOnAir = function () {
-        $log.log("Turning onAir to: " + $scope.onAir);
-        if ($scope.onAir) {
-            onAirPromise = $interval($scope.updateNow, 1000);
-            $scope.updateNow();    // in order not to wait for the first interval triggering
-        } else {
-            $scope.disableOnAirPoller();
-        }
     };
     $scope.disableOnAirPoller = function() {
         if (angular.isDefined(onAirPromise)) {
@@ -48,20 +34,51 @@ app.controller('controlPanelController', function ($scope, $rootScope,
         $scope.disableOnAirPoller();
     });
     $scope.prepend = function () {
-        if ($scope.onAir == true) {
-            $scope.onAir = false;
-            $scope.toggleOnAir();
-        }
+        $scope.onAir = false;
         providerService($scope.selectedLog.path, $scope.encoding, $scope.stopOnAir, $scope.prependingSize);
     };
     $scope.clear = function () {
         renderingService.clearQueue();
     };
     $scope.stopOnAir = function () {
-        if ($scope.onAir == false) {
-            return;
-        }
         $scope.onAir = false;
-        $scope.toggleOnAir();
+    };
+    /**
+     * Queries log choice options (choices) from backend and initiates loading of selected log.
+     */
+    function initChoicesAndLog() {
+        choicesService(function (choices, selectedChoice) {
+            $scope.choices = choices;
+            $scope.selectedLog = selectedChoice;
+            $rootScope.watchingLog = selectedChoice.title + " - АнаЛог";
+            $scope.updateLog();
+        });
     }
+    // the following watch allows us to react to URL path change instantly (without opening a new browser tab)
+    $scope.$watch(function () {
+        return $location.path();
+    }, function (value) {
+        // $log.log("Raw value: " + value); // helpful for troubleshooting paths starting with 'C:\'
+        var newPath = value.replace(new RegExp("^/"), "");
+        if ($scope.selectedLog && !arePathsEqual($scope.selectedLog.path, newPath)) {
+            $log.log("Path change detected. Old path: '" + $scope.selectedLog.path + "'; new path: '" + newPath +"'.");
+            $scope.onAir = false;
+            $scope.clear();
+            initChoicesAndLog();
+        }
+    });
+
+    // the following watch allows us to react to any change of onAir mode flag (both from UI or internally)
+    $scope.$watch(function () {
+        return $scope.onAir;
+    }, function () {
+        $log.log("Turning onAir to: " + $scope.onAir);
+        if ($scope.onAir) {
+            onAirPromise = $interval($scope.updateLog, 1000);
+            $scope.updateLog();    // in order not to wait for the first interval triggering
+        } else {
+            $scope.disableOnAirPoller();
+        }
+    });
+
 });
