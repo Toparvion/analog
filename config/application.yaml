@@ -5,12 +5,12 @@ server:
 
 choices:
   - group: Логи UPC-1
-    base: log-samples/
+    pathBase: C:\lang\analog\log-samples\
     paths:
       - bankplus.log as "$g - $f"
       - logSample.log as "Примерчик ($F)" (selected)
 
   - group: Логи UPC-2
     paths:
-      - log-samples/core.log AS "Ядро ПК-2 ($f)"
-      - log-samples/pppinfo.log
+      - C:\lang\analog\log-samples\core.log AS "Ядро ПК-2 ($f)"
+      - C:/lang/analog/log-samples/pppinfo.log

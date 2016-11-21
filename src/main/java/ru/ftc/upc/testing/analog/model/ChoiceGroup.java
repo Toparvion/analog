@@ -9,7 +9,7 @@ import java.util.List;
 @SuppressWarnings("unused")       // setters are used by Spring while processing @ConfigurationProperties
 public class ChoiceGroup {
   private String group = "(non-grouped)";
-  private String base = "";
+  private String pathBase = "";
   private List<String> paths = new ArrayList<>();
 
   public ChoiceGroup() { }
@@ -22,12 +22,12 @@ public class ChoiceGroup {
     this.group = group;
   }
 
-  public String getBase() {
-    return base;
+  public String getPathBase() {
+    return pathBase;
   }
 
-  public void setBase(String base) {
-    this.base = base;
+  public void setPathBase(String pathBase) {
+    this.pathBase = pathBase;
   }
 
   public List<String> getPaths() {

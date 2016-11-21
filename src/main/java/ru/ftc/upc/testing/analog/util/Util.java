@@ -50,7 +50,7 @@ public final class Util {
       String title = expandTitle(purePath, pureTitle, group.getGroup());
       choices.add(new LogChoice(
                           group.getGroup(),
-                          group.getBase() + purePath,
+                          group.getPathBase() + purePath,
                           title,
                           selectedByDefault));
     }
