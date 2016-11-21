@@ -8,9 +8,14 @@ choices:
     pathBase: C:\lang\analog\log-samples\
     paths:
       - bankplus.log as "$g - $f"
-      - logSample.log as "Примерчик ($F)" (selected)
+      - logSample.log as "Примерчик ($F)"
 
   - group: Логи UPC-2
     paths:
       - C:\lang\analog\log-samples\core.log AS "Ядро ПК-2 ($f)"
       - C:/lang/analog/log-samples/pppinfo.log
+
+  - group: JavaScript
+    scanDir: C:\lang\analog\src\main\resources\static\js
+    paths:
+      - C:\lang\analog\src\main\resources\static\js\main.js as "Main.JS" (selected)

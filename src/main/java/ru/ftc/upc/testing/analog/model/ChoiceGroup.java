@@ -11,6 +11,7 @@ public class ChoiceGroup {
   private String group = "(non-grouped)";
   private String pathBase = "";
   private List<String> paths = new ArrayList<>();
+  private String scanDir;
 
   public ChoiceGroup() { }
 
@@ -36,5 +37,13 @@ public class ChoiceGroup {
 
   public void setPaths(List<String> paths) {
     this.paths = paths;
+  }
+
+  public String getScanDir() {
+    return scanDir;
+  }
+
+  public void setScanDir(String scanDir) {
+    this.scanDir = scanDir;
   }
 }

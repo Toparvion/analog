@@ -32,4 +32,19 @@ public class LogChoice {
   public boolean getSelectedByDefault() {
     return selectedByDefault;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    LogChoice logChoice = (LogChoice) o;
+
+    return path.equals(logChoice.path);
+  }
+
+  @Override
+  public int hashCode() {
+    return path.hashCode();
+  }
 }
