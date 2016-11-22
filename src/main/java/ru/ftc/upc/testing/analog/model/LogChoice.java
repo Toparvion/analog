@@ -12,7 +12,7 @@ public class LogChoice {
 
   public LogChoice(String group, String path, String title, boolean selectedByDefault) {
     this.group = group;
-    this.path = path;
+    this.path = path.replaceAll("\\\\", "/");
     this.title = title;
     this.selectedByDefault = selectedByDefault;
   }
