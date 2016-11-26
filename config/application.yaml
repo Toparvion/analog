@@ -7,8 +7,12 @@ choices:
   - group: Логи UPC-1
     pathBase: C:\lang\analog\log-samples\
     paths:
-      - bankplus.log as "$g - $f"
       - logSample.log as "Примерчик ($F)"
+
+  - group: Логи в CP1251
+    encoding: CP-1251
+    paths:
+      - log-samples/bankplus.log as "$g - $f"
 
   - group: Логи UPC-2
     paths:

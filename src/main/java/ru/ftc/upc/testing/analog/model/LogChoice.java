@@ -7,12 +7,14 @@ package ru.ftc.upc.testing.analog.model;
 public class LogChoice {
   private final String group;
   private final String path;
+  private final String encoding;
   private final String title;
   private final boolean selectedByDefault;
 
-  public LogChoice(String group, String path, String title, boolean selectedByDefault) {
+  public LogChoice(String group, String path, String encoding, String title, boolean selectedByDefault) {
     this.group = group;
     this.path = path.replaceAll("\\\\", "/");
+    this.encoding = encoding;
     this.title = title;
     this.selectedByDefault = selectedByDefault;
   }
@@ -23,6 +25,10 @@ public class LogChoice {
 
   public String getPath() {
     return path;
+  }
+
+  public String getEncoding() {
+    return encoding;
   }
 
   public String getTitle() {

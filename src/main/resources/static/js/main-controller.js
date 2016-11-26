@@ -13,7 +13,8 @@ app.controller('controlPanelController', function ($scope, $rootScope,
     initChoicesAndLog();
 
     $scope.onLogChange = function () {
-        $log.log("New choice: " + $scope.selectedLog.path);
+        $log.log("New choice: " + $scope.selectedLog.path + " (" + $scope.selectedLog.encoding + ")");
+        $scope.encoding = $scope.selectedLog.encoding;
         $rootScope.watchingLog = $scope.selectedLog.title + " - АнаЛог";
         $location.path($scope.selectedLog.path);
         $scope.onAir = false;
@@ -50,6 +51,7 @@ app.controller('controlPanelController', function ($scope, $rootScope,
         choicesService(function (choices, selectedChoice) {
             $scope.choices = choices;
             $scope.selectedLog = selectedChoice;
+            $scope.encoding = selectedChoice.encoding;
             $rootScope.watchingLog = selectedChoice.title + " - АнаЛог";
             $scope.updateLog();
         });
@@ -64,7 +66,7 @@ app.controller('controlPanelController', function ($scope, $rootScope,
             newPath = newPath.replace(new RegExp("^/"), "");
         }
         if ($scope.selectedLog && !arePathsEqual($scope.selectedLog.path, newPath)) {
-            $log.log("Path change detected. Old path: '" + $scope.selectedLog.path + "'; new path: '" + newPath +"'.");
+            $log.log("Path change detected from: '" + $scope.selectedLog.path + "' to: '" + newPath +"'.");
             $scope.onAir = false;
             $scope.clear();
             initChoicesAndLog();

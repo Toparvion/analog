@@ -21,7 +21,9 @@ import static java.util.stream.Collectors.toSet;
  */
 public final class Util {
   private static final Logger log = LoggerFactory.getLogger(Util.class);
+
   private static final String DEFAULT_TITLE_FORMAT = "$f ($g)";
+  private static final String DEFAULT_ENCODING = "UTF-8";
 
   static String extractFileName(String path) {
     int lastSlashPosition = Math.max(
@@ -33,6 +35,9 @@ public final class Util {
   public static Stream<LogChoice> flattenGroup(ChoiceGroup group) {
     Set<LogChoice> choices = new LinkedHashSet<>();
     String groupName = group.getGroup();
+    String encoding = formatEncodingName((group.getEncoding() != null)
+                                              ? group.getEncoding()
+                                              : DEFAULT_ENCODING);
 
     // first let's traverse and process all of the path entries as they are commonly used in groups
     for (String path : group.getPaths()) {
@@ -60,7 +65,7 @@ public final class Util {
       String title = expandTitle(purePath, pureTitle, groupName);
       choices.add(new LogChoice(groupName,
                                 group.getPathBase() + purePath,
-                                title,
+                                encoding, title,
                                 selectedByDefault));
     }
 
@@ -72,6 +77,7 @@ public final class Util {
                         .filter(Files::isRegularFile)   // the scanning is not recursive so we bypass nested directories
                         .map(logPath -> new LogChoice(groupName,
                                                       logPath.toAbsolutePath().toString(),
+                                                      encoding,
                                                       expandTitle(logPath.toString(), DEFAULT_TITLE_FORMAT, groupName),
                                                       false))
                 .collect(toSet()));
@@ -88,5 +94,12 @@ public final class Util {
     return pureTitle.replaceAll("(?i)\\$f", fileName)
                     .replaceAll("(?i)\\$g", groupName)
                     .replaceAll("(^\")|(\"$)", "");
+  }
+
+  /**
+   * @return the given encoding name formatted for comparison on frontend
+   */
+  private static String formatEncodingName(String originalEncodingName) {
+    return originalEncodingName.toLowerCase().replaceAll("-", "");
   }
 }
