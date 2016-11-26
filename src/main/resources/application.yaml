@@ -7,4 +7,4 @@ spring:
 logging:
   level:
     root: info
-    ru.ftc.upc.testing.analog: debug
+    ru.ftc.upc.testing.analog: trace

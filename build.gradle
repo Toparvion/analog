@@ -32,17 +32,22 @@ repositories {
 }
 
 dependencies {
+    // Backend compile deps
 	compile('org.springframework.boot:spring-boot-devtools')
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compile("org.springframework.boot:spring-boot-starter-actuator")
 //	compile group: 'org.springframework.integration', name: 'spring-integration-file', version: '4.3.4.RELEASE'
 	compile group: 'net.sf.jtidy', name: 'jtidy', version: 'r938'
 	compile group: 'net.bull.javamelody', name: 'javamelody-core', version: '1.61.0'
+    compile group: 'com.github.albfernandez', name: 'juniversalchardet', version: '2.0.0'
+
+    // FrontEnd deps
     compile 'org.webjars:angularjs:1.5.8'
     compile group: 'org.webjars', name: 'highlightjs', version: '9.7.0'
 	compile group: 'org.webjars', name: 'jquery', version: '1.8.2'
 
-//	runtime('com.h2database:h2')
+	//	runtime('com.h2database:h2')
 
+	// Test deps
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }

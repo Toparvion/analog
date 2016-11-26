@@ -1,8 +1,7 @@
-package ru.ftc.upc.testing.analog.service;
+package ru.ftc.upc.testing.analog.model;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-import ru.ftc.upc.testing.analog.model.ChoiceGroup;
 
 import java.util.ArrayList;
 import java.util.List;

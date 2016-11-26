@@ -10,7 +10,7 @@ choices:
       - logSample.log as "Примерчик ($F)"
 
   - group: Логи в CP1251
-    encoding: CP-1251
+#    encoding: CP-1251
     paths:
       - log-samples/bankplus.log as "$g - $f"
 

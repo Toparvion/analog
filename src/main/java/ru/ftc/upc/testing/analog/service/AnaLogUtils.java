@@ -3,6 +3,7 @@ package ru.ftc.upc.testing.analog.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.tidy.Tidy;
+import ru.ftc.upc.testing.analog.model.ReadingMetaData;
 
 import javax.servlet.http.HttpSession;
 import javax.websocket.CloseReason;
