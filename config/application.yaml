@@ -22,4 +22,4 @@ choices:
   - group: JavaScript
     scanDir: C:\lang\analog\src\main\resources\static\js
     paths:
-      - C:\lang\analog\src\main\resources\static\js\main.js as "Main.JS" (selected)
+      - C:\lang\analog\src\main\resources\static\js\main-controller.js as "Main.JS" (selected)

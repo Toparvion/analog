@@ -8,7 +8,7 @@ var $watchToggler;
 var $loader;
 var isLoading = false;
 var isFirstPrependingString = false;
-// РїРµСЂРµРјРµРЅРЅС‹Рµ РѕС‚ С„СѓРЅРєС†РёРѕРЅР°Р»Р° СЃР»РµР¶РµРЅРёСЏ
+// переменные от функционала слежения
 var isWatching = false;
 var watcher;
 
@@ -22,7 +22,7 @@ function init() {
     $watchToggler = $('input[name=watchToggler]');
     $loader = $('#loader');
 
-    // РёР·РІР»РµРєР°РµРј РёРјСЏ Р»РѕРіР° РёР· URL-РїР°СЂР°РјРµС‚СЂР° log
+    // извлекаем имя лога из URL-параметра log
     var logFileName = '/pub/home/upc/applications/upcManualTesting/log/bankplus.log';
     var $select = $('select[name=logFileName]');
     if(location.search) {
@@ -71,7 +71,7 @@ function loadData(prependingMode) {
         .fail(function (jqXHR, textStatus, errorThrown) {
             stopAutoRefreshing();
             stopWatching();
-            alert('РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РіСЂСѓР·РёС‚СЊ С„Р°Р№Р» Р»РѕРіР°: ' + textStatus + '(' + errorThrown + ')');
+            alert('Не удалось загрузить файл лога: ' + textStatus + '(' + errorThrown + ')');
         })
         .always(function () {
             if (prependingMode) {
@@ -92,7 +92,7 @@ function prepareMessages(responseData, prependingMode) {
 			$messageLine = $('<pre class="xml"><code>' + item.text + '</code></pre>');
             hljs.highlightBlock($messageLine[0]);
 		}
-        // РІС‹Р±РёСЂР°РµРј Р·Р°РїРѕР»РЅСЏРµРјСѓСЋ РѕС‡РµСЂРµРґСЊ СЃС‚СЂРѕРє РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ РЅР°РїСЂР°РІР»РµРЅРёСЏ Р·Р°РїРѕР»РЅРµРЅРёСЏ
+        // выбираем заполняемую очередь строк в зависимости от направления заполнения
         if (prependingMode) {
             prependingRenderQueue.push($messageLine);
         } else {
@@ -132,7 +132,7 @@ function renderNextMessage() {
         return;
     }
     var i, nextLine;
-    // РїСЂРµРґРІР°СЂСЏСЋС‰Р°СЏ РѕС‡РµСЂРµРґСЊ РёРјРµРµС‚ РїСЂРёРѕСЂРёС‚РµС‚ РЅР°Рґ РґРѕРїРѕР»РЅСЏСЋС‰РµР№, РїРѕСЌС‚РѕРјСѓ Р°РЅР°Р»РёР·РёСЂСѓРµС‚СЃСЏ Рё РѕР±СЂР°Р±Р°С‚С‹РІР°РµС‚СЃСЏ РїРµСЂРІРѕР№
+    // предваряющая очередь имеет приоритет над дополняющей, поэтому анализируется и обрабатывается первой
     if (prependingRenderQueue.length > 0) {
         if (isFirstPrependingString) {
             $consolePanel.find('div:first').replaceWith(prependingRenderQueue.pop());
@@ -177,7 +177,7 @@ function stopAutoRefreshing() {
 function toggleWatching() {
     if (!isWatching) {
         console.log('Turning log watching on...');
-        var url = 'ws://' + window.location.host + '/analog/watch?log=' + encodeURIComponent(currentLogFileName)        // TODO РѕС‚РІСЏР·Р°С‚СЊСЃСЏ
+        var url = 'ws://' + window.location.host + '/analog/watch?log=' + encodeURIComponent(currentLogFileName)        // TODO отвязаться
             + '&encoding=' + $('select[name=encoding]').val();
         if ('WebSocket' in window) {
             watcher.socket = new WebSocket(url);
@@ -191,7 +191,7 @@ function toggleWatching() {
         watcher.socket.onopen = function () {
             console.log("Connection opened.");
             //watcher.socket.send(currentLogFileName);
-            $updateNowButton.html("[Р РµР¶РёРј СЃР»РµР¶РµРЅРёСЏ]");
+            $updateNowButton.html("[Режим слежения]");
             $updateNowButton.attr('disabled', 'disabled');
             $loader.addClass('loading');
             isWatching = true;
@@ -201,16 +201,16 @@ function toggleWatching() {
             console.log("Connection closed.");
             $watchToggler.removeAttr('checked');
             $updateNowButton.removeAttr('disabled');
-            $updateNowButton.html("РћР±РЅРѕРІРёС‚СЊ СЃРµР№С‡Р°СЃ");
+            $updateNowButton.html("Обновить сейчас");
             $loader.removeClass('loading');
             isWatching = false;
         };
 
         watcher.socket.onerror = function(error) {
-            alert("РћС€РёР±РєР° СЃР»РµР¶РµРЅРёСЏ: " + error.message);
+            alert("Ошибка слежения: " + error.message);
             $watchToggler.removeAttr('checked');
             $updateNowButton.removeAttr('disabled');
-            $updateNowButton.html("РћР±РЅРѕРІРёС‚СЊ СЃРµР№С‡Р°СЃ");
+            $updateNowButton.html("Обновить сейчас");
             $loader.removeClass('loading');
             isWatching = false;
         };

@@ -31,7 +31,7 @@ function ChoicesService($http, $location, $log, $window) {
                             selectedChoice = {
                                 group: "Указан через URL",
                                 title: extractFileName(proposedLogPath),
-                                encoding: "utf8",
+                                encoding: "UTF-8",
                                 path: proposedLogPath
                             };
                             choices.push(selectedChoice);

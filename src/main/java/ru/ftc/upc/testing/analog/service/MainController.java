@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
@@ -27,6 +26,8 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static ru.ftc.upc.testing.analog.service.AnaLogUtils.detectMessageType;
 import static ru.ftc.upc.testing.analog.service.AnaLogUtils.distinguishXml;
+import static ru.ftc.upc.testing.analog.util.Util.DEFAULT_ENCODING;
+import static ru.ftc.upc.testing.analog.util.Util.DEFAULT_TITLE_FORMAT;
 
 @RestController
 public class MainController {
@@ -93,7 +94,6 @@ public class MainController {
   private Stream<LogChoice> flattenGroup(ChoiceGroup group) {
     Set<LogChoice> choices = new LinkedHashSet<>();
     String groupName = group.getGroup();
-    ConcurrentHashMap<String, String> detectedEncodings = encodingDetector.getDetectedEncodings();
 
     // first let's traverse and process all of the path entries as they are commonly used in groups
     for (String path : group.getPaths()) {
@@ -101,7 +101,7 @@ public class MainController {
       if (coms == null) continue; // the origin of this object is responsible for logging in this case
       String title = Util.expandTitle(coms.getPurePath(), coms.getPureTitle(), groupName);
       String fullPath = group.getPathBase() + coms.getPurePath();
-      String encoding = detectedEncodings.getOrDefault(fullPath, Util.DEFAULT_ENCODING);
+      String encoding = encodingDetector.getEncodingFor(fullPath, DEFAULT_ENCODING);
       choices.add(new LogChoice(groupName,
               fullPath,
               encoding,
@@ -113,15 +113,17 @@ public class MainController {
     if (group.getScanDir() != null) {
       String groupEncoding = (group.getEncoding() != null)
               ? Util.formatEncodingName(group.getEncoding())
-              : Util.DEFAULT_ENCODING;
+              : null;   // this value will provoke encoding detection
       Path scanDirPath = Paths.get(group.getScanDir());
       try (Stream<Path> scannedPaths = Files.list(scanDirPath)) {
-        choices.addAll(scannedPaths
+        choices.addAll(scannedPaths   // such sets merging allows to exclude duplicates while preserving explicit paths
                 .filter(Files::isRegularFile)   // the scanning is not recursive so we bypass nested directories
                 .map(logPath -> new LogChoice(groupName,
                         logPath.toAbsolutePath().toString(),
-                        groupEncoding,
-                        Util.expandTitle(logPath.toString(), Util.DEFAULT_TITLE_FORMAT, groupName),
+                        (groupEncoding != null)
+                                ? groupEncoding
+                                : encodingDetector.getEncodingFor(logPath.toAbsolutePath().toString(), DEFAULT_ENCODING),
+                        Util.expandTitle(logPath.toString(), DEFAULT_TITLE_FORMAT, groupName),
                         false))
                 .collect(toSet()));
       } catch (IOException e) {

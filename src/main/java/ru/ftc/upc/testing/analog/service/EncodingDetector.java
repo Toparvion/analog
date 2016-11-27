@@ -33,7 +33,7 @@ public class EncodingDetector {
             .filter(group -> (group.getEncoding()==null))
             .parallel()
             .forEach(this::processGroup);
-    log.info("Encodings detection took {} ms.", (System.currentTimeMillis()-wholeProcessingStart));
+    log.info("The whole encodings detection took {} ms.", (System.currentTimeMillis()-wholeProcessingStart));
   }
 
   private void processGroup(ChoiceGroup group) {
@@ -42,26 +42,39 @@ public class EncodingDetector {
       ChoiceComponents coms = Util.extractChoiceComponents(pathSpec);
       if (coms == null) continue;   // the origin of this object is responsible for logging in this case
       String path = group.getPathBase() + coms.getPurePath();
-      File file = new File(path);
-      try {
-        long fileProcessingStart = System.currentTimeMillis();
-        String encoding = UniversalDetector.detectCharset(file);
-        if (encoding != null) {
-          detectedEncodings.put(path, Util.formatEncodingName(encoding));
-          log.debug("Encoding of log '{}' detected as '{}' (took {} ms).", path, encoding, (System.currentTimeMillis() - fileProcessingStart));
-        } else {
-          log.warn("UniversalCharDet couldn't recognize the encoding of log '{}' (took {} ms).", path, (System.currentTimeMillis() - fileProcessingStart));
-        }
-
-      } catch (IOException e) {
-        log.warn(format("Couldn't detect encoding of log '%s' because of error.", path), e);
-      }
+      processPath(path);
     }
     log.debug("Group '{}' has been processed for {} ms.", group.getGroup(),
-            (System.currentTimeMillis() - groupProcessingStart));
+                                                          (System.currentTimeMillis() - groupProcessingStart));
   }
 
-  public ConcurrentHashMap<String, String> getDetectedEncodings() {
-    return detectedEncodings;
+  private void processPath(String path) {
+    File file = new File(path);
+    try {
+      long fileProcessingStart = System.currentTimeMillis();
+      String encoding = UniversalDetector.detectCharset(file);
+      if (encoding != null) {
+        detectedEncodings.put(path, Util.formatEncodingName(encoding));
+        log.debug("Encoding of log '{}' detected as '{}' (took {} ms).", path, encoding, (System.currentTimeMillis() - fileProcessingStart));
+      } else {
+        log.warn("UniversalCharDet couldn't recognize the encoding of log '{}' (took {} ms).", path, (System.currentTimeMillis() - fileProcessingStart));
+      }
+
+    } catch (IOException e) {
+      log.warn(format("Couldn't detect encoding of log '%s' because of error.", path), e);
+    }
+  }
+
+  String getEncodingFor(String path, String defaultEncoding) {
+    String cachedEncoding = detectedEncodings.get(path);
+    if (cachedEncoding != null) {
+      log.trace("Cache hit: {} for log '{}' ", cachedEncoding, path);
+      return cachedEncoding;
+    }
+
+    log.trace("Cache miss for log '{}'; attempting to detect encoding...", path);
+    processPath(path);
+
+    return detectedEncodings.getOrDefault(path, defaultEncoding);
   }
 }
