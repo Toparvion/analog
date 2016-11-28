@@ -26,7 +26,6 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static ru.ftc.upc.testing.analog.service.AnaLogUtils.detectMessageType;
 import static ru.ftc.upc.testing.analog.service.AnaLogUtils.distinguishXml;
-import static ru.ftc.upc.testing.analog.util.Util.DEFAULT_ENCODING;
 import static ru.ftc.upc.testing.analog.util.Util.DEFAULT_TITLE_FORMAT;
 
 @RestController
@@ -101,7 +100,7 @@ public class MainController {
       if (coms == null) continue; // the origin of this object is responsible for logging in this case
       String title = Util.expandTitle(coms.getPurePath(), coms.getPureTitle(), groupName);
       String fullPath = group.getPathBase() + coms.getPurePath();
-      String encoding = encodingDetector.getEncodingFor(fullPath, DEFAULT_ENCODING);
+      String encoding = encodingDetector.getEncodingFor(fullPath);
       choices.add(new LogChoice(groupName,
               fullPath,
               encoding,
@@ -122,7 +121,7 @@ public class MainController {
                         logPath.toAbsolutePath().toString(),
                         (groupEncoding != null)
                                 ? groupEncoding
-                                : encodingDetector.getEncodingFor(logPath.toAbsolutePath().toString(), DEFAULT_ENCODING),
+                                : encodingDetector.getEncodingFor(logPath.toAbsolutePath().toString()),
                         Util.expandTitle(logPath.toString(), DEFAULT_TITLE_FORMAT, groupName),
                         false))
                 .collect(toSet()));

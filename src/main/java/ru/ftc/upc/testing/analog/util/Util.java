@@ -11,7 +11,6 @@ public final class Util {
   private static final Logger log = LoggerFactory.getLogger(Util.class);
 
   public static final String DEFAULT_TITLE_FORMAT = "$f ($g)";
-  public static final String DEFAULT_ENCODING = "UTF-8";
 
   static String extractFileName(String path) {
     int lastSlashPosition = Math.max(

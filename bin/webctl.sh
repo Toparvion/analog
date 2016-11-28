@@ -14,6 +14,7 @@ componentName="analog-0.6"
 JAVA_OPTS=`echo "
 -D_$componentName
 "`
+JAVA_OPTS="$JAVA_OPTS -Xmx1024m -XX:MaxMetaspaceSize=512m"
 
 if [ -x "$JAVA_HOME/bin/java" ]; then
     JAVA="$JAVA_HOME/bin/java"

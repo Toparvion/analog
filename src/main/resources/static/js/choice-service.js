@@ -12,9 +12,9 @@ function ChoicesService($http, $location, $log, $window) {
                     // сначала проверим, был ли указан путь к логу в URL
                     if ($location.path()) {
                         var proposedLogPath = $location.path();
-                        if (isWindowsOS()) {
-                            proposedLogPath = proposedLogPath.replace(new RegExp("^/"), "");
-                        }
+                        // if (isWindowsOS()) {
+                        //     proposedLogPath = proposedLogPath.replace(new RegExp("^/"), "");
+                        // }
                         $log.log("Proposed log path found in URL: " + proposedLogPath);
                         // теперь попытаемся выяснить, есть ли указанный лог среди известных на сервере
                         for (var i in choices) {
