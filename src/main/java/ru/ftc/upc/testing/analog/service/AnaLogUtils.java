@@ -169,10 +169,10 @@ public class AnaLogUtils {
     return "UNKNOWN";
   }
 
-  public static List<String> getRawLines(String inputFileName,
-                                         String encoding,
-                                         ReadingMetaData readingMetaData,
-                                         Long prependingSnippetSizePercent) throws Exception {
+  static List<String> getRawLines(String inputFileName,
+                                  String encoding,
+                                  ReadingMetaData readingMetaData,
+                                  Long prependingSnippetSizePercent) throws Exception {
     // проверяем наличие указанного файла
     File inputFile = new File(inputFileName);
     if (!inputFile.exists() || !inputFile.isFile()) {

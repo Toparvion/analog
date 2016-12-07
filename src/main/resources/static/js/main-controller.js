@@ -19,10 +19,10 @@ app.controller('controlPanelController', function ($scope, $rootScope,
         $location.path($scope.selectedLog.path);
         $scope.onAir = false;
         renderingService.clearQueue();
-        $scope.updateLog($scope.selectedLog);
+        $scope.updateLog(/*readBackAllowed:*/true);
     };
-    $scope.updateLog = function () {
-        providerService($scope.selectedLog.path, $scope.encoding, $scope.stopOnAir)
+    $scope.updateLog = function (isReadBackAllowed) {
+        providerService($scope.selectedLog.path, $scope.encoding, $scope.stopOnAir, isReadBackAllowed)
     };
     $scope.disableOnAirPoller = function() {
         if (angular.isDefined(onAirPromise)) {
@@ -36,7 +36,7 @@ app.controller('controlPanelController', function ($scope, $rootScope,
     });
     $scope.prepend = function () {
         $scope.onAir = false;
-        providerService($scope.selectedLog.path, $scope.encoding, $scope.stopOnAir, $scope.prependingSize);
+        providerService($scope.selectedLog.path, $scope.encoding, $scope.stopOnAir, false, $scope.prependingSize);
     };
     $scope.clear = function () {
         renderingService.clearQueue();
@@ -53,7 +53,7 @@ app.controller('controlPanelController', function ($scope, $rootScope,
             $scope.selectedLog = selectedChoice;
             $scope.encoding = selectedChoice.encoding;
             $rootScope.watchingLog = selectedChoice.title + " - АнаЛог";
-            $scope.updateLog();
+            $scope.updateLog(/*readBackAllowed:*/true);
         });
     }
     // the following watch allows us to react to URL path change instantly (without opening a new browser tab)
@@ -76,8 +76,8 @@ app.controller('controlPanelController', function ($scope, $rootScope,
     }, function () {
         $log.log("Turning onAir to: " + $scope.onAir);
         if ($scope.onAir) {
-            onAirPromise = $interval($scope.updateLog, 1000);
-            $scope.updateLog();    // in order not to wait for the first interval triggering
+            onAirPromise = $interval(function() {$scope.updateLog(false)}, 1000);
+            $scope.updateLog(false);    // in order not to wait for the first interval triggering
         } else {
             $scope.disableOnAirPoller();
         }

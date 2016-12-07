@@ -8,9 +8,13 @@ import java.io.Serializable;
  * Time: 12:48
  */
 public class ReadingMetaData implements Serializable {
-  private long prependingCounter = -1L;
-  private long appendingCounter = 0L;
-  private long fileSavedSize = 0L;
+  private long prependingCounter;
+  private long appendingCounter;
+  private long fileSavedSize;
+
+  public ReadingMetaData() {
+    reset();
+  }
 
   public long getPrependingCounter() {
     return prependingCounter;
@@ -38,5 +42,11 @@ public class ReadingMetaData implements Serializable {
 
   public boolean isPrependingCounterSet() {
     return (prependingCounter != -1L);
+  }
+
+  public void reset() {
+    prependingCounter = -1L;
+    appendingCounter = 0L;
+    fileSavedSize = 0L;
   }
 }

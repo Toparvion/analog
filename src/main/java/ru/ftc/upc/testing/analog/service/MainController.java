@@ -43,27 +43,19 @@ public class MainController {
 
   @RequestMapping("/provide")
   public Part provide(@RequestParam("log") String inputFileName,
-                      @RequestParam(name = "prependingSize", required = false) Long prependingSize,
+                      @RequestParam(required = false, name = "prependingSize") Long prependingSize,
                       @RequestParam(required = false, defaultValue = "UTF-8") String encoding,
+                      @RequestParam(required = false, defaultValue = "false") boolean readBackAllowed,
                       HttpSession session) {
     // получаем данные о предыдущем чтении
     ReadingMetaData readingMetaData = AnaLogUtils.retrieveMetaData(session, inputFileName);
 
     // получаем сырой набор строк из файла
-    List<String> rawLines;
-    try {
-      rawLines = AnaLogUtils.getRawLines(inputFileName, encoding, readingMetaData, prependingSize);
-
-    } catch (FileNotFoundException e) {
-      log.warn("Ошибка при чтении заданного файла: " + e.getMessage());
-      throw new RuntimeException(e);
-
-    } catch (Exception e) {
-      log.error("Internal application error: ", e);
-      throw new RuntimeException(e);
-    }
-    if (!rawLines.isEmpty()) {
-      log.trace("Raw lines read: {}", rawLines.size());
+    List<String> rawLines = fetchRawLines(inputFileName, prependingSize, encoding, readingMetaData);
+    if (rawLines.isEmpty() && readBackAllowed) {
+      log.debug("No new lines fetched. Attempting to read back...");
+      readingMetaData.reset();
+      rawLines = fetchRawLines(inputFileName, prependingSize, encoding, readingMetaData);
     }
 
     List<Line> parsedLines = new ArrayList<>();
@@ -81,6 +73,28 @@ public class MainController {
     }
 
     return new Part(parsedLines);
+  }
+
+  private List<String> fetchRawLines(String inputFileName,
+                                     Long prependingSize,
+                                     String encoding,
+                                     ReadingMetaData readingMetaData) {
+    List<String> rawLines;
+    try {
+      rawLines = AnaLogUtils.getRawLines(inputFileName, encoding, readingMetaData, prependingSize);
+
+    } catch (FileNotFoundException e) {
+      log.warn("Ошибка при чтении заданного файла: " + e.getMessage());
+      throw new RuntimeException(e);
+
+    } catch (Exception e) {
+      log.error("Internal application error: ", e);
+      throw new RuntimeException(e);
+    }
+    if (!rawLines.isEmpty()) {
+      log.trace("Raw lines read: {}", rawLines.size());
+    }
+    return rawLines;
   }
 
   @RequestMapping("/choices")

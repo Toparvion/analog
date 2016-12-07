@@ -1,8 +1,9 @@
 function ProviderService($http, $window, renderingService) {
-    return function (logPath, encoding, errorCallback, prependingSize) {
+    return function (logPath, encoding, errorCallback, isReadBackAllowed, prependingSize) {
         var params = {
             log: logPath,
-            encoding: encoding
+            encoding: encoding,
+            readBackAllowed: isReadBackAllowed
         };
         if (prependingSize) {
             params.prependingSize = prependingSize;
