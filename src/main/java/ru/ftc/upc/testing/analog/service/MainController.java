@@ -99,7 +99,12 @@ public class MainController {
       ChoiceComponents coms = Util.extractChoiceComponents(path);
       if (coms == null) continue; // the origin of this object is responsible for logging in this case
       String title = Util.expandTitle(coms.getPurePath(), coms.getPureTitle(), groupName);
-      String fullPath = group.getPathBase() + coms.getPurePath();
+//      String fullPath = group.getPathBase() + coms.getPurePath();
+      Path rawPath = Paths.get(group.getPathBase(), coms.getPurePath());
+      Path absPath = rawPath.isAbsolute()
+              ? rawPath
+              : rawPath.toAbsolutePath();
+      String fullPath = absPath.toString();
       String encoding = encodingDetector.getEncodingFor(fullPath);
       choices.add(new LogChoice(groupName,
               fullPath,

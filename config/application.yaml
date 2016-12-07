@@ -7,7 +7,7 @@ choices:
   - group: Логи UPC-1
     pathBase: C:\lang\analog\log-samples\
     paths:
-      - logSample.log as "Примерчик ($F)"
+      - sftp/logSample.log as "Примерчик ($F)"
 
   - group: Логи в CP1251
 #    encoding: CP-1251
@@ -17,7 +17,7 @@ choices:
   - group: Логи UPC-2
     paths:
       - C:\lang\analog\log-samples\core.log AS "Ядро ПК-2 ($f)"
-      - log-samples/pppinfo.log
+      - log-samples/sftp/pppinfo.log
 
   - group: JavaScript
     scanDir: C:\lang\analog\src\main\resources\static\js

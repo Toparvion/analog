@@ -24,12 +24,3 @@ function prepareMessages(responseData) {
     });
     return preparedMessages;
 }
-
-function isWindowsOS() {
-    var osName="Unknown OS";
-    if (navigator.appVersion.indexOf("Win")!=-1) osName="Windows";
-    if (navigator.appVersion.indexOf("Mac")!=-1) osName="MacOS";
-    if (navigator.appVersion.indexOf("X11")!=-1) osName="UNIX";
-    if (navigator.appVersion.indexOf("Linux")!=-1) osName="Linux";
-    return (osName == "Windows");
-}

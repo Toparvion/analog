@@ -62,9 +62,6 @@ app.controller('controlPanelController', function ($scope, $rootScope,
     }, function (value) {
         // $log.log("Raw value: " + value); // helpful for troubleshooting paths starting with 'C:\'
         var newPath = value;
-        // if (isWindowsOS()) {
-        //     newPath = newPath.replace(new RegExp("^/"), "");
-        // }
         if ($scope.selectedLog && !arePathsEqual($scope.selectedLog.path, newPath)) {
             $log.log("Path change detected from: '" + $scope.selectedLog.path + "' to: '" + newPath +"'.");
             $scope.onAir = false;

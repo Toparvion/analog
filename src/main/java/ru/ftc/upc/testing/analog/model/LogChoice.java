@@ -13,7 +13,10 @@ public class LogChoice {
 
   public LogChoice(String group, String path, String encoding, String title, boolean selectedByDefault) {
     this.group = group;
-    this.path = path.replaceAll("\\\\", "/");
+    String forwardSlashedPath = path.replaceAll("\\\\", "/");
+    this.path = forwardSlashedPath.startsWith("/")
+            ? forwardSlashedPath
+            : ("/" + forwardSlashedPath);
     this.encoding = encoding;
     this.title = title;
     this.selectedByDefault = selectedByDefault;
