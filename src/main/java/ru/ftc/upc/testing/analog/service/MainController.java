@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -144,6 +145,9 @@ public class MainController {
                         Util.expandTitle(logPath.toString(), DEFAULT_TITLE_FORMAT, groupName),
                         false))
                 .collect(toSet()));
+      } catch (NoSuchFileException e) {
+        log.warn("Path '{}' is not found and thus won't be scanned.", scanDirPath);
+
       } catch (IOException e) {
         log.error(format("Failed to scan directory '%s'; will be ignored.", group.getScanDir()), e);
       }

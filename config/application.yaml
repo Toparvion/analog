@@ -12,7 +12,7 @@ choices:
   - group: Логи в CP1251
 #    encoding: CP-1251
     paths:
-      - log-samples/bankplus.log as "$g - $f"
+      - log-samples/bankplus.log as "$g - $f" (selected)
 
   - group: Логи UPC-2
     paths:
@@ -22,4 +22,4 @@ choices:
   - group: JavaScript
     scanDir: C:\lang\analog\src\main\resources\static\js
     paths:
-      - C:\lang\analog\src\main\resources\static\js\main-controller.js as "Main.JS" (selected)
+      - C:\lang\analog\src\main\resources\static\js\main-controller.js as "Main.JS"
