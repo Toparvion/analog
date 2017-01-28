@@ -12,7 +12,7 @@ import java.util.List;
 @SuppressWarnings({"unused", "WeakerAccess"})     // such access level and setters presence are required by Spring Boot
 @Component
 @ConfigurationProperties
-public class ChoicesProperties {
+public class ChoiceProperties {
   private List<ChoiceGroup> choices = new ArrayList<>();
 
   public List<ChoiceGroup> getChoices() {

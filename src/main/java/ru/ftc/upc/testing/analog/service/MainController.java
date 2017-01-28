@@ -36,8 +36,9 @@ public class MainController {
   private final EncodingDetector encodingDetector;
 
   @Autowired
-  public MainController(ChoicesProperties choicesProperties, EncodingDetector encodingDetector) {
-    this.choices = choicesProperties.getChoices();
+  public MainController(ChoiceProperties choiceProperties,
+                        EncodingDetector encodingDetector) {
+    this.choices = choiceProperties.getChoices();
     this.encodingDetector = encodingDetector;
   }
 

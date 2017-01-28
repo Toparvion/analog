@@ -3,11 +3,16 @@ server:
 #logging:
 #  file: application.log
 
+remote:
+  incoming:
+    address: localhost
+    port: 21005
+
 choices:
   - group: Логи UPC-1
     pathBase: C:\lang\analog\log-samples\
     paths:
-      - sftp/logSample.log as "Примерчик ($F)"
+      - logSample.log as "Примерчик ($F)"
 
   - group: Логи в CP1251
 #    encoding: CP-1251
@@ -17,7 +22,7 @@ choices:
   - group: Логи UPC-2
     paths:
       - C:\lang\analog\log-samples\core.log AS "Ядро ПК-2 ($f)"
-      - log-samples/sftp/pppinfo.log
+      - log-samples/pppinfo.log
 
   - group: JavaScript
     scanDir: C:\lang\analog\src\main\resources\static\js

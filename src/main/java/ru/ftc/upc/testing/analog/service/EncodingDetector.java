@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.ftc.upc.testing.analog.model.ChoiceComponents;
 import ru.ftc.upc.testing.analog.model.ChoiceGroup;
-import ru.ftc.upc.testing.analog.model.ChoicesProperties;
+import ru.ftc.upc.testing.analog.model.ChoiceProperties;
 import ru.ftc.upc.testing.analog.util.Util;
 
 import java.io.File;
@@ -27,7 +27,7 @@ public class EncodingDetector {
   private final ConcurrentHashMap<String, String> detectedEncodings;
 
   @Autowired
-  public EncodingDetector(ChoicesProperties properties) {
+  public EncodingDetector(ChoiceProperties properties) {
     detectedEncodings = new ConcurrentHashMap<>(properties.getChoices().size());
     long wholeProcessingStart = System.currentTimeMillis();
     properties.getChoices().stream()

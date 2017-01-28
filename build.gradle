@@ -1,26 +1,27 @@
 buildscript {
-	ext {
-		springBootVersion = '1.4.1.RELEASE'
-	}
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-	}
+    ext {
+        springBootVersion = '2.0.0.BUILD-SNAPSHOT'
+    }
+    repositories {
+        mavenCentral()
+        maven { url 'https://repo.spring.io/libs-snapshot' }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.0.BUILD-20170119.122042-301")
+    }
 }
 
 apply plugin: 'java'
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot'
 
 jar {
     archiveName = 'analog.jar'
-	version = '0.6'
-	manifest {
+    version = '0.7'
+    manifest {
         attributes(
-            "Implementation-Title": "AnaLog",
-            "Implementation-Version": version,
-            "Implementation-Vendor": "Toparvion"
+                "Implementation-Title": "AnaLog",
+                "Implementation-Version": version,
+                "Implementation-Vendor": "Toparvion"
         )
     }
 }
@@ -28,26 +29,34 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 repositories {
-	mavenCentral()
+    mavenCentral()
+    maven { url 'https://repo.spring.io/libs-milestone' }
+    maven { url 'https://repo.spring.io/libs-snapshot' }
 }
 
 dependencies {
     // Backend compile deps
-	compile('org.springframework.boot:spring-boot-devtools')
-	compile('org.springframework.boot:spring-boot-starter-web')
-	compile("org.springframework.boot:spring-boot-starter-actuator")
-//	compile group: 'org.springframework.integration', name: 'spring-integration-file', version: '4.3.4.RELEASE'
-	compile group: 'net.sf.jtidy', name: 'jtidy', version: 'r938'
-	compile group: 'net.bull.javamelody', name: 'javamelody-core', version: '1.61.0'
+    compile('org.springframework.boot:spring-boot-devtools:2.0.0.BUILD-SNAPSHOT')
+    compile('org.springframework.boot:spring-boot-starter-web:2.0.0.BUILD-SNAPSHOT')
+    compile('org.springframework.boot:spring-boot-starter-actuator:2.0.0.BUILD-SNAPSHOT')
+//	compile('org.springframework.boot:spring-boot-starter-integration')
+
+    compile group: 'org.springframework.integration', name: 'spring-integration-core', version: '5.0.0.M2'
+    compile group: 'org.springframework.integration', name: 'spring-integration-file', version: '5.0.0.M2'
+    compile group: 'org.springframework.integration', name: 'spring-integration-rmi', version: '5.0.0.M2'
+    compile group: 'io.projectreactor', name: 'reactor-core', version: '3.0.4.RELEASE'
+
+    compile group: 'net.sf.jtidy', name: 'jtidy', version: 'r938'
+    compile group: 'net.bull.javamelody', name: 'javamelody-core', version: '1.61.0'
     compile group: 'com.github.albfernandez', name: 'juniversalchardet', version: '2.0.0'
 
     // FrontEnd deps
     compile 'org.webjars:angularjs:1.5.8'
     compile group: 'org.webjars', name: 'highlightjs', version: '9.7.0'
-	compile group: 'org.webjars', name: 'jquery', version: '1.8.2'
+    compile group: 'org.webjars', name: 'jquery', version: '1.8.2'
 
-	//	runtime('com.h2database:h2')
+    //	runtime('com.h2database:h2')
 
-	// Test deps
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+    // Test deps
+    testCompile('org.springframework.boot:spring-boot-starter-test:2.0.0.BUILD-SNAPSHOT')
 }
