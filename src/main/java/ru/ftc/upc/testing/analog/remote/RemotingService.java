@@ -14,6 +14,7 @@ import org.springframework.integration.file.tail.FileTailingMessageProducerSuppo
 import org.springframework.integration.rmi.RmiInboundGateway;
 import org.springframework.integration.rmi.RmiOutboundGateway;
 import org.springframework.stereotype.Service;
+import ru.ftc.upc.testing.analog.util.timestamp.TimestampExtractor;
 
 import java.io.File;
 import java.net.InetSocketAddress;
@@ -23,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.springframework.integration.file.dsl.Files.tailAdapter;
+import static ru.ftc.upc.testing.analog.remote.RemoteConfig.LOG_TIMESTAMP_HEADER_NAME;
 
 /**
  * Created by Toparvion on 15.01.2017.
@@ -40,14 +42,18 @@ public class RemotingService {
   private final Map<String, Set<AddressAwareRmiOutboundGateway>> watchersRegistry = new HashMap<>();
 
   private IntegrationFlowContext flowContext;
+  private final TimestampExtractor timestampExtractor;
 
   @Autowired
-  public RemotingService(@SuppressWarnings("SpringJavaAutowiringInspection") IntegrationFlowContext flowContext) {
+  public RemotingService(@SuppressWarnings("SpringJavaAutowiringInspection") IntegrationFlowContext flowContext,
+                         TimestampExtractor timestampExtractor) {
     this.flowContext = flowContext;
+    this.timestampExtractor = timestampExtractor;
   }
 
-  void registerWatcher(InetSocketAddress watcherAddress, String logPath) {
-    log.info("Получен запрос на регистрацию наблюдателя {} за логом '{}'.", watcherAddress, logPath);
+  void registerWatcher(InetSocketAddress watcherAddress, String logPath, String timestampFormat) {
+    log.info("Получен запрос на регистрацию наблюдателя {} за логом '{}' (формат метки: {}).",
+              watcherAddress, logPath, timestampFormat);
 
     // first let's check if it is duplicate registration request
     Set<AddressAwareRmiOutboundGateway> knownWatchers = watchersRegistry.get(logPath);
@@ -64,7 +70,8 @@ public class RemotingService {
     if (logTrackingRegistrationId != null) {
       IntegrationFlowRegistration logTrackingRegistration = flowContext.getRegistrationById(logTrackingRegistrationId);
       logTrackingFlow = (StandardIntegrationFlow) logTrackingRegistration.getIntegrationFlow();
-      log.info("Found existing log tracking flow with id={}.", logTrackingRegistrationId);
+      log.info("Найдено существующее слежение с id={}.", logTrackingRegistrationId);
+//      log.info("Found existing log tracking flow with id={}.", logTrackingRegistrationId);
 
     } else {
       IntegrationFlowRegistration registration = flowContext
@@ -73,6 +80,7 @@ public class RemotingService {
           .register();
       logTrackingRegistry.put(logPath, registration.getId());
       logTrackingFlow = (StandardIntegrationFlow) registration.getIntegrationFlow();
+      timestampExtractor.registerNewTimestampFormat(timestampFormat, logPath);
       log.info("Создано новое слежение для лога '{}' с id={}.", logPath, registration.getId());
 //      log.info("Created new log tracking flow with id={}.", registration.getId());
     }
@@ -91,8 +99,8 @@ public class RemotingService {
     outChannel.subscribe(payloadOutGateway);
 
     watchersRegistry.computeIfAbsent(logPath, s -> new HashSet<>())
-        .add(payloadOutGateway);
-    log.debug("Зарегистрирован новый интерфейс отправки полезной нагрузки: {}", payloadOutGateway.getGatewayAddress());
+                    .add(payloadOutGateway);
+    log.debug("Зарегистрирован новый слушатель лога: {}", payloadOutGateway.getGatewayAddress());
 //    log.debug("Registered new payloadOutGateway with address {}", payloadOutGateway.getGatewayAddress());
   }
 
@@ -135,6 +143,7 @@ public class RemotingService {
             .delay(1000)
             .end(true)
             .reopen(false))
+        .enrichHeaders(e -> e.headerFunction(LOG_TIMESTAMP_HEADER_NAME, timestampExtractor::extractTimestamp))
         .channel(channels -> channels.publishSubscribe(logPath))
         .get();
   }

@@ -1,4 +1,4 @@
-package ru.ftc.upc.testing.analog.util.convert;
+package ru.ftc.upc.testing.analog.util.timestamp;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -10,7 +10,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Some basic converter checks.
@@ -39,7 +40,7 @@ public class DateFormat2RegexConverterTest {
     Matcher matcher = convertedPattern.matcher(sampleLogTimestamp);
     assertTrue(matcher.find());
 
-    assertEquals("^\\d{2}\\.\\d{2}\\.\\d{2} \\d{2}:\\d{2}:\\d{2}", convertedPattern.toString());
+    assertEquals("\\d{2}\\.\\d{2}\\.\\d{2} \\d{2}:\\d{2}:\\d{2}", convertedPattern.toString());
 
     String matchingString = matcher.group();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
@@ -59,7 +60,7 @@ public class DateFormat2RegexConverterTest {
     Matcher matcher = convertedPattern.matcher(sampleLogTimestamp);
     assertTrue(matcher.find());
 
-    assertEquals("^\\d{4}\\-\\d{2}\\-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}", convertedPattern.toString());
+    assertEquals("\\d{4}\\-\\d{2}\\-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}", convertedPattern.toString());
 
     String matchingString = matcher.group();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
@@ -79,7 +80,7 @@ public class DateFormat2RegexConverterTest {
     Matcher matcher = convertedPattern.matcher(sampleLogTimestamp);
     assertTrue(matcher.find());
 
-    assertEquals("^\\d{4}\\-\\d{2}\\-\\d{2}TTT\\d{2}:\\d{2}:\\d{2}\\.\\d{3}", convertedPattern.toString());
+    assertEquals("\\d{4}\\-\\d{2}\\-\\d{2}TTT\\d{2}:\\d{2}:\\d{2}\\.\\d{3}", convertedPattern.toString());
   }
 
   @Test
@@ -93,30 +94,17 @@ public class DateFormat2RegexConverterTest {
     Matcher matcher = convertedPattern.matcher(sampleLogTimestamp);
     assertTrue(matcher.find());
 
-    assertEquals("^\\d{4}\\-\\d{2}\\-\\d{2} \\d{2}h \\d{2}' \\d{2}'' \\d{3}", convertedPattern.toString());
+    assertEquals("\\d{4}\\-\\d{2}\\-\\d{2} \\d{2}h \\d{2}' \\d{2}'' \\d{3}", convertedPattern.toString());
   }
 
   @Test
-  public void negativeSearch() throws Exception {
+  public void positiveSearch() throws Exception {
     String format = "dd.MM.yy HH:mm:ss";
     String sampleLogTimestamp = "[02.10.14 09:21:58]";
 
     Pattern convertedPattern = converter.convertToRegex(format);
     log.info("Converted pattern: {}", convertedPattern);
-    assertEquals("^\\d{2}\\.\\d{2}\\.\\d{2} \\d{2}:\\d{2}:\\d{2}", convertedPattern.toString());
-
-    Matcher matcher = convertedPattern.matcher(sampleLogTimestamp);
-    assertFalse(matcher.find());
-  }
-
-  @Test
-  public void positiveSearch() throws Exception {
-    String format = "[dd.MM.yy HH:mm:ss";
-    String sampleLogTimestamp = "[02.10.14 09:21:58]";
-
-    Pattern convertedPattern = converter.convertToRegex(format);
-    log.info("Converted pattern: {}", convertedPattern);
-    assertEquals("^\\[\\d{2}\\.\\d{2}\\.\\d{2} \\d{2}:\\d{2}:\\d{2}", convertedPattern.toString());
+    assertEquals("\\d{2}\\.\\d{2}\\.\\d{2} \\d{2}:\\d{2}:\\d{2}", convertedPattern.toString());
 
     Matcher matcher = convertedPattern.matcher(sampleLogTimestamp);
     assertTrue(matcher.find());

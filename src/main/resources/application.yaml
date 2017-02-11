@@ -9,6 +9,7 @@ server:
     persistent: true
     cookie:
       max-age: 86400
+  display-name: AnaLog
 
 logging:
   level:

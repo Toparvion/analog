@@ -33,6 +33,8 @@ public class RemoteConfig {
   private static final String REGISTER_RMI_IN_CHANNEL_ID = "registerRmiInChannel";
   private static final String SENDER_ADDRESS_HEADER_NAME = "senderAddress";
 
+  static final String LOG_TIMESTAMP_HEADER_NAME = "logTimestamp";
+
   @Value("${remote.incoming.address:127.0.0.1}")
   private String host;
   @Value("${remote.incoming.port:21003}")
@@ -44,7 +46,7 @@ public class RemoteConfig {
 
     RmiInboundGateway inboundRmiGateway = new RmiInboundGateway();
     inboundRmiGateway.setRequestChannel(registerRmiInChannel);
-    // inboundRmiGateway.setRegistryHost(host); // this causes application failure at startup due to connection refused
+    // inboundRmiGateway.setRegistryHost(host);// this causes application failure at startup due to 'connection refused'
     inboundRmiGateway.setRegistryPort(port);
 
     return IntegrationFlows
@@ -53,9 +55,11 @@ public class RemoteConfig {
         .<Boolean, HeaderValueRouter>
             route(new HeaderValueRouter(REGISTRATION_MODE_HEADER_NAME),
               routerSpec -> routerSpec
-                  .subFlowMapping(true /* registering*/,
+                  .subFlowMapping(true  /* registering*/,
                       f -> f.handle(String.class, (logPath, headers) -> {
-                        remotingService.registerWatcher((InetSocketAddress) headers.get(SENDER_ADDRESS_HEADER_NAME), logPath);
+                        remotingService.registerWatcher((InetSocketAddress) headers.get(SENDER_ADDRESS_HEADER_NAME),
+                                                        logPath,
+                                                        (String) headers.get(LOG_TIMESTAMP_HEADER_NAME));
                         return null;
                       }))
                   .subFlowMapping(false /* unregistering */,

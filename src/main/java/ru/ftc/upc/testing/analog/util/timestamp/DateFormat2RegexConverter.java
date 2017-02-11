@@ -1,4 +1,4 @@
-package ru.ftc.upc.testing.analog.util.convert;
+package ru.ftc.upc.testing.analog.util.timestamp;
 
 import org.springframework.stereotype.Service;
 
@@ -132,7 +132,7 @@ public class DateFormat2RegexConverter {
   Pattern convertToRegex(String logTimestampFormat) {
     Objects.requireNonNull(logTimestampFormat, "logTimestampFormat must not be null");
 
-    StringBuilder regexBuilder = new StringBuilder("^");
+    StringBuilder regexBuilder = new StringBuilder(logTimestampFormat.length()*2);
     StringBuilder sameCharsGroup = new StringBuilder(4);
     final int inputLength = logTimestampFormat.length();
     boolean isQuoting = false;

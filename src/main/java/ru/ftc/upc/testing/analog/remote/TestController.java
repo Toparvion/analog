@@ -19,12 +19,18 @@ public class TestController {
   }
 
   @RequestMapping("/start-watching")
-  public void startWatching(@RequestParam String logPath) {
-    remoteGateway.switchRegistration(logPath, true);
+  public void startWatching(@RequestParam String logPath,
+                            @RequestParam String timestampFormat) {
+
+    remoteGateway.switchRegistration(logPath,
+                                     timestampFormat,
+                                     true);
   }
 
   @RequestMapping("/stop-watching")
   public void stopWatching(@RequestParam String logPath) {
-    remoteGateway.switchRegistration(logPath, false);
+    remoteGateway.switchRegistration(logPath,
+                                     null,
+                                     false);
   }
 }
