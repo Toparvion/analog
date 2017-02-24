@@ -33,7 +33,7 @@ public class RemoteConfig {
   private static final String REGISTER_RMI_IN_CHANNEL_ID = "registerRmiInChannel";
   private static final String SENDER_ADDRESS_HEADER_NAME = "senderAddress";
 
-  static final String LOG_TIMESTAMP_HEADER_NAME = "logTimestamp";
+  public static final String LOG_TIMESTAMP_HEADER_NAME = "logTimestamp";
 
   @Value("${remote.incoming.address:127.0.0.1}")
   private String host;
@@ -95,10 +95,11 @@ public class RemoteConfig {
     inboundRmiGateway.setRequestChannel(payloadRmiInChannel);
     // inboundRmiGateway.setRegistryHost(host); // this causes application failure at startup due to connection refused
     inboundRmiGateway.setRegistryPort(port);
+    inboundRmiGateway.setExpectReply(false);    // to avoid 1 sec delay on every request/response exchange
 
     return IntegrationFlows
         .from(inboundRmiGateway)
-        .handle(message -> log.info("Возвращена строка: '{}'", message.getPayload()))
+        .handle(message -> log.info("Возвращена строка:\n'{}'", message.getPayload()))
         .get();
   }
 

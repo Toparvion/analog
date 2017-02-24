@@ -16,4 +16,10 @@ logging:
     root: info
     ru.ftc.upc.testing.analog: DEBUG
     ru.ftc.upc.testing.analog.service.EncodingDetector: INFO
+    ru.ftc.upc.testing.analog.remote.RemotingService$AddressAwareRmiOutboundGateway: INFO
+    ru.ftc.upc.testing.analog.remote.agent.RecordAggregator: INFO
     org.springframework.integration: INFO
+
+    # temporal tunings for log aggregator debugging
+    # org.springframework.integration.file.tail.OSDelegatingFileTailingMessageProducer: TRACE
+    # org.springframework.integration.aggregator: TRACE

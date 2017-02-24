@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.integration.aggregator.MessageGroupProcessor;
 import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
@@ -13,7 +14,10 @@ import org.springframework.integration.dsl.context.IntegrationFlowRegistration;
 import org.springframework.integration.file.tail.FileTailingMessageProducerSupport;
 import org.springframework.integration.rmi.RmiInboundGateway;
 import org.springframework.integration.rmi.RmiOutboundGateway;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
+import ru.ftc.upc.testing.analog.remote.agent.CorrelationIdHeaderEnricher;
+import ru.ftc.upc.testing.analog.remote.agent.RecordAggregator;
 import ru.ftc.upc.testing.analog.util.timestamp.TimestampExtractor;
 
 import java.io.File;
@@ -23,6 +27,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static java.util.stream.Collectors.joining;
+import static org.springframework.integration.IntegrationMessageHeaderAccessor.CORRELATION_ID;
 import static org.springframework.integration.file.dsl.Files.tailAdapter;
 import static ru.ftc.upc.testing.analog.remote.RemoteConfig.LOG_TIMESTAMP_HEADER_NAME;
 
@@ -138,12 +144,21 @@ public class RemotingService {
   }
 
   private IntegrationFlow tailingFlow(String logPath) {
+    CorrelationIdHeaderEnricher correlationProvider = new CorrelationIdHeaderEnricher();
+
+    MessageGroupProcessor recordComposer = group -> group.getMessages()
+        .stream()
+        .map(Message::getPayload)
+        .map(Object::toString)
+        .collect(joining("\n"));
+    int groupSizeInclusiveThreshold = 30;      // TODO move to properties
+    int groupTimeout = 3000;                   // TODO move to properties
+
     return IntegrationFlows
-        .from(tailAdapter((new File(logPath)))
-            .delay(1000)
-            .end(true)
-            .reopen(false))
+        .from(tailAdapter((new File(logPath))))
         .enrichHeaders(e -> e.headerFunction(LOG_TIMESTAMP_HEADER_NAME, timestampExtractor::extractTimestamp))
+        .enrichHeaders(e -> e.headerFunction(CORRELATION_ID, correlationProvider::obtainCorrelationId))
+        .handle(new RecordAggregator(recordComposer, groupSizeInclusiveThreshold, groupTimeout))
         .channel(channels -> channels.publishSubscribe(logPath))
         .get();
   }

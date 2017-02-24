@@ -8,11 +8,13 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.0.BUILD-20170119.122042-301")
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-M3'
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'org.junit.platform.gradle.plugin'
 
 jar {
     archiveName = 'analog.jar'
@@ -59,4 +61,10 @@ dependencies {
 
     // Test deps
     testCompile('org.springframework.boot:spring-boot-starter-test:2.0.0.BUILD-SNAPSHOT')
+    testCompile("org.junit.jupiter:junit-jupiter-api:5.0.0-M3")
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.0.0-M3")
+}
+
+junitPlatform {
+    enableStandardTestTask = true
 }

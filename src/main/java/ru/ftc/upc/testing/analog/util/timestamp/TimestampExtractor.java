@@ -75,6 +75,9 @@ public class TimestampExtractor {
     Matcher timestampMatcher = paf.getPattern().matcher(line);
     if (!timestampMatcher.find()) {
       return null;
+      // TODO есть проблема: если число таких записей без метки будет слишком велико, то выделяющий записи агрегатор
+      // выпустит их без "головы", то есть без предшествующей записи с меткой. Из-за этого на принимающей стороне их,
+      // возможно, будет трудно куда-либо определить. Нужно подумать, как это победить и есть ли такая проблема.
     }
 
     String tsString = timestampMatcher.group();
