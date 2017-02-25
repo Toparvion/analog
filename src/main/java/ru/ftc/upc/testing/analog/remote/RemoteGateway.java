@@ -18,7 +18,7 @@ public interface RemoteGateway {
    * @param doRegister
    */
   void switchRegistration(String logPath,
-                          @Header(value = LOG_TIMESTAMP_HEADER_NAME, required = false) String timestampFormat,
+                          @Header(value = LOG_TIMESTAMP_HEADER, required = false) String timestampFormat,
                           @Header(value = REGISTRATION_MODE_HEADER_NAME) boolean doRegister);
 
 }

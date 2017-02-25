@@ -12,7 +12,10 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
@@ -20,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.integration.IntegrationMessageHeaderAccessor.CORRELATION_ID;
+import static ru.ftc.upc.testing.analog.remote.RemoteConfig.LOG_TIMESTAMP_HEADER;
 
 class RecordAggregatorTest {
   private static final Logger log = LoggerFactory.getLogger(RecordAggregatorTest.class);
@@ -33,11 +37,14 @@ class RecordAggregatorTest {
 
   @BeforeEach
   void prepareSutAndMocks() {
-    MessageGroupProcessor processor = group -> group.getMessages()
-        .stream()
-        .map(Message::getPayload)
-        .map(Object::toString)
-        .collect(joining("\n"));
+    MessageGroupProcessor processor = group -> MessageBuilder
+        .withPayload(group.getMessages()
+            .stream()
+            .map(Message::getPayload)
+            .map(Object::toString)
+            .collect(joining("\n")))
+        .copyHeadersIfAbsent(group.getOne().getHeaders())
+        .build();
     sut = new RecordAggregator(processor, 3, GROUP_TIMEOUT);
     sut.setBeanName("RecordAggregator");      // to make SI log records not so long
     outputChannelMock = mock(MessageChannel.class);
@@ -188,6 +195,33 @@ class RecordAggregatorTest {
     // there is also a log message should be printed: 'Previous group with id=111111111111 has been already released. Skip.'
   }
 
+  @Test
+  @DisplayName("Timestamp header is included into released group independently of the completion way")
+  void timestampHeadersAreTransferredCorrectly() {
+    String rawLines[] = {
+        "02.10.14 09:12:49 WARN    SCT:148cea18683 /personal/ pdkem lite.web.customer.sclub.util.SClubUtils - Calls promo action for account id: 2171336801",
+        "java.lang.RuntimeException:",
+        "\tat lite.web.customer.sclub.util.SClubUtils.getAgentId(SClubUtils.java:670)",
+    };
+    LocalDateTime recordTimestamp = LocalDateTime.now();
+
+    List<Message<String>> lineMessages = new ArrayList<>();
+    for (int i = 0; i < rawLines.length; i++) {
+      String rawLine = rawLines[i];
+      MessageBuilder<String> messageBuilder = MessageBuilder
+          .withPayload(rawLine)
+          .setCorrelationId(111111111111L);
+      if (i == 0) {
+        messageBuilder.setHeader(LOG_TIMESTAMP_HEADER, recordTimestamp);
+      }
+      lineMessages.add(messageBuilder.build());
+    }
+
+    lineMessages.forEach(sut::handleMessage);
+
+    verify(outputChannelMock, only()).send(argThat(hasHeader(LOG_TIMESTAMP_HEADER, recordTimestamp)));
+  }
+
   private Message<String> buildMessage(String payload, long correlationId) {
     return MessageBuilder
         .withPayload(payload)
@@ -197,5 +231,9 @@ class RecordAggregatorTest {
 
   private ArgumentMatcher<Message<?>> matchesMessageWith(String expectedRecord) {
     return message -> expectedRecord.equals(message.getPayload().toString());
+  }
+
+  private ArgumentMatcher<Message<?>> hasHeader(String headerName, Object headerValue) {
+    return message -> headerValue.equals(message.getHeaders().get(headerName));
   }
 }

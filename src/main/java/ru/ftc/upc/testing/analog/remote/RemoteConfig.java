@@ -12,8 +12,10 @@ import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.rmi.RmiInboundGateway;
 import org.springframework.integration.rmi.RmiOutboundGateway;
 import org.springframework.integration.router.HeaderValueRouter;
+import ru.ftc.upc.testing.analog.model.RecordLevel;
 
 import java.net.InetSocketAddress;
+import java.time.LocalDateTime;
 
 import static org.springframework.integration.dsl.channel.MessageChannels.direct;
 import static org.springframework.integration.rmi.RmiInboundGateway.SERVICE_NAME_PREFIX;
@@ -33,7 +35,8 @@ public class RemoteConfig {
   private static final String REGISTER_RMI_IN_CHANNEL_ID = "registerRmiInChannel";
   private static final String SENDER_ADDRESS_HEADER_NAME = "senderAddress";
 
-  public static final String LOG_TIMESTAMP_HEADER_NAME = "logTimestamp";
+  public static final String LOG_TIMESTAMP_HEADER = "logTimestamp";
+  public static final String RECORD_LEVEL_HEADER = "recordLevel";
 
   @Value("${remote.incoming.address:127.0.0.1}")
   private String host;
@@ -59,7 +62,7 @@ public class RemoteConfig {
                       f -> f.handle(String.class, (logPath, headers) -> {
                         remotingService.registerWatcher((InetSocketAddress) headers.get(SENDER_ADDRESS_HEADER_NAME),
                                                         logPath,
-                                                        (String) headers.get(LOG_TIMESTAMP_HEADER_NAME));
+                                                        (String) headers.get(LOG_TIMESTAMP_HEADER));
                         return null;
                       }))
                   .subFlowMapping(false /* unregistering */,
@@ -99,7 +102,10 @@ public class RemoteConfig {
 
     return IntegrationFlows
         .from(inboundRmiGateway)
-        .handle(message -> log.info("Возвращена строка:\n'{}'", message.getPayload()))
+        .handle(message -> log.info("Получена запись с меткой {} и уровнем {}:\n< {}",
+            message.getHeaders().get(LOG_TIMESTAMP_HEADER, LocalDateTime.class),
+            message.getHeaders().get(RECORD_LEVEL_HEADER, RecordLevel.class),
+            message.getPayload().toString().replaceAll("\\n", "\n< ")))
         .get();
   }
 

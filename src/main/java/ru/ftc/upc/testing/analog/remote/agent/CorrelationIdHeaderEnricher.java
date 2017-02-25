@@ -4,7 +4,7 @@ import org.springframework.messaging.Message;
 
 import java.time.LocalDateTime;
 
-import static ru.ftc.upc.testing.analog.remote.RemoteConfig.LOG_TIMESTAMP_HEADER_NAME;
+import static ru.ftc.upc.testing.analog.remote.RemoteConfig.LOG_TIMESTAMP_HEADER;
 
 /**
  * Simple yet stateful correlationId provider that relies on messages timestamps extracted by
@@ -23,7 +23,7 @@ public class CorrelationIdHeaderEnricher {
   private Long currentCorrelationId = System.nanoTime();
 
   public Long obtainCorrelationId(Message<String> lineMessage) {
-    LocalDateTime lineTimestamp = lineMessage.getHeaders().get(LOG_TIMESTAMP_HEADER_NAME, LocalDateTime.class);
+    LocalDateTime lineTimestamp = lineMessage.getHeaders().get(LOG_TIMESTAMP_HEADER, LocalDateTime.class);
     if (lineTimestamp == null) {
       return currentCorrelationId;
     }

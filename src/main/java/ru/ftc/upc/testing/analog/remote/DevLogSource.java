@@ -33,7 +33,7 @@ public class DevLogSource {
   private static final Logger log = LoggerFactory.getLogger(DevLogSource.class);
 
   private static final Pattern LOG_RECORD_START_REGEX = Pattern.compile("^\\d{2}\\.\\d{2}\\.\\d{2} \\d{2}:\\d{2}:\\d{2}");
-  private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.uu HH:mm:ss,SS");
+  private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.uu HH:mm:ss,SSS");
 
   private final List<String> records;
 
