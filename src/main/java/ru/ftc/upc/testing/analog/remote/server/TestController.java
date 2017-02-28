@@ -1,4 +1,4 @@
-package ru.ftc.upc.testing.analog.remote;
+package ru.ftc.upc.testing.analog.remote.server;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
+ * Simple REST controller for debugging cluster routines without frontend (through IDEA REST Client)
  * Created by Toparvion on 15.01.2017.
  */
 @RestController

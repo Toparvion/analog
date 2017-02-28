@@ -1,4 +1,4 @@
-package ru.ftc.upc.testing.analog.remote;
+package ru.ftc.upc.testing.analog.remote.agent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +18,6 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import ru.ftc.upc.testing.analog.model.RecordLevel;
-import ru.ftc.upc.testing.analog.remote.agent.CorrelationIdHeaderEnricher;
-import ru.ftc.upc.testing.analog.remote.agent.RecordAggregator;
 import ru.ftc.upc.testing.analog.util.timestamp.TimestampExtractor;
 
 import java.io.File;
@@ -34,15 +32,15 @@ import static java.util.stream.Collectors.joining;
 import static org.springframework.integration.IntegrationMessageHeaderAccessor.CORRELATION_ID;
 import static org.springframework.integration.file.dsl.Files.tailAdapter;
 import static ru.ftc.upc.testing.analog.model.RecordLevel.UNKNOWN;
-import static ru.ftc.upc.testing.analog.remote.RemoteConfig.LOG_TIMESTAMP_HEADER;
-import static ru.ftc.upc.testing.analog.remote.RemoteConfig.RECORD_LEVEL_HEADER;
+import static ru.ftc.upc.testing.analog.remote.CommonTrackingConstants.*;
 
 /**
+ * Applied logical service providing routines for remote log tracking.<p>
  * Created by Toparvion on 15.01.2017.
  */
 @Service
-public class RemotingService {
-  private static final Logger log = LoggerFactory.getLogger(RemotingService.class);
+public class TrackingService {
+  private static final Logger log = LoggerFactory.getLogger(TrackingService.class);
 
   /**
    * The registry of logs being tracked, where the key is log path being watched and the value is corresponding
@@ -56,17 +54,23 @@ public class RemotingService {
   private final TimestampExtractor timestampExtractor;
 
   @Autowired
-  public RemotingService(@SuppressWarnings("SpringJavaAutowiringInspection") IntegrationFlowContext flowContext,
+  public TrackingService(@SuppressWarnings("SpringJavaAutowiringInspection") IntegrationFlowContext flowContext,
                          TimestampExtractor timestampExtractor) {
     this.flowContext = flowContext;
     this.timestampExtractor = timestampExtractor;
   }
 
-  void registerWatcher(InetSocketAddress watcherAddress, String logPath, String timestampFormat) {
+  /**
+   *
+   * @param watcherAddress
+   * @param logPath
+   * @param timestampFormat
+   */
+  public void registerWatcher(InetSocketAddress watcherAddress, String logPath, String timestampFormat) {
     log.info("Получен запрос на регистрацию наблюдателя {} за логом '{}' (формат метки: {}).",
               watcherAddress, logPath, timestampFormat);
 
-    // first let's check if it is duplicate registration request
+    // first let's check if it is a duplicate registration request
     Set<AddressAwareRmiOutboundGateway> knownWatchers = watchersRegistry.get(logPath);
     if (knownWatchers != null && knownWatchers.stream()
         .map(AddressAwareRmiOutboundGateway::getGatewayAddress)
@@ -102,7 +106,7 @@ public class RemotingService {
         watcherAddress.getHostName(),
         watcherAddress.getPort(),
         RmiInboundGateway.SERVICE_NAME_PREFIX,
-        RemoteConfig.PAYLOAD_RMI_IN_CHANNEL_ID);
+        SERVER_RMI_PAYLOAD_IN__CHANNEL);
     AddressAwareRmiOutboundGateway payloadOutGateway = new AddressAwareRmiOutboundGateway(
         watcherAddress,
         payloadSendingUrl);
@@ -115,7 +119,12 @@ public class RemotingService {
 //    log.debug("Registered new payloadOutGateway with address {}", payloadOutGateway.getGatewayAddress());
   }
 
-  void unregisterWatcher(InetSocketAddress watcherAddress, String logPath) {
+  /**
+   *
+   * @param watcherAddress
+   * @param logPath
+   */
+  public void unregisterWatcher(InetSocketAddress watcherAddress, String logPath) {
     log.info("Получен запрос на дерегистрацию наблюдателя {} для лога: '{}'", watcherAddress, logPath);
 
     // находим соответствующее слежение и извлекаем из него выходной канал
@@ -148,19 +157,24 @@ public class RemotingService {
     }
   }
 
+  /**
+   * TODO DOCME
+   * @param logPath
+   * @return
+   */
   private IntegrationFlow tailingFlow(String logPath) {
     // each tailing flow must have its own instance of correlationProvider as it is stateful and not thread-safe
     CorrelationIdHeaderEnricher correlationProvider = new CorrelationIdHeaderEnricher();
 
     int groupSizeInclusiveThreshold = 30;      // TODO move to properties
-    int groupTimeout = 3000;                   // TODO move to properties
+    int groupTimeout = 250;                    // TODO move to properties
 
     return IntegrationFlows
         .from(tailAdapter((new File(logPath))))
-        .enrichHeaders(e -> e.headerFunction(LOG_TIMESTAMP_HEADER, timestampExtractor::extractTimestamp))
+        .enrichHeaders(e -> e.headerFunction(LOG_TIMESTAMP_VALUE__HEADER, timestampExtractor::extractTimestamp))
         .enrichHeaders(e -> e.headerFunction(CORRELATION_ID, correlationProvider::obtainCorrelationId))
         .handle(new RecordAggregator(this::composeRecord, groupSizeInclusiveThreshold, groupTimeout))
-        .enrichHeaders(e -> e.headerFunction(RECORD_LEVEL_HEADER, this::detectRecordLevel))
+        .enrichHeaders(e -> e.headerFunction(RECORD_LEVEL__HEADER, this::detectRecordLevel))
         .channel(channels -> channels.publishSubscribe(logPath))
         .get();
   }

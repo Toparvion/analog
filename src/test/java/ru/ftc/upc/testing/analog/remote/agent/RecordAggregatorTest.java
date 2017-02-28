@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.integration.IntegrationMessageHeaderAccessor.CORRELATION_ID;
-import static ru.ftc.upc.testing.analog.remote.RemoteConfig.LOG_TIMESTAMP_HEADER;
+import static ru.ftc.upc.testing.analog.remote.CommonTrackingConstants.LOG_TIMESTAMP_VALUE__HEADER;
 
 class RecordAggregatorTest {
   private static final Logger log = LoggerFactory.getLogger(RecordAggregatorTest.class);
@@ -212,14 +212,14 @@ class RecordAggregatorTest {
           .withPayload(rawLine)
           .setCorrelationId(111111111111L);
       if (i == 0) {
-        messageBuilder.setHeader(LOG_TIMESTAMP_HEADER, recordTimestamp);
+        messageBuilder.setHeader(LOG_TIMESTAMP_VALUE__HEADER, recordTimestamp);
       }
       lineMessages.add(messageBuilder.build());
     }
 
     lineMessages.forEach(sut::handleMessage);
 
-    verify(outputChannelMock, only()).send(argThat(hasHeader(LOG_TIMESTAMP_HEADER, recordTimestamp)));
+    verify(outputChannelMock, only()).send(argThat(hasHeader(LOG_TIMESTAMP_VALUE__HEADER, recordTimestamp)));
   }
 
   private Message<String> buildMessage(String payload, long correlationId) {
