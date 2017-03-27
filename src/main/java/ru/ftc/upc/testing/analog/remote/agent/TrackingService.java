@@ -5,38 +5,28 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.integration.channel.PublishSubscribeChannel;
-import org.springframework.integration.dsl.IntegrationFlow;
-import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.dsl.StandardIntegrationFlow;
 import org.springframework.integration.dsl.context.IntegrationFlowContext;
 import org.springframework.integration.dsl.context.IntegrationFlowRegistration;
 import org.springframework.integration.file.tail.FileTailingMessageProducerSupport;
 import org.springframework.integration.rmi.RmiInboundGateway;
 import org.springframework.integration.rmi.RmiOutboundGateway;
-import org.springframework.integration.store.MessageGroup;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
-import ru.ftc.upc.testing.analog.model.RecordLevel;
 import ru.ftc.upc.testing.analog.util.timestamp.TimestampExtractor;
 
-import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.joining;
-import static org.springframework.integration.IntegrationMessageHeaderAccessor.CORRELATION_ID;
-import static org.springframework.integration.file.dsl.Files.tailAdapter;
-import static ru.ftc.upc.testing.analog.model.RecordLevel.UNKNOWN;
-import static ru.ftc.upc.testing.analog.remote.CommonTrackingConstants.*;
+import static ru.ftc.upc.testing.analog.remote.RemotingConstants.SERVER_RMI_PAYLOAD_IN__CHANNEL;
 
 /**
- * Applied logical service providing routines for remote log tracking.<p>
- * Created by Toparvion on 15.01.2017.
+ * Applied logical service providing routines for remote log tracking.
+ *
+ * @author Toparvion
+ * @since v0.7
  */
 @Service
 public class TrackingService {
@@ -52,12 +42,15 @@ public class TrackingService {
 
   private IntegrationFlowContext flowContext;
   private final TimestampExtractor timestampExtractor;
+  private final TailingFlowProvider tailingFlowProvider;
 
   @Autowired
   public TrackingService(@SuppressWarnings("SpringJavaAutowiringInspection") IntegrationFlowContext flowContext,
-                         TimestampExtractor timestampExtractor) {
+                         TimestampExtractor timestampExtractor,
+                         TailingFlowProvider tailingFlowProvider) {
     this.flowContext = flowContext;
     this.timestampExtractor = timestampExtractor;
+    this.tailingFlowProvider = tailingFlowProvider;
   }
 
   /**
@@ -66,7 +59,7 @@ public class TrackingService {
    * @param logPath
    * @param timestampFormat
    */
-  public void registerWatcher(InetSocketAddress watcherAddress, String logPath, String timestampFormat) {
+  void registerWatcher(InetSocketAddress watcherAddress, String logPath, String timestampFormat) {
     log.info("Получен запрос на регистрацию наблюдателя {} за логом '{}' (формат метки: {}).",
               watcherAddress, logPath, timestampFormat);
 
@@ -90,7 +83,7 @@ public class TrackingService {
 
     } else {
       IntegrationFlowRegistration registration = flowContext
-          .registration(tailingFlow(logPath))
+          .registration(tailingFlowProvider.provideTailingFlow(logPath))
           .autoStartup(true)
           .register();
       logTrackingRegistry.put(logPath, registration.getId());
@@ -124,7 +117,7 @@ public class TrackingService {
    * @param watcherAddress
    * @param logPath
    */
-  public void unregisterWatcher(InetSocketAddress watcherAddress, String logPath) {
+  void unregisterWatcher(InetSocketAddress watcherAddress, String logPath) {
     log.info("Получен запрос на дерегистрацию наблюдателя {} для лога: '{}'", watcherAddress, logPath);
 
     // находим соответствующее слежение и извлекаем из него выходной канал
@@ -157,51 +150,6 @@ public class TrackingService {
     }
   }
 
-  /**
-   * TODO DOCME
-   * @param logPath
-   * @return
-   */
-  private IntegrationFlow tailingFlow(String logPath) {
-    // each tailing flow must have its own instance of correlationProvider as it is stateful and not thread-safe
-    CorrelationIdHeaderEnricher correlationProvider = new CorrelationIdHeaderEnricher();
-
-    int groupSizeInclusiveThreshold = 30;      // TODO move to properties
-    int groupTimeout = 250;                    // TODO move to properties
-
-    return IntegrationFlows
-        .from(tailAdapter((new File(logPath))))
-        .enrichHeaders(e -> e.headerFunction(LOG_TIMESTAMP_VALUE__HEADER, timestampExtractor::extractTimestamp))
-        .enrichHeaders(e -> e.headerFunction(CORRELATION_ID, correlationProvider::obtainCorrelationId))
-        .handle(new RecordAggregator(this::composeRecord, groupSizeInclusiveThreshold, groupTimeout))
-        .enrichHeaders(e -> e.headerFunction(RECORD_LEVEL__HEADER, this::detectRecordLevel))
-        .channel(channels -> channels.publishSubscribe(logPath))
-        .get();
-  }
-
-  private RecordLevel detectRecordLevel(Message<String> recordMessage) {
-    String record = recordMessage.getPayload();
-    int eolIndex = record.indexOf('\n');
-    int searchBoundary = (eolIndex != -1) ? eolIndex : record.length();
-    String recordFirstLine = record.substring(0, searchBoundary);
-    return Stream.of(RecordLevel.values())
-        .filter(level -> !UNKNOWN.equals(level))
-        .filter(level -> recordFirstLine.contains(level.name()))
-        .findAny()
-        .orElse(UNKNOWN);
-  }
-
-  private Object composeRecord(MessageGroup group) {
-    return MessageBuilder
-        .withPayload(group.getMessages()
-                          .stream()
-                          .map(Message::getPayload)
-                          .map(Object::toString)
-                          .collect(joining("\n")))
-        .copyHeadersIfAbsent(group.getOne().getHeaders())   // in order not to loose 'logTimestamp' after release
-        .build();
-  }
-
   @EventListener
   public void processFileTailingEvent(FileTailingMessageProducerSupport.FileTailingEvent event) {
     log.debug("Caught file tailing event: {}", event.toString());
@@ -211,8 +159,8 @@ public class TrackingService {
     return logTrackingFlow.getIntegrationComponents()
         .stream()
         .filter(component -> PublishSubscribeChannel.class.isAssignableFrom(component.getClass()))
-        .map(component -> (PublishSubscribeChannel) component)
         .findAny()
+        .map(component -> (PublishSubscribeChannel) component)
         .orElseThrow(() -> new IllegalStateException(String.format("A logTrackingFlow for regId=%s is found " +
             "but it doesn't contain PublishSubscribeChannel.", registrationId)));
   }

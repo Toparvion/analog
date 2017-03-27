@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Simple REST controller for debugging cluster routines without frontend (through IDEA REST Client)
- * Created by Toparvion on 15.01.2017.
+ *
+ * @author Toparvion
+ * @since v0.7
  */
 @RestController
 public class TestController {

@@ -17,5 +17,5 @@ logging:
     ru.ftc.upc.testing.analog: DEBUG
     ru.ftc.upc.testing.analog.service.EncodingDetector: INFO
     ru.ftc.upc.testing.analog.remote.agent.TrackingService$AddressAwareRmiOutboundGateway: INFO
-    ru.ftc.upc.testing.analog.remote.agent.RecordAggregator: INFO
+    ru.ftc.upc.testing.analog.remote.agent.RecordAggregatorConfigurer: INFO
     org.springframework.integration: INFO

@@ -13,11 +13,12 @@ import org.springframework.integration.router.HeaderValueRouter;
 import java.net.InetSocketAddress;
 
 import static org.springframework.integration.dsl.channel.MessageChannels.direct;
-import static ru.ftc.upc.testing.analog.remote.CommonTrackingConstants.*;
+import static ru.ftc.upc.testing.analog.remote.RemotingConstants.*;
 
 /**
  * Spring configuration beans that compose tracking flow on the agent side.<p>
- * Created by Toparvion on 27.02.2017.
+ * @author Toparvion
+ * @since v0.7
  */
 @Configuration
 @IntegrationComponentScan

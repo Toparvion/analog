@@ -18,11 +18,13 @@ import java.time.LocalDateTime;
 
 import static org.springframework.integration.dsl.channel.MessageChannels.direct;
 import static org.springframework.integration.rmi.RmiInboundGateway.SERVICE_NAME_PREFIX;
-import static ru.ftc.upc.testing.analog.remote.CommonTrackingConstants.*;
+import static ru.ftc.upc.testing.analog.remote.RemotingConstants.*;
 
 /**
- * Spring configuration beans that compose tracking flow on the server side.<p>
- * Created by Toparvion on 15.01.2017.
+ * Spring configuration beans that compose tracking flow on the server side.
+ *
+ * @author Toparvion
+ * @since v0.7
  */
 @Configuration
 @IntegrationComponentScan

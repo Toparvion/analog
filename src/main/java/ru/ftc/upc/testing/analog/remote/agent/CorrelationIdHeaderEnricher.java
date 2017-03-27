@@ -4,7 +4,7 @@ import org.springframework.messaging.Message;
 
 import java.time.LocalDateTime;
 
-import static ru.ftc.upc.testing.analog.remote.CommonTrackingConstants.LOG_TIMESTAMP_VALUE__HEADER;
+import static ru.ftc.upc.testing.analog.remote.RemotingConstants.LOG_TIMESTAMP_VALUE__HEADER;
 
 /**
  * Simple yet stateful correlationId provider that relies on messages timestamps extracted by
@@ -13,7 +13,9 @@ import static ru.ftc.upc.testing.analog.remote.CommonTrackingConstants.LOG_TIMES
  * ascending timestamp order. While this is obvious for log tailing, it must be provided explicitly in case of manual
  * log navigation.<p>
  * This enricher is intended for use for single log file only and thus <em>is not thread safe</em>.
- * <p>Created by Toparvion on 18.02.2017.
+ *
+ * @author Toparvion
+ * @since v0.7
  */
 class CorrelationIdHeaderEnricher {
   /**

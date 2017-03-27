@@ -3,11 +3,13 @@ package ru.ftc.upc.testing.analog.remote.server;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.messaging.handler.annotation.Header;
 
-import static ru.ftc.upc.testing.analog.remote.CommonTrackingConstants.*;
+import static ru.ftc.upc.testing.analog.remote.RemotingConstants.*;
 
 /**
- * A gateway to the logs tracking control.<p>
- * Created by Toparvion on 13.01.2017.
+ * A gateway to the logs tracking control.
+ *
+ * @author Toparvion
+ * @since v0.7
  */
 @MessagingGateway(defaultRequestChannel = SERVER_REGISTRATION_RMI_OUT__CHANNEL)
 public interface RemoteGateway {

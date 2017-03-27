@@ -18,7 +18,9 @@ import java.util.regex.Pattern;
 import static java.lang.String.format;
 
 /**
- * Created by Toparvion on 11.02.2017.
+ *
+ * @author Toparvion
+ * @since v0.7
  */
 @Service
 public class TimestampExtractor {
@@ -62,7 +64,7 @@ public class TimestampExtractor {
   public LocalDateTime extractTimestamp(Message<String> lineMessage) {
     String line = lineMessage.getPayload();
     if (line.startsWith("\tat ")) {
-      // a king of short-hand way to avoid wasting time on analyzing lines of java stacktraces
+      // a kind of short-hand way to avoid wasting time on analyzing lines of java stacktraces
       return null;
     }
 
