@@ -24,6 +24,7 @@ public final class RemotingConstants {
   public static final String LOG_TIMESTAMP_FORMAT__HEADER = "logTimestampFormat";
   public static final String LOG_TIMESTAMP_VALUE__HEADER = "logTimestampValue";
   public static final String RECORD_LEVEL__HEADER = "recordLevel";
+  public static final String SEQUENCE_NUMBER__HEADER = "sequenceNumberLong";
   public static final String RECORD_AGGREGATOR_INPUT_CHANNEL = "recordAggregatorInputChannel";
   //</editor-fold>
 }

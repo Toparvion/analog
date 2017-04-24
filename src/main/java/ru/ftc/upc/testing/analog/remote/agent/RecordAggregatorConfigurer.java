@@ -17,6 +17,7 @@ import java.util.Objects;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.joining;
 import static org.springframework.integration.IntegrationMessageHeaderAccessor.CORRELATION_ID;
+import static org.springframework.messaging.support.MessageBuilder.fromMessage;
 
 /**
  * @author Toparvion
@@ -73,7 +74,7 @@ class RecordAggregatorConfigurer {
   private Object outputProcessor(MessageGroup group) {
     assert group.size() > 0;
     if (group.size() == 1) {      // the singleton group is special case and must be handled separately
-      return MessageBuilder.fromMessage(group.getOne()).build();
+      return fromMessage(group.getOne()).build();
     }
     if (group.size() >= groupSizeThreshold) {
       return composeRecord(group);

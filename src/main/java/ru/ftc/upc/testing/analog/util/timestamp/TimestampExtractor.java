@@ -3,7 +3,6 @@ package ru.ftc.upc.testing.analog.util.timestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.integration.file.FileHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +15,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
+import static org.springframework.integration.file.FileHeaders.ORIGINAL_FILE;
 
 /**
+ * An internal tool to extract parsed timestamps from log lines.
+ * Holds a registry (ako cache) of pre-configured patterns and formatters.
  *
  * @author Toparvion
  * @since v0.7
@@ -40,9 +42,12 @@ public class TimestampExtractor {
   }
 
   /**
-   *
-   * @param format
-   * @param logPath
+   * Associates given {@code logPath} with corresponding pattern and formatter. The pattern is obtained by means of
+   * {@linkplain DateFormat2RegexConverter#convertToRegex(java.lang.String) converting} given {@code format} into
+   * Java regular expression. The formatter is just
+   * {@linkplain DateTimeFormatter#ofPattern(java.lang.String) constructed} from the {@code format} directly.
+   * @param format log timestamp format in the {@link DateTimeFormatter} syntax
+   * @param logPath file system path to associate created objects with
    */
   public void registerNewTimestampFormat(String format, String logPath) {
     if (registry.containsKey(logPath)) {
@@ -57,9 +62,12 @@ public class TimestampExtractor {
   }
 
   /**
-   *
-   * @param lineMessage
-   * @return
+   * Parses payload of the {@code lineMessage} against
+   * {@linkplain TimestampExtractor#registerNewTimestampFormat(java.lang.String, java.lang.String) given} pattern and,
+   * in case of success, returns {@link LocalDateTime} representing the timestamp specified in the line.
+   * Otherwise returns {@code null}.
+   * @param lineMessage a message wrapping single line of log
+   * @return parsed line's timestamp or {@code null} in case of parsing fail
    */
   public LocalDateTime extractTimestamp(Message<String> lineMessage) {
     String line = lineMessage.getPayload();
@@ -68,7 +76,7 @@ public class TimestampExtractor {
       return null;
     }
 
-    File logFile = lineMessage.getHeaders().get(FileHeaders.ORIGINAL_FILE, File.class);
+    File logFile = lineMessage.getHeaders().get(ORIGINAL_FILE, File.class);
     assert (logFile != null) : "lineMessage doesn't contain 'file_originalFile' header; check tailAdapter.";
 
     PatternAndFormatter paf = registry.get(logFile.getAbsolutePath());
@@ -79,7 +87,7 @@ public class TimestampExtractor {
       return null;
       // TODO есть проблема: если число таких записей без метки будет слишком велико, то выделяющий записи агрегатор
       // выпустит их без "головы", то есть без предшествующей записи с меткой. Из-за этого на принимающей стороне их,
-      // возможно, будет трудно куда-либо определить. Нужно подумать, как это победить и есть ли такая проблема.
+      // возможно, будет трудно куда-либо определить. Нужно подумать, как это победить, и есть ли такая проблема.
     }
 
     String tsString = timestampMatcher.group();

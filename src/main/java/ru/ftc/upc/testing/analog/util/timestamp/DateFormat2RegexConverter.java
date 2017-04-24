@@ -125,7 +125,7 @@ public class DateFormat2RegexConverter {
    * In order to process timestamps'less log lines as fast as possible, the returned pattern contains a prefix
    * denoting searching from the start of a line only ({@code ^} symbol).<p>
    * Because log timestamps are not always located at the very beginning of a line, {@code
-   * logTimestampFormat} may contain some additional characters. For instance, if log timestamp are wrapped with
+   * logTimestampFormat} may contain some additional characters. For instance, if log timestamp is wrapped with
    * square braces, the format string may look like {@code [dd.MM.yy HH:mm:ss.SSS}. The opening square bracket will
    * be put into returning pattern as escaped symbol (to avoid considering it as regex meta char).
    */
