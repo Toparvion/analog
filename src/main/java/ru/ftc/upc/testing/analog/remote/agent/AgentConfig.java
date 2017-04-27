@@ -8,7 +8,6 @@ import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.rmi.RmiInboundGateway;
-import org.springframework.integration.router.HeaderValueRouter;
 
 import java.net.InetSocketAddress;
 
@@ -16,7 +15,7 @@ import static org.springframework.integration.dsl.channel.MessageChannels.direct
 import static ru.ftc.upc.testing.analog.remote.RemotingConstants.*;
 
 /**
- * Spring configuration beans that compose tracking flow on the agent side.<p>
+ * Spring configuration bean that compose tracking flow on the agent side.<p>
  * @author Toparvion
  * @since v0.7
  */
@@ -39,9 +38,8 @@ public class AgentConfig {
     return IntegrationFlows
         .from(inboundRmiGateway)
         .log()
-        .<Boolean, HeaderValueRouter>
-            route(new HeaderValueRouter(REGISTRATION_MODE__HEADER),
-            routerSpec -> routerSpec
+        .route("headers." + REGISTRATION_MODE__HEADER,
+            spec -> spec
                 .subFlowMapping(true  /* registering*/,
                     f -> f.handle(String.class, (logPath, headers) -> {
                       trackingService.registerWatcher((InetSocketAddress) headers.get(SENDER_ADDRESS__HEADER),
@@ -54,8 +52,8 @@ public class AgentConfig {
                       trackingService.unregisterWatcher((InetSocketAddress) headers.get(SENDER_ADDRESS__HEADER),
                           logPath);
                       return null;    // just to conform GenericHandler interface
-                    })),
-            endpointSpec -> endpointSpec.id("registrationRouter"))
+                    }))
+                .id("registrationRouter"))
         .get();
   }
 

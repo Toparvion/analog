@@ -44,9 +44,9 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-actuator:2.0.0.BUILD-SNAPSHOT')
 //	compile('org.springframework.boot:spring-boot-starter-integration')
 
-    compile group: 'org.springframework.integration', name: 'spring-integration-core', version: '5.0.0.M2'
-    compile group: 'org.springframework.integration', name: 'spring-integration-file', version: '5.0.0.M2'
-    compile group: 'org.springframework.integration', name: 'spring-integration-rmi', version: '5.0.0.M2'
+    compile group: 'org.springframework.integration', name: 'spring-integration-core', version: '5.0.0.M3'
+    compile group: 'org.springframework.integration', name: 'spring-integration-file', version: '5.0.0.M3'
+    compile group: 'org.springframework.integration', name: 'spring-integration-rmi', version: '5.0.0.M3'
     compile group: 'io.projectreactor', name: 'reactor-core', version: '3.0.4.RELEASE'
 
     compile group: 'net.sf.jtidy', name: 'jtidy', version: 'r938'
