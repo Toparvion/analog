@@ -5,9 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.ftc.upc.testing.analog.model.ChoiceComponents;
-import ru.ftc.upc.testing.analog.model.ChoiceGroup;
-import ru.ftc.upc.testing.analog.model.ChoiceProperties;
+import ru.ftc.upc.testing.analog.model.config.ChoiceGroup;
+import ru.ftc.upc.testing.analog.model.config.ChoiceProperties;
+import ru.ftc.upc.testing.analog.model.config.LogConfigEntry;
 import ru.ftc.upc.testing.analog.util.Util;
 
 import java.io.File;
@@ -39,10 +39,12 @@ public class EncodingDetector {
 
   private void processGroup(ChoiceGroup group) {
     long groupProcessingStart = System.currentTimeMillis();
-    for (String pathSpec : group.getPaths()) {
-      ChoiceComponents coms = Util.extractChoiceComponents(pathSpec);
-      if (coms == null) continue;   // the origin of this object is responsible for logging in this case
-      String path = group.getPathBase() + coms.getPurePath();
+    for (LogConfigEntry logConfigEntry : group.getLogs()) {
+      if (logConfigEntry.getEncoding() != null) {
+        log.trace("Log entry '{}' has encoding explicitly set. Skip.", logConfigEntry.getPath());
+        continue;
+      }
+      String path = group.getPathBase() + logConfigEntry.getPath();
       processPath(path);
     }
     log.debug("Group '{}' has been processed for {} ms.", group.getGroup(),

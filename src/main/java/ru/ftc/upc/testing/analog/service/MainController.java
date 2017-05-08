@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.ftc.upc.testing.analog.model.*;
+import ru.ftc.upc.testing.analog.model.config.ChoiceGroup;
+import ru.ftc.upc.testing.analog.model.config.ChoiceProperties;
+import ru.ftc.upc.testing.analog.model.config.LogConfigEntry;
 import ru.ftc.upc.testing.analog.util.Util;
 
 import javax.servlet.http.HttpSession;
@@ -110,12 +113,12 @@ public class MainController {
     String groupName = group.getGroup();
 
     // first let's traverse and process all of the path entries as they are commonly used in groups
-    for (String path : group.getPaths()) {
-      ChoiceComponents coms = Util.extractChoiceComponents(path);
-      if (coms == null) continue; // the origin of this object is responsible for logging in this case
-      String title = Util.expandTitle(coms.getPurePath(), coms.getPureTitle(), groupName);
+    for (LogConfigEntry logConfigEntry : group.getLogs()) {
+      String path = logConfigEntry.getPath();
+      String titleFormat = Util.nvls(logConfigEntry.getTitle(), DEFAULT_TITLE_FORMAT);
+      String title = Util.expandTitle(path, titleFormat, groupName);
 //      String fullPath = group.getPathBase() + coms.getPurePath();
-      Path rawPath = Paths.get(group.getPathBase(), coms.getPurePath());
+      Path rawPath = Paths.get(group.getPathBase(), path);
       Path absPath = rawPath.isAbsolute()
               ? rawPath
               : rawPath.toAbsolutePath();
@@ -125,7 +128,8 @@ public class MainController {
               fullPath,
               encoding,
               title,
-              coms.isSelectedByDefault()));
+              logConfigEntry.isSelected(),
+              logConfigEntry.getUid()));
     }
 
     // then let's add scanned directory logs to set being composed
@@ -143,7 +147,8 @@ public class MainController {
                                 ? groupEncoding
                                 : encodingDetector.getEncodingFor(logPath.toAbsolutePath().toString()),
                         Util.expandTitle(logPath.toString(), DEFAULT_TITLE_FORMAT, groupName),
-                        false))
+                        false,
+                        null /*TODO decide how to support auto scan feature after v0.7*/))
                 .collect(toSet()));
       } catch (IOException e) {
         log.error(format("Failed to scan directory '%s'; will be ignored.", group.getScanDir()), e);

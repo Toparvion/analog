@@ -271,12 +271,6 @@ public class AnaLogUtils {
     return rawLines;
   }
 
-  public static String nvls(String s, String def) {
-    return (s == null || "".equals(s))
-            ? def
-            : s;
-  }
-
   public static void closeWebSocket(Session session, CloseReason.CloseCodes code, String message) {
     try {
       session.close(new CloseReason(code, message));

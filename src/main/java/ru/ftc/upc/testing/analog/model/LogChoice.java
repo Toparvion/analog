@@ -10,8 +10,9 @@ public class LogChoice {
   private final String encoding;
   private final String title;
   private final boolean selectedByDefault;
+  private final String uid;
 
-  public LogChoice(String group, String path, String encoding, String title, boolean selectedByDefault) {
+  public LogChoice(String group, String path, String encoding, String title, boolean selectedByDefault, String uid) {
     this.group = group;
     String forwardSlashedPath = path.replaceAll("\\\\", "/");
     this.path = forwardSlashedPath.startsWith("/")
@@ -20,6 +21,7 @@ public class LogChoice {
     this.encoding = encoding;
     this.title = title;
     this.selectedByDefault = selectedByDefault;
+    this.uid = uid;
   }
 
   public String getGroup() {
@@ -40,6 +42,10 @@ public class LogChoice {
 
   public boolean getSelectedByDefault() {
     return selectedByDefault;
+  }
+
+  public String getUid() {
+    return uid;
   }
 
   @Override

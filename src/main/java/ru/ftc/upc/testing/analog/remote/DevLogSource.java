@@ -39,7 +39,7 @@ public class DevLogSource {
 
   public DevLogSource() throws IOException {
     records = Files.readAllLines(Paths.get("log-samples/cluster/local/exceptional-source.log"));
-    Files.deleteIfExists(Paths.get("log-samples/cluster/local/growing.log"));
+//    Files.deleteIfExists(Paths.get("log-samples/cluster/local/growing.log"));
   }
 
   private Message<Object> getSingleRandomRecord() {

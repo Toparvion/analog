@@ -12,7 +12,8 @@ package ru.ftc.upc.testing.analog.remote;
 public final class RemotingConstants {
 
   //<editor-fold desc="Channels names">
-  public static final String SERVER_REGISTRATION_RMI_OUT__CHANNEL = "serverRegistrationRmiOutChannel";
+  public static final String SERVER_REGISTRATION_ROUTER__CHANNEL = "serverRegistrationRouterChannel";
+  public static final String SERVER_REGISTRATION_RMI_OUT__CHANNEL_PREFIX = "serverRegistrationRmiOutChannel_";
   public static final String AGENT_REGISTRATION_RMI_IN__CHANNEL = "agentRegistrationRmiInChannel";
   public static final String SERVER_RMI_PAYLOAD_IN__CHANNEL = "serverRmiPayloadInChannel";
   //</editor-fold>
@@ -20,7 +21,8 @@ public final class RemotingConstants {
 
   //<editor-fold desc="Headers names">
   public static final String REGISTRATION_MODE__HEADER = "registrationMode";
-  public static final String SENDER_ADDRESS__HEADER = "senderAddress";
+  public static final String NODE_NAME__HEADER = "nodeName";
+  public static final String REPLY_ADDRESS__HEADER = "replyAddress";
   public static final String LOG_TIMESTAMP_FORMAT__HEADER = "logTimestampFormat";
   public static final String LOG_TIMESTAMP_VALUE__HEADER = "logTimestampValue";
   public static final String RECORD_LEVEL__HEADER = "recordLevel";

@@ -10,7 +10,6 @@ import org.springframework.integration.dsl.context.IntegrationFlowContext;
 import org.springframework.integration.dsl.context.IntegrationFlowRegistration;
 import org.springframework.integration.file.tail.FileTailingMessageProducerSupport;
 import org.springframework.integration.rmi.RmiInboundGateway;
-import org.springframework.integration.rmi.RmiOutboundGateway;
 import org.springframework.stereotype.Service;
 import ru.ftc.upc.testing.analog.util.timestamp.TimestampExtractor;
 
@@ -163,20 +162,6 @@ public class TrackingService {
         .map(component -> (PublishSubscribeChannel) component)
         .orElseThrow(() -> new IllegalStateException(String.format("A logTrackingFlow for regId=%s is found " +
             "but it doesn't contain PublishSubscribeChannel.", registrationId)));
-  }
-
-  private class AddressAwareRmiOutboundGateway extends RmiOutboundGateway {
-
-    private final InetSocketAddress gatewayAddress;
-
-    AddressAwareRmiOutboundGateway(InetSocketAddress address, String url) {
-      super(url);
-      this.gatewayAddress = address;
-    }
-
-    InetSocketAddress getGatewayAddress() {
-      return gatewayAddress;
-    }
   }
 
 }

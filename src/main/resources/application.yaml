@@ -13,9 +13,12 @@ server:
 
 logging:
   level:
-    root: info
-    ru.ftc.upc.testing.analog: DEBUG
+    root: INFO
+    ru.ftc.upc.testing.analog: TRACE
     ru.ftc.upc.testing.analog.service.EncodingDetector: INFO
-    ru.ftc.upc.testing.analog.remote.agent.TrackingService$AddressAwareRmiOutboundGateway: INFO
+    ru.ftc.upc.testing.analog.remote.agent.AddressAwareRmiOutboundGateway: INFO
     ru.ftc.upc.testing.analog.remote.agent.RecordAggregatorConfigurer: INFO
+    ru.ftc.upc.testing.analog.remote.DevLogSource: INFO
     org.springframework.integration: INFO
+    org.springframework.web.socket: DEBUG
+    org.springframework.messaging.simp.stomp: TRACE

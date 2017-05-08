@@ -42,23 +42,27 @@ dependencies {
     compile('org.springframework.boot:spring-boot-devtools:2.0.0.BUILD-SNAPSHOT')
     compile('org.springframework.boot:spring-boot-starter-web:2.0.0.BUILD-SNAPSHOT')
     compile('org.springframework.boot:spring-boot-starter-actuator:2.0.0.BUILD-SNAPSHOT')
+    compile('org.springframework.boot:spring-boot-starter-websocket:2.0.0.BUILD-SNAPSHOT')
 //	compile('org.springframework.boot:spring-boot-starter-integration')
 
     compile group: 'org.springframework.integration', name: 'spring-integration-core', version: '5.0.0.M3'
     compile group: 'org.springframework.integration', name: 'spring-integration-file', version: '5.0.0.M3'
     compile group: 'org.springframework.integration', name: 'spring-integration-rmi', version: '5.0.0.M3'
-    compile group: 'io.projectreactor', name: 'reactor-core', version: '3.0.4.RELEASE'
+    compile group: 'io.projectreactor', name: 'reactor-core', version: '3.0.6.RELEASE'
 
     compile group: 'net.sf.jtidy', name: 'jtidy', version: 'r938'
     compile group: 'net.bull.javamelody', name: 'javamelody-core', version: '1.61.0'
     compile group: 'com.github.albfernandez', name: 'juniversalchardet', version: '2.0.0'
 
     // FrontEnd deps
-    compile 'org.webjars:angularjs:1.5.8'
+    compile group: 'org.webjars', name: 'angularjs', version: '1.5.8'
     compile group: 'org.webjars', name: 'highlightjs', version: '9.7.0'
     compile group: 'org.webjars', name: 'jquery', version: '1.8.2'
+    compile group: 'org.webjars', name: 'sockjs-client', version: '1.1.2'
+    compile group: 'org.webjars.bower', name: 'stomp-websocket', version: '2.3.4'
 
     //	runtime('com.h2database:h2')
+    runtime group: 'commons-logging', name: 'commons-logging', version: '1.2'
 
     // Test deps
     testCompile('org.springframework.boot:spring-boot-starter-test:2.0.0.BUILD-SNAPSHOT')

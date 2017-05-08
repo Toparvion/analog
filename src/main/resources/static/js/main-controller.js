@@ -1,11 +1,12 @@
 app = angular.module("AnaLog", []);
 
-app.run(function ($rootScope) { $rootScope.watchingLog = "АнаЛог v0.6 (загрузка...)"; });
+app.run(function ($rootScope) { $rootScope.watchingLog = "АнаЛог v0.7 (загрузка...)"; });
 
 app.controller('controlPanelController', function ($scope, $rootScope,
                                                    choicesService, providerService, renderingService,
                                                    $location, $log, $interval) {
     var onAirPromise;
+    var watching = null;
     $scope.encoding = 'utf8';
     $scope.onAir = false;
     $scope.prependingSize = "1";
@@ -76,10 +77,27 @@ app.controller('controlPanelController', function ($scope, $rootScope,
     }, function () {
         $log.log("Turning onAir to: " + $scope.onAir);
         if ($scope.onAir) {
-            onAirPromise = $interval(function() {$scope.updateLog(false)}, 1000);
-            $scope.updateLog(false);    // in order not to wait for the first interval triggering
+            // onAirPromise = $interval(function() {$scope.updateLog(false)}, 1000);
+            // $scope.updateLog(false);    // in order not to wait for the first interval triggering
+            watching = {};
+            watching.stompClient = Stomp.over(new SockJS('/watch-endpoint'));
+            watching.stompClient.connect({}, function (frame) {
+                $log.log('Connected: ' + frame);
+                var callback = function (serverMessage) {
+                    $log.log('Message from server: ' + serverMessage);
+                    // $log.log(JSON.parse(serverMessage.body).content);
+                };
+                watching.subscription = watching.stompClient.subscribe('/topic/' + $scope.selectedLog.uid,
+                                                     callback,
+                                                     {id: 'time-'+new Date().getTime()+'-sub-'+$scope.selectedLog.uid});
+            });
+
         } else {
-            $scope.disableOnAirPoller();
+            // $scope.disableOnAirPoller();
+            if (watching !== null) {
+                watching.subscription.unsubscribe();
+                watching.stompClient.disconnect(function () {watching = null});
+            }
         }
     });
 

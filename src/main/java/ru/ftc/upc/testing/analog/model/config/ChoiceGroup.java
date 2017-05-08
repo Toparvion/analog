@@ -1,4 +1,4 @@
-package ru.ftc.upc.testing.analog.model;
+package ru.ftc.upc.testing.analog.model.config;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,11 +9,11 @@ import java.util.List;
 @SuppressWarnings("unused")       // setters are used by Spring while processing @ConfigurationProperties
 public class ChoiceGroup {
 
-  private String group        = "(non-grouped)";
-  private String encoding     = null;
-  private String pathBase     = "";
-  private List<String> paths  = new ArrayList<>();
-  private String scanDir      = null;
+  private String group                = "(non-grouped)";
+  private String encoding             = null;
+  private String pathBase             = "";
+  private String scanDir              = null;
+  private List<LogConfigEntry> logs   = new ArrayList<>();
 
   public ChoiceGroup() { }
 
@@ -41,19 +41,19 @@ public class ChoiceGroup {
     this.pathBase = pathBase;
   }
 
-  public List<String> getPaths() {
-    return paths;
-  }
-
-  public void setPaths(List<String> paths) {
-    this.paths = paths;
-  }
-
   public String getScanDir() {
     return scanDir;
   }
 
   public void setScanDir(String scanDir) {
     this.scanDir = scanDir;
+  }
+
+  public List<LogConfigEntry> getLogs() {
+    return logs;
+  }
+
+  public void setLogs(List<LogConfigEntry> logs) {
+    this.logs = logs;
   }
 }

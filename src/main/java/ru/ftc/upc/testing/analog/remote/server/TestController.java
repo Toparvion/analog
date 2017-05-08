@@ -26,6 +26,7 @@ public class TestController {
                             @RequestParam String timestampFormat) {
 
     remoteGateway.switchRegistration(logPath,
+                                     "angara",
                                      timestampFormat,
                                      true);
   }
@@ -33,6 +34,7 @@ public class TestController {
   @RequestMapping("/stop-watching")
   public void stopWatching(@RequestParam String logPath) {
     remoteGateway.switchRegistration(logPath,
+                                     "angara",
                                      null,
                                      false);
   }

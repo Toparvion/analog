@@ -11,18 +11,20 @@ import static ru.ftc.upc.testing.analog.remote.RemotingConstants.*;
  * @author Toparvion
  * @since v0.7
  */
-@MessagingGateway(defaultRequestChannel = SERVER_REGISTRATION_RMI_OUT__CHANNEL)
+@MessagingGateway(defaultRequestChannel = SERVER_REGISTRATION_ROUTER__CHANNEL)
 public interface RemoteGateway {
 
   /**
    * Entry point for switching log tracking on and off. A part of server side.
    * @param logPath absolute path to tracking log file
+   * @param nodeName name of the cluster node where log is located on
    * @param timestampFormat format of log timestamp in the form of {@link java.time.format.DateTimeFormatter};
    *                        required for registration mode only (when {@code doRegister==true})
    * @param doRegister a flag indicating the mode of the operation: {@code true} for registering new tracking and
    * {@code false} for unregistering it
    */
   void switchRegistration(String logPath,
+                          @Header(value = NODE_NAME__HEADER) String nodeName,
                           @Header(value = LOG_TIMESTAMP_FORMAT__HEADER, required = false) String timestampFormat,
                           @Header(value = REGISTRATION_MODE__HEADER) boolean doRegister);
 

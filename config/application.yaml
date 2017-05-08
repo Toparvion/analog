@@ -3,28 +3,37 @@ server:
 #logging:
 #  file: application.log
 
-remote:
-  incoming:
-    address: localhost
-    port: 21005
+clusterNodes:
+  - name: angara
+    address: angara.ftc.ru:7801
+    # myself: true
+  - name: volga
+    address: volga.ftc.ru:7802
+  - name: tobol
+    address: tobol.ftc.ru:7803
 
 choices:
-  - group: Логи UPC-1
+  - group: Samples
     pathBase: C:\lang\analog\log-samples\
-    paths:
-      - logSample.log as "Примерчик ($F)"
+    logs:
+      - path: bankplus.log
+        title: $g - $f
+        selected: false
+        encoding: CP-1251
+        timestamp: dd.MM.yy HH:mm:ss,SSS
 
-  - group: Логи в CP1251
-#    encoding: CP-1251
-    paths:
-      - log-samples/bankplus.log as "$g - $f"
+      - path: logSample.log
+        title: $g - $f
+        selected: false
+        timestamp: dd.MM.yy HH:mm:ss,SSS
 
-  - group: Логи UPC-2
-    paths:
-      - C:\lang\analog\log-samples\core.log AS "Ядро ПК-2 ($f)"
-      - log-samples/pppinfo.log
-
-  - group: JavaScript
-    scanDir: C:\lang\analog\src\main\resources\static\js
-    paths:
-      - C:\lang\analog\src\main\resources\static\js\main-controller.js as "Main.JS" (selected)
+      - path: cluster\local\growing.log
+        node: angara
+        title: $g - $f
+        selected: true
+        encoding: CP-1251
+        timestamp: dd.MM.yy HH:mm:ss,SSS
+#        includes:
+#          - node: angara
+#            path: C:\lang\analog\log-samples\cluster\local\growing.log
+#            timestamp: dd.MM.yy HH:mm:ss,SSS
