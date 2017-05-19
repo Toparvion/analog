@@ -8,11 +8,13 @@ import org.springframework.web.socket.config.annotation.AbstractWebSocketMessage
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
+import static ru.ftc.upc.testing.analog.remote.RemotingConstants.WEBSOCKET_TOPIC_PREFIX;
+
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
-  private final StartWatchHandler startWatchHandler;
+	private final StartWatchHandler startWatchHandler;
   private final StopWatchHandler stopWatchHandler;
 
   @Autowired
@@ -23,7 +25,7 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
   @Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
-		config.enableSimpleBroker("/topic/", "/queue/");
+		config.enableSimpleBroker(WEBSOCKET_TOPIC_PREFIX);
 		config.setApplicationDestinationPrefixes("/app");
 	}
 

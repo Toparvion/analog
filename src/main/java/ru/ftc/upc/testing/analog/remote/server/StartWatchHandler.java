@@ -8,6 +8,7 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler;
 import org.springframework.stereotype.Component;
+import ru.ftc.upc.testing.analog.model.TrackingRequest;
 import ru.ftc.upc.testing.analog.model.config.ChoiceProperties;
 import ru.ftc.upc.testing.analog.model.config.ClusterNode;
 import ru.ftc.upc.testing.analog.model.config.ClusterProperties;
@@ -50,21 +51,21 @@ public class StartWatchHandler extends AbstractWatchHandler {
   public Message<?> beforeHandleInternal(Message<?> message, MessageChannel channel, SimpleBrokerMessageHandler handler) {
     String uid = getUid(message);
     int clientsCount = clientCounters.computeIfAbsent(uid, s -> new AtomicInteger()).get();
-    log.debug("{} client(s) are watching log with uid={} (not including new one).", clientsCount, uid);
+    log.debug("{} client(s) are tracking log with uid={} (not including new one).", clientsCount, uid);
 
     if (clientsCount == 0) {
-      log.info("There was no watching clients for uid={} before this moment. Starting watching for this node...", uid);
+      log.info("There was no tracking clients for uid={} before this moment. Starting tracking for this node...", uid);
       // 1. Pick up the log config entry corresponding the one received from the client
       LogConfigEntry logConfig = findMatchingLogConfigEntry(uid);
 
       // 2. Then ensure that all RMI registration channels are created
       ensureRegistrationChannelsCreated(logConfig);
 
-      // 3. And now register the watching on specified nodes
-      initiateWatching(logConfig);
+      // 3. And now register the tracking on specified nodes
+      initiateTracking(logConfig);
     }
 
-    clientCounters.get(uid).incrementAndGet();    // just now, after doing all the stuff we can change counter value
+    clientCounters.get(uid).incrementAndGet();    // just now, after doing all the stuff, we can change counter value
     return message;
   }
 
@@ -86,17 +87,22 @@ public class StartWatchHandler extends AbstractWatchHandler {
         });
   }
 
-  private void initiateWatching(LogConfigEntry matchingEntry) {
+  private void initiateTracking(LogConfigEntry matchingEntry) {
     ClusterNode myselfNode = clusterProperties.getMyselfNode();
     String fullPath = buildFullPath(matchingEntry);
     String nodeName = nvls(matchingEntry.getNode(), myselfNode.getName());
-    remoteGateway.switchRegistration(fullPath, nodeName, matchingEntry.getTimestamp(), true);
-    matchingEntry.getIncludes().forEach(included ->
-        remoteGateway.switchRegistration(included.getPath(),
-            nvls(included.getNode(), myselfNode.getName()),
-            included.getTimestamp(),
-            true)
-    );
+    // send registration request for the main entry
+    TrackingRequest request = new TrackingRequest(fullPath, matchingEntry.getTimestamp(), nodeName, matchingEntry.getUid());
+    remoteGateway.switchRegistration(request, true);
+    // send registration requests for included entries
+    for (LogConfigEntry included : matchingEntry.getIncludes()) {
+      request = new TrackingRequest(included.getPath(),
+                                    included.getTimestamp(),
+                                    nvls(included.getNode(), myselfNode.getName()),
+                                    matchingEntry.getUid());
+      remoteGateway.switchRegistration(request, true);
+      // TODO provide isolation for included logs registration in order to avoid any of them capable of failing others
+    }
   }
 
 }

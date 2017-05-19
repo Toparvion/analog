@@ -1,7 +1,5 @@
 package ru.ftc.upc.testing.analog.remote.server;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.IntegrationComponentScan;
@@ -9,10 +7,7 @@ import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.rmi.RmiInboundGateway;
-import ru.ftc.upc.testing.analog.model.RecordLevel;
 import ru.ftc.upc.testing.analog.model.config.ClusterProperties;
-
-import java.time.LocalDateTime;
 
 import static java.lang.String.format;
 import static org.springframework.integration.dsl.channel.MessageChannels.direct;
@@ -27,10 +22,9 @@ import static ru.ftc.upc.testing.analog.remote.RemotingConstants.*;
 @Configuration
 @IntegrationComponentScan
 public class ServerConfig {
-  private static final Logger log = LoggerFactory.getLogger(ServerConfig.class);
 
   @Bean
-  public IntegrationFlow serverRmiPayloadFlow(ClusterProperties clusterProperties) {
+  public IntegrationFlow serverRmiPayloadFlow(ClusterProperties clusterProperties, WebSocketRecordSender sender) {
     DirectChannel payloadRmiInChannel = direct(SERVER_RMI_PAYLOAD_IN__CHANNEL).get();
     int myPort = clusterProperties.getMyselfNode().getPort();
 
@@ -42,23 +36,21 @@ public class ServerConfig {
 
     return IntegrationFlows
         .from(inboundRmiGateway)
-        .handle(message -> log.info("Получена запись с меткой {} и уровнем {}:\n< {}",
-            message.getHeaders().get(LOG_TIMESTAMP_VALUE__HEADER, LocalDateTime.class),
-            message.getHeaders().get(RECORD_LEVEL__HEADER, RecordLevel.class),
-            message.getPayload().toString().replaceAll("\\n", "\n< ")))
+        .handle(sender::sendRecord)
         .get();
   }
 
   @Bean
   public IntegrationFlow serverRegistrationRouter() {
     /* Because the number and names of cluster nodes are not fixed, it is impossible to declare separate integration
-    flows for every one of them. Therefore the flows are created separately. But this brings another problem - how to
-    address them during messages dispatching? To solve this problem the input channel of every integration flow is
-    named by format "SERVER_REGISTRATION_RMI_OUT__CHANNEL_PREFIX + nodeName". The first one is constant and the
-    second is given as corresponding message header. The following intermediate flow uses SpEL to extract the header's
-    value, combine it with the constant value and thus define the channel name to redirect the message to. */
+    flows for every one of them. Therefore, the flows are created separately and dynamically. But this brings another
+    problem - how to address them during messages dispatching? To solve this problem the input channel of every
+    integration flow is named by format "SERVER_REGISTRATION_RMI_OUT__CHANNEL_PREFIX + nodeName". The first one is
+    a constant and the second is given as corresponding message payload field. The following intermediate flow uses SpEL
+    to extract the field value, combine it with the constant value and thus define the channel name to redirect the
+    message to. */
     return IntegrationFlows.from(direct(SERVER_REGISTRATION_ROUTER__CHANNEL))
-        .route(format("'%s'.concat(headers.%s)", SERVER_REGISTRATION_RMI_OUT__CHANNEL_PREFIX, NODE_NAME__HEADER))
+        .route(format("'%s'.concat(payload.nodeName)", SERVER_REGISTRATION_RMI_OUT__CHANNEL_PREFIX))
         .get();
   }
 

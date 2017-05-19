@@ -8,6 +8,7 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.broker.SimpleBrokerMessageHandler;
 import org.springframework.stereotype.Component;
+import ru.ftc.upc.testing.analog.model.TrackingRequest;
 import ru.ftc.upc.testing.analog.model.config.ChoiceProperties;
 import ru.ftc.upc.testing.analog.model.config.ClusterNode;
 import ru.ftc.upc.testing.analog.model.config.ClusterProperties;
@@ -45,21 +46,22 @@ public class StopWatchHandler extends AbstractWatchHandler {
   protected Message<?> beforeHandleInternal(Message<?> message, MessageChannel channel, SimpleBrokerMessageHandler handler) {
     String uid = getUid(message);
     int clientsCount = clientCounters.get(uid).get();
-    log.debug("{} client(s) are watching log with uid={} (including one being processed).", clientsCount, uid);
+    log.debug("{} client(s) are tracking log with uid={} (including one being processed).", clientsCount, uid);
     if (clientsCount == 1) {
-      log.info("There will be no watching clients for uid={} after processing. Stopping watching from this node...", uid);
+      log.info("There will be no tracking clients for uid={} after processing. Stopping tracking from this node...", uid);
       LogConfigEntry logConfig = findMatchingLogConfigEntry(uid);
       ClusterNode myselfNode = clusterProperties.getMyselfNode();
       String fullPath = buildFullPath(logConfig);
       String nodeName = nvls(logConfig.getNode(), myselfNode.getName());
-      remoteGateway.switchRegistration(fullPath, nodeName, null, false);
+      TrackingRequest request = new TrackingRequest(fullPath, logConfig.getTimestamp(), nodeName, logConfig.getUid());
+      remoteGateway.switchRegistration(request, false);
     }
 
     clientCounters.get(uid).decrementAndGet();    // just now, after doing all the stuff we can change counter value
     return message;
 
-    // TODO It is still unaddressed problem how to stop watching in case a client suddenly disappears 'cause it provokes
-    // DISCONNECT only but not UNSUBSCRIBE. 'Hanging' watching is not a big problem but looks like result of weak design.
+    // TODO It is still unaddressed problem how to stop tracking in case a client suddenly disappears 'cause it provokes
+    // DISCONNECT only but not UNSUBSCRIBE. 'Hanging' tracking is not a big problem but looks like result of weak design.
 
   }
 }

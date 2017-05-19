@@ -7,6 +7,7 @@ import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.rmi.RmiInboundGateway;
+import ru.ftc.upc.testing.analog.model.TrackingRequest;
 import ru.ftc.upc.testing.analog.model.config.ClusterProperties;
 
 import java.net.InetSocketAddress;
@@ -38,16 +39,13 @@ public class AgentConfig {
         .route("headers." + REGISTRATION_MODE__HEADER,
             spec -> spec
                 .subFlowMapping(true  /* registering*/,
-                    f -> f.handle(String.class, (logPath, headers) -> {
-                      trackingService.registerWatcher((InetSocketAddress) headers.get(REPLY_ADDRESS__HEADER),
-                          logPath,
-                          (String) headers.get(LOG_TIMESTAMP_FORMAT__HEADER));
+                    f -> f.handle(TrackingRequest.class, (request, headers) -> {
+                      trackingService.registerWatcher(request, (InetSocketAddress) headers.get(REPLY_ADDRESS__HEADER));
                       return null;    // just to conform GenericHandler interface
                     }))
                 .subFlowMapping(false /* unregistering */,
-                    f -> f.handle(String.class, (logPath, headers) -> {
-                      trackingService.unregisterWatcher((InetSocketAddress) headers.get(REPLY_ADDRESS__HEADER),
-                          logPath);
+                    f -> f.handle(TrackingRequest.class, (request, headers) -> {
+                      trackingService.unregisterWatcher(request, (InetSocketAddress) headers.get(REPLY_ADDRESS__HEADER));
                       return null;    // just to conform GenericHandler interface
                     }))
                 .id("agentRegistrationRouter"))

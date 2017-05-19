@@ -23,7 +23,7 @@ import static ru.ftc.upc.testing.analog.remote.RemotingConstants.*;
 
 /**
  * Other cluster nodes may be unavailable upon starting current one. Furthermore they may theoretically change their
- * addresses over time. To handle such a behavior the process of creating channels for watching registration is made
+ * addresses over time. To handle such a behavior the process of creating channels for tracking registration is made
  * lazy. Combining with Eureka this would allow to build truly adaptive application.<p>
  * The only channel that is created during application startup is channel to itself.
  * @author Toparvion
