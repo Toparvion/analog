@@ -51,7 +51,7 @@ public class TimestampExtractor {
    */
   public void registerNewTimestampFormat(String format, String logPath) {
     if (registry.containsKey(logPath)) {
-      log.debug("Extractor registry already has a record for logPath='{}'. Skip registration.", logPath);
+      log.debug("Extractor registry already has record '{}' for logPath='{}'. Skip registration.", format, logPath);
       return;
     }
     Pattern pattern = converter.convertToRegex(format);

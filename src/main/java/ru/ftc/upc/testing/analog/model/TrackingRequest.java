@@ -1,5 +1,6 @@
 package ru.ftc.upc.testing.analog.model;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 
 /**
@@ -11,11 +12,12 @@ import java.io.Serializable;
  */
 public class TrackingRequest implements Serializable {
   private final String logFullPath;
+  @Nullable
   private final String timestampFormat;
   private final String nodeName;
   private final String uid;
 
-  public TrackingRequest(String logFullPath, String timestampFormat, String nodeName, String uid) {
+  public TrackingRequest(String logFullPath, @Nullable String timestampFormat, String nodeName, String uid) {
     this.logFullPath = logFullPath;
     this.timestampFormat = timestampFormat;
     this.nodeName = nodeName;
@@ -26,6 +28,7 @@ public class TrackingRequest implements Serializable {
     return logFullPath;
   }
 
+  @Nullable
   public String getTimestampFormat() {
     return timestampFormat;
   }

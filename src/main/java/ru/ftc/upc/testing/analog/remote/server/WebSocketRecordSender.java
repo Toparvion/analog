@@ -9,9 +9,10 @@ import org.springframework.stereotype.Component;
 import ru.ftc.upc.testing.analog.model.RecordLevel;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-import static ru.ftc.upc.testing.analog.remote.RemotingConstants.LOG_TIMESTAMP_VALUE__HEADER;
-import static ru.ftc.upc.testing.analog.remote.RemotingConstants.RECORD_LEVEL__HEADER;
+import static java.util.stream.Collectors.joining;
+import static ru.ftc.upc.testing.analog.remote.RemotingConstants.*;
 
 /**
  * @author Toparvion
@@ -31,14 +32,16 @@ public class WebSocketRecordSender {
   void sendRecord(Message<?> recordMessage) {
 //    if (log.isTraceEnabled()) {
 //      log.info("Sending record with timestamp {} and level {}:\n< {}",
-      log.info("Рассылается запись с меткой {}, уровнем {}, UID {}:\n< {}",
-          recordMessage.getHeaders().get(LOG_TIMESTAMP_VALUE__HEADER, LocalDateTime.class),
-          recordMessage.getHeaders().get(RECORD_LEVEL__HEADER, RecordLevel.class),
-          recordMessage.getHeaders().get("uid", String.class),
-          recordMessage.getPayload().toString().replaceAll("\\n", "\n< "));
+    String uid = recordMessage.getHeaders().get(LOG_CONFIG_ENTRY_UID__HEADER, String.class);
+    RecordLevel level = recordMessage.getHeaders().get(RECORD_LEVEL__HEADER, RecordLevel.class);
+    LocalDateTime localDateTime = recordMessage.getHeaders().get(LOG_TIMESTAMP_VALUE__HEADER, LocalDateTime.class);
+
+    @SuppressWarnings("unchecked")
+    List<String> payload = (List<String>) recordMessage.getPayload();
+    String record = payload.stream().collect(joining("\n< ", "\n< ", ""));
+    log.info("Рассылается запись с меткой {}, уровнем {}, UID {}:{}", localDateTime, level, uid, record);
 //    }
 
-//    messagingTemplate.convertAndSend(RemotingConstants.WEBSOCKET_TOPIC_PREFIX + "???", recordMessage);
-
+    messagingTemplate.convertAndSend(WEBSOCKET_TOPIC_PREFIX + uid, record);
   }
 }

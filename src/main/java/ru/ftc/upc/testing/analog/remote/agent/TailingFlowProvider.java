@@ -1,12 +1,15 @@
 package ru.ftc.upc.testing.analog.remote.agent;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.stereotype.Component;
 import ru.ftc.upc.testing.analog.model.RecordLevel;
+import ru.ftc.upc.testing.analog.remote.agent.misc.CorrelationIdHeaderEnricher;
+import ru.ftc.upc.testing.analog.remote.agent.misc.SequenceNumberHeaderEnricher;
 import ru.ftc.upc.testing.analog.util.timestamp.TimestampExtractor;
 
 import java.io.File;
@@ -30,6 +33,12 @@ public class TailingFlowProvider {
 
   private final TimestampExtractor timestampExtractor;
 
+  @Value("${tracking.groupSizeThreshold}")
+  private int groupSizeThreshold = 50;
+  @Value("${tracking.groupTimeoutMs}")
+  private int groupTimeoutMs = 1_000;
+
+
   @Autowired
   public TailingFlowProvider(TimestampExtractor timestampExtractor) {
     this.timestampExtractor = timestampExtractor;
@@ -41,14 +50,11 @@ public class TailingFlowProvider {
    * @param logPath full path to log file to tail
    * @return a new tailing flow
    */
-  IntegrationFlow provideTailingFlow(String logPath) {
+  IntegrationFlow provideAggregatingFlow(String logPath) {
     // each tailing flow must have its own instance of correlationProvider as it is stateful and not thread-safe
     CorrelationIdHeaderEnricher correlationProvider = new CorrelationIdHeaderEnricher();
     // each tailing flow must have its own instance of sequenceProvider as it is stateful and not thread-safe
     SequenceNumberHeaderEnricher sequenceProvider = new SequenceNumberHeaderEnricher();
-
-    int groupSizeThreshold = 50;          // TODO move to properties
-    int groupTimeout = 1_000;             // TODO move to properties
 
     /* When dealing with log message groups, some messages have to be resent to aggregator. Since the aggregator is
     capable of processing single message at a moment only, it is prepended with a queue channel that stores the incoming
@@ -62,13 +68,13 @@ public class TailingFlowProvider {
     MessageChannel preAggregatorQueueChannel = queue(RECORD_AGGREGATOR_INPUT_CHANNEL, queue).get();
 
     RecordAggregatorConfigurer recordAggregatorConfigurer
-        = new RecordAggregatorConfigurer(preAggregatorQueueChannel, groupSizeThreshold, groupTimeout);
+        = new RecordAggregatorConfigurer(preAggregatorQueueChannel, groupSizeThreshold, groupTimeoutMs);
 
     return IntegrationFlows
         .from(tailAdapter(new File(logPath)).id("tailSource"))
         .enrichHeaders(e -> e.headerFunction(LOG_TIMESTAMP_VALUE__HEADER, timestampExtractor::extractTimestamp))
         .enrichHeaders(e -> e.headerFunction(CORRELATION_ID, correlationProvider::obtainCorrelationId))
-        .enrichHeaders(e -> e.headerFunction(RECORD_LEVEL__HEADER, this::detectRecordLevelSingle))
+        .enrichHeaders(e -> e.headerFunction(RECORD_LEVEL__HEADER, this::detectRecordLevel))
         .enrichHeaders(e -> e.headerFunction(SEQUENCE_NUMBER__HEADER, sequenceProvider::assignSequenceNumber))
         .channel(preAggregatorQueueChannel)
         .aggregate(recordAggregatorConfigurer::configure)
@@ -76,7 +82,14 @@ public class TailingFlowProvider {
         .get();
   }
 
-  private RecordLevel detectRecordLevelSingle(Message<String> recordMessage) {
+  IntegrationFlow providePlainFlow(String logPath) {
+    return IntegrationFlows
+        .from(tailAdapter(new File(logPath)).id("tailSource"))
+        .channel(channels -> channels.publishSubscribe(logPath))
+        .get();
+  }
+
+  private RecordLevel detectRecordLevel(Message<String> recordMessage) {
     if (!recordMessage.getHeaders().containsKey(LOG_TIMESTAMP_VALUE__HEADER)) {
       return null;
     }

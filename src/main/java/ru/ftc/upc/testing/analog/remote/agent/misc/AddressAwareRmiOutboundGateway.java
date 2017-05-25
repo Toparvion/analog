@@ -1,4 +1,4 @@
-package ru.ftc.upc.testing.analog.remote.agent;
+package ru.ftc.upc.testing.analog.remote.agent.misc;
 
 import org.springframework.integration.rmi.RmiOutboundGateway;
 
@@ -8,16 +8,16 @@ import java.net.InetSocketAddress;
  * @author Toparvion
  * @since v0.7
  */
-class AddressAwareRmiOutboundGateway extends RmiOutboundGateway {
+public class AddressAwareRmiOutboundGateway extends RmiOutboundGateway {
 
   private final InetSocketAddress gatewayAddress;
 
-  AddressAwareRmiOutboundGateway(InetSocketAddress address, String url) {
+  public AddressAwareRmiOutboundGateway(InetSocketAddress address, String url) {
     super(url);
     this.gatewayAddress = address;
   }
 
-  InetSocketAddress getGatewayAddress() {
+  public InetSocketAddress getGatewayAddress() {
     return gatewayAddress;
   }
 

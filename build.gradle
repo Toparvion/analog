@@ -44,6 +44,7 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-actuator:2.0.0.BUILD-SNAPSHOT')
     compile('org.springframework.boot:spring-boot-starter-websocket:2.0.0.BUILD-SNAPSHOT')
 //	compile('org.springframework.boot:spring-boot-starter-integration')
+    compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
 
     compile group: 'org.springframework.integration', name: 'spring-integration-core', version: '5.0.0.M3'
     compile group: 'org.springframework.integration', name: 'spring-integration-file', version: '5.0.0.M3'

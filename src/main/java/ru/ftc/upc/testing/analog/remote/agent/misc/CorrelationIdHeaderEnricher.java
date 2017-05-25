@@ -1,4 +1,4 @@
-package ru.ftc.upc.testing.analog.remote.agent;
+package ru.ftc.upc.testing.analog.remote.agent.misc;
 
 import org.springframework.messaging.Message;
 
@@ -17,14 +17,14 @@ import static ru.ftc.upc.testing.analog.remote.RemotingConstants.LOG_TIMESTAMP_V
  * @author Toparvion
  * @since v0.7
  */
-class CorrelationIdHeaderEnricher {
+public class CorrelationIdHeaderEnricher {
   /**
    * Current (acting) correlationId value.
    * Defaults to current system time at the moment of class instance creation.
    */
   private Long currentCorrelationId = System.nanoTime();
 
-  Long obtainCorrelationId(Message<String> lineMessage) {
+  public Long obtainCorrelationId(Message<String> lineMessage) {
     LocalDateTime lineTimestamp = lineMessage.getHeaders().get(LOG_TIMESTAMP_VALUE__HEADER, LocalDateTime.class);
     if (lineTimestamp == null) {
       return currentCorrelationId;

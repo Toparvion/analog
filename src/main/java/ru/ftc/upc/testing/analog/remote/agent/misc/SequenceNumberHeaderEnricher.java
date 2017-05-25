@@ -1,4 +1,4 @@
-package ru.ftc.upc.testing.analog.remote.agent;
+package ru.ftc.upc.testing.analog.remote.agent.misc;
 
 import org.springframework.integration.IntegrationMessageHeaderAccessor;
 import org.springframework.messaging.Message;
@@ -13,11 +13,11 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author Toparvion
  * @since v0.7
  */
-class SequenceNumberHeaderEnricher {
+public class SequenceNumberHeaderEnricher {
   private final AtomicLong counter = new AtomicLong(0L);
 
-  @SuppressWarnings("unused")     // sequence number does not depend on message being counted
-  long assignSequenceNumber(Message<String> lineMessage) {
+  @SuppressWarnings("unused") // sequence number does not depend on message being counted
+  public long assignSequenceNumber(Message<String> lineMessage) {
     return counter.incrementAndGet();
   }
 }

@@ -14,10 +14,11 @@ import reactor.util.function.Tuples;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 import static org.springframework.integration.IntegrationMessageHeaderAccessor.CORRELATION_ID;
-import static org.springframework.messaging.support.MessageBuilder.fromMessage;
+import static org.springframework.messaging.support.MessageBuilder.withPayload;
 
 /**
  * @author Toparvion
@@ -74,7 +75,9 @@ class RecordAggregatorConfigurer {
   private Object outputProcessor(MessageGroup group) {
     assert group.size() > 0;
     if (group.size() == 1) {      // the singleton group is special case and must be handled separately
-      return fromMessage(group.getOne()).build();
+      return withPayload(singletonList(group.getOne().getPayload()))
+          .copyHeaders(group.getOne().getHeaders())
+          .build();
     }
     if (group.size() >= groupSizeThreshold) {
       return composeRecord(group);
@@ -102,7 +105,8 @@ class RecordAggregatorConfigurer {
             .stream()
             .map(Message::getPayload)
             .map(Object::toString)
-            .collect(joining("\n")))
+            .collect(toList()))
+            //.collect(joining("\n")))
         .copyHeadersIfAbsent(group.getOne().getHeaders())   // in order not to loose 'logTimestamp' after release
         .build();
   }
