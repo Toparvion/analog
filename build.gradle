@@ -1,14 +1,15 @@
 buildscript {
     ext {
         springBootVersion = '2.0.0.BUILD-SNAPSHOT'
+        springIntegrationVersion = '5.0.0.BUILD-SNAPSHOT'
     }
     repositories {
         mavenCentral()
         maven { url 'https://repo.spring.io/libs-snapshot' }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.0.BUILD-20170119.122042-301")
-        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-M3'
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-M4'
     }
 }
 
@@ -39,17 +40,16 @@ repositories {
 
 dependencies {
     // Backend compile deps
-    compile('org.springframework.boot:spring-boot-devtools:2.0.0.BUILD-SNAPSHOT')
-    compile('org.springframework.boot:spring-boot-starter-web:2.0.0.BUILD-SNAPSHOT')
-    compile('org.springframework.boot:spring-boot-starter-actuator:2.0.0.BUILD-SNAPSHOT')
-    compile('org.springframework.boot:spring-boot-starter-websocket:2.0.0.BUILD-SNAPSHOT')
+    compile("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
+    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+    compile("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
+    compile("org.springframework.boot:spring-boot-starter-websocket:${springBootVersion}")
 //	compile('org.springframework.boot:spring-boot-starter-integration')
     compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
 
-    compile group: 'org.springframework.integration', name: 'spring-integration-core', version: '5.0.0.M3'
-    compile group: 'org.springframework.integration', name: 'spring-integration-file', version: '5.0.0.M3'
-    compile group: 'org.springframework.integration', name: 'spring-integration-rmi', version: '5.0.0.M3'
-    compile group: 'io.projectreactor', name: 'reactor-core', version: '3.0.6.RELEASE'
+    compile group: 'org.springframework.integration', name: 'spring-integration-core', version: "${springIntegrationVersion}"
+    compile group: 'org.springframework.integration', name: 'spring-integration-file', version: "${springIntegrationVersion}"
+    compile group: 'org.springframework.integration', name: 'spring-integration-rmi', version: "${springIntegrationVersion}"
 
     compile group: 'net.sf.jtidy', name: 'jtidy', version: 'r938'
     compile group: 'net.bull.javamelody', name: 'javamelody-core', version: '1.61.0'

@@ -19,7 +19,10 @@ import ru.ftc.upc.testing.analog.remote.agent.misc.AddressAwareRmiOutboundGatewa
 import ru.ftc.upc.testing.analog.util.timestamp.TimestampExtractor;
 
 import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
@@ -35,6 +38,7 @@ import static ru.ftc.upc.testing.analog.remote.RemotingConstants.SERVER_RMI_PAYL
 @Service
 public class TrackingService {
   private static final Logger log = LoggerFactory.getLogger(TrackingService.class);
+  private static final String PAYLOAD_OUT_GATEWAY_BEAN_NAME = "payloadOutGateway";
 
   /**
    * The registry of logs being tracked, where the key is log path being watched and the value is corresponding
@@ -124,7 +128,7 @@ public class TrackingService {
         IntegrationFlows
             .from(outChannel)
             .enrichHeaders(e -> e.header(LOG_CONFIG_ENTRY_UID__HEADER, request.getUid()))
-            .handle(payloadOutGateway)
+            .handle(payloadOutGateway, spec -> spec.id(PAYLOAD_OUT_GATEWAY_BEAN_NAME))
             .get())
         .autoStartup(true)
         .register();
@@ -182,13 +186,13 @@ public class TrackingService {
   }
 
   private PublishSubscribeChannel extractOutChannel(StandardIntegrationFlow logTrackingFlow) {
-    return logTrackingFlow.getIntegrationComponents()
+    return logTrackingFlow.getIntegrationComponents().keySet()
         .stream()
         .filter(component -> PublishSubscribeChannel.class.isAssignableFrom(component.getClass()))
         .findAny()
         .map(component -> (PublishSubscribeChannel) component)
         .orElseThrow(() -> new IllegalStateException(format("No PublishSubscribeChannel found among components of " +
-            "logTrackingFlow: %s", logTrackingFlow.getIntegrationComponents()
+            "logTrackingFlow: %s", logTrackingFlow.getIntegrationComponents().keySet()
                                                   .stream()
                                                   .map(Object::toString)
                                                   .collect(joining()))));
@@ -198,8 +202,14 @@ public class TrackingService {
     IntegrationFlowRegistration registration = flowContext.getRegistrationById(flowId);
     assert registration != null;
     StandardIntegrationFlow flow = (StandardIntegrationFlow) registration.getIntegrationFlow();
-    List<Object> components = flow.getIntegrationComponents();
-    Object lastComponent = components.get(components.size() - 1); // ConsumerEndpointFactoryBean
+
+    Object lastComponent = flow.getIntegrationComponents().entrySet()
+        .stream()
+        .filter(entry -> PAYLOAD_OUT_GATEWAY_BEAN_NAME.equals(entry.getValue()))
+        .map(Map.Entry::getKey)
+        .findAny()
+        .orElseThrow(() -> new IllegalArgumentException(format("No bean with name '%s' found among components of " +
+                "flow with id=%s", PAYLOAD_OUT_GATEWAY_BEAN_NAME, flowId)));
     ConfigurablePropertyAccessor propertyAccessor = PropertyAccessorFactory.forDirectFieldAccess(lastComponent);
     return  (AddressAwareRmiOutboundGateway) propertyAccessor.getPropertyValue("handler");
   }

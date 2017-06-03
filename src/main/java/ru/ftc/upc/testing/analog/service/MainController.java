@@ -6,7 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.ftc.upc.testing.analog.model.*;
+import ru.ftc.upc.testing.analog.model.Line;
+import ru.ftc.upc.testing.analog.model.LogChoice;
+import ru.ftc.upc.testing.analog.model.Part;
+import ru.ftc.upc.testing.analog.model.ReadingMetaData;
 import ru.ftc.upc.testing.analog.model.config.ChoiceGroup;
 import ru.ftc.upc.testing.analog.model.config.ChoiceProperties;
 import ru.ftc.upc.testing.analog.model.config.LogConfigEntry;
@@ -117,7 +120,6 @@ public class MainController {
       String path = logConfigEntry.getPath();
       String titleFormat = Util.nvls(logConfigEntry.getTitle(), DEFAULT_TITLE_FORMAT);
       String title = Util.expandTitle(path, titleFormat, groupName);
-//      String fullPath = group.getPathBase() + coms.getPurePath();
       Path rawPath = Paths.get(group.getPathBase(), path);
       Path absPath = rawPath.isAbsolute()
               ? rawPath
