@@ -16,7 +16,7 @@ import static org.springframework.integration.dsl.channel.MessageChannels.direct
 import static ru.ftc.upc.testing.analog.remote.RemotingConstants.*;
 
 /**
- * Spring configuration bean that compose tracking flow on the agent side.<p>
+ * Spring configuration bean that compose tracking flow on the agent side.
  * @author Toparvion
  * @since v0.7
  */

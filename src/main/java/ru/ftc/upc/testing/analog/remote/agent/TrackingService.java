@@ -82,7 +82,6 @@ public class TrackingService {
   void registerWatcher(TrackingRequest request, InetSocketAddress watcherAddress) {
     log.info("Получен запрос на регистрацию наблюдателя {} за логом {}.", watcherAddress, request);
     String logPath = request.getLogFullPath();
-    String timestampFormat = request.getTimestampFormat();
 
     // first let's check if it is a duplicate registration request
     Set<String> knownWatcherFlowIds = sendingRegistry.get(logPath);
@@ -110,7 +109,7 @@ public class TrackingService {
           .register();
       trackingRegistry.put(logPath, trackingRegistration.getId());
       trackingFlow = (StandardIntegrationFlow) trackingRegistration.getIntegrationFlow();
-      timestampExtractor.registerNewTimestampFormat(timestampFormat, logPath);
+      timestampExtractor.registerNewTimestampFormat(request.getTimestampFormat(), logPath);
       //log.info("Created new aggregating log tracking flow with id={}.", registration.getId());
       log.info("Создано новое агрегирующее слежение для лога '{}' с id={}.", logPath, trackingRegistration.getId());
 

@@ -48,7 +48,7 @@ abstract class AbstractWatchHandler extends ChannelInterceptorAdapter implements
     // 0. First of all let's filter out all excess invocations (those are not interesting in this context)
     SimpMessageType messageType = SimpMessageHeaderAccessor.getMessageType(headers);
     if (!getTargetMessageType().equals(messageType)) {
-      // in order to avoid multiple triggering this method passes invocations with message type other than SUBSCRIBE
+      // in order to avoid multiple triggering this method passes invocations with message type other than specified
       return message;
     }
     if (!SimpleBrokerMessageHandler.class.isAssignableFrom(handler.getClass())) {
@@ -86,9 +86,8 @@ abstract class AbstractWatchHandler extends ChannelInterceptorAdapter implements
 
   LogConfigEntry findOrCreateLogConfigEntry(Message<?> message) {
     String subId = SimpMessageHeaderAccessor.getSubscriptionId(message.getHeaders());
-    int keyStartPos;
-    if ((keyStartPos = subId.indexOf("uid=")) != -1) {
-      String uid = subId.substring(keyStartPos + "uid=".length());
+    if (subId.startsWith("uid=")) {
+      String uid = subId.substring("uid=".length());
       LogConfigEntry matchingEntry = choiceProperties.getChoices().stream()
           .flatMap(choiceGroup -> choiceGroup.getLogs().stream())
           .filter(entry -> entry.getUid().equals(uid))
@@ -98,17 +97,16 @@ abstract class AbstractWatchHandler extends ChannelInterceptorAdapter implements
       return matchingEntry;
     }
 
-    if ((keyStartPos = subId.indexOf("path=")) != -1) {
-      String path = subId.substring(keyStartPos + "path=".length());
+    if (subId.startsWith("path=")) {
+      String path = subId.substring("path=".length());
       LogConfigEntry artificialEntry = new LogConfigEntry();
       artificialEntry.setPath(path);
       // TODO parse and set node here as well
       artificialEntry.setTitle(Util.extractFileName(path));
       return artificialEntry;
-
-    } else {
-      throw new IllegalArgumentException("Couldn't extract logId from subscription id: " + subId);
     }
+
+    throw new IllegalArgumentException("Couldn't extract logId from subscription id: " + subId);
   }
 
 }

@@ -11,7 +11,6 @@ app.controller('controlPanelController', function ($scope, $rootScope,
     $scope.onAir = false;
     $scope.prependingSize = "1";
 
-    initHashCodeSupport();
     initChoicesAndLog();
 
     $scope.onLogChange = function () {
@@ -88,18 +87,15 @@ app.controller('controlPanelController', function ($scope, $rootScope,
                     $log.log('Message from server: ' + serverMessage);
                     // $log.log(JSON.parse(serverMessage.body).content);
                 };
-                var subId = 'time=' + new Date().getTime();
-                var logId;
+                var subId, logId;
                 if ($scope.selectedLog.uid) {
                     logId = $scope.selectedLog.uid;
-                    subId += '&uid=' + logId;
+                    subId = 'uid=' + logId;
                 } else {
                     logId = $scope.selectedLog.path;
-                    subId += '&path=' + logId;
+                    subId = 'path=' + logId;
                 }
-                watching.subscription = watching.stompClient.subscribe('/topic/' + logId,
-                                                     callback,
-                                                     {id: subId});
+                watching.subscription = watching.stompClient.subscribe('/topic/'+logId, callback, {id: subId});
             });
 
         } else {
