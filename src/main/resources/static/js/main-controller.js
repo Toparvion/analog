@@ -89,15 +89,15 @@ app.controller('controlPanelController', function ($scope, $rootScope,
                     // $log.log(JSON.parse(serverMessage.body).content);
                 };
                 var subId = 'time=' + new Date().getTime();
-                var uid;
+                var logId;
                 if ($scope.selectedLog.uid) {
-                    subId += '&uid=' + $scope.selectedLog.uid;
-                    uid = $scope.selectedLog.uid;
+                    logId = $scope.selectedLog.uid;
+                    subId += '&uid=' + logId;
                 } else {
-                    subId += '&path=' + $scope.selectedLog.path;
-                    uid = Math.abs($scope.selectedLog.path.hashCode());     // todo think of converting to hex string
+                    logId = $scope.selectedLog.path;
+                    subId += '&path=' + logId;
                 }
-                watching.subscription = watching.stompClient.subscribe('/topic/' + uid,
+                watching.subscription = watching.stompClient.subscribe('/topic/' + logId,
                                                      callback,
                                                      {id: subId});
             });

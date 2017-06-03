@@ -83,7 +83,7 @@ public class LogConfigEntry {
 
   public String getUid() {
     if (this.isPlain()) {
-      return String.valueOf(Math.abs(path.hashCode()));
+      return path;
     }
     return Integer.toHexString(hashCode());
   }
