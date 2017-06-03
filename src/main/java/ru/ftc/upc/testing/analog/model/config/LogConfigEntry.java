@@ -1,5 +1,6 @@
 package ru.ftc.upc.testing.analog.model.config;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -11,11 +12,13 @@ import java.util.Objects;
 @SuppressWarnings("unused")       // setters are used by Spring while processing @ConfigurationProperties
 public class LogConfigEntry {
   private String path;
+  @Nullable
   private String node;
   private String title;
   private boolean selected = false;
-  private String encoding;
-  private String timestamp = "dd.MM.yy HH:mm:ss,SSS";
+  private String encoding = "UTF-8";
+  @Nullable
+  private String timestamp;
   private List<LogConfigEntry> includes = new ArrayList<>();
 
   public LogConfigEntry() { }
@@ -28,11 +31,12 @@ public class LogConfigEntry {
     this.path = path;
   }
 
+  @Nullable
   public String getNode() {
     return node;
   }
 
-  public void setNode(String node) {
+  public void setNode(@Nullable String node) {
     this.node = node;
   }
 
@@ -60,11 +64,12 @@ public class LogConfigEntry {
     this.encoding = encoding;
   }
 
+  @Nullable
   public String getTimestamp() {
     return timestamp;
   }
 
-  public void setTimestamp(String timestamp) {
+  public void setTimestamp(@Nullable String timestamp) {
     this.timestamp = timestamp;
   }
 
@@ -77,7 +82,14 @@ public class LogConfigEntry {
   }
 
   public String getUid() {
+    if (this.isPlain()) {
+      return String.valueOf(Math.abs(path.hashCode()));
+    }
     return Integer.toHexString(hashCode());
+  }
+
+  public boolean isPlain() {
+    return (timestamp == null);
   }
 
   @Override

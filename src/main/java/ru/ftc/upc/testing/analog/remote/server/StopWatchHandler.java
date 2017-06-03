@@ -44,12 +44,12 @@ public class StopWatchHandler extends AbstractWatchHandler {
 
   @Override
   protected Message<?> beforeHandleInternal(Message<?> message, MessageChannel channel, SimpleBrokerMessageHandler handler) {
-    String uid = getUid(message);
+    LogConfigEntry logConfig = findOrCreateLogConfigEntry(message);
+    String uid = logConfig.getUid();
     int clientsCount = clientCounters.get(uid).get();
     log.debug("{} client(s) are tracking log with uid={} (including one being processed).", clientsCount, uid);
     if (clientsCount == 1) {
       log.info("There will be no tracking clients for uid={} after processing. Stopping tracking from this node...", uid);
-      LogConfigEntry logConfig = findMatchingLogConfigEntry(uid);
       ClusterNode myselfNode = clusterProperties.getMyselfNode();
       String fullPath = buildFullPath(logConfig);
       String nodeName = nvls(logConfig.getNode(), myselfNode.getName());

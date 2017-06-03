@@ -42,6 +42,15 @@ public class TrackingRequest implements Serializable {
     return uid;
   }
 
+  /**
+   * A request with no timestamp format is considered 'plain' as it cannot be involved into complex aggregating
+   * tracking logic and thus is suitable for plain old tracking only.
+   * @return {@code true} if this is a request for plain tracking only
+   */
+  public boolean isPlain() {
+    return (timestampFormat == null);
+  }
+
   @Override
   public String toString() {
     return "TrackingRequest{" +

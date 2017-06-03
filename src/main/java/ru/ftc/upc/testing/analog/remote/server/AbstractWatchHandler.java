@@ -14,6 +14,7 @@ import org.springframework.messaging.support.ExecutorChannelInterceptor;
 import ru.ftc.upc.testing.analog.model.config.ChoiceGroup;
 import ru.ftc.upc.testing.analog.model.config.ChoiceProperties;
 import ru.ftc.upc.testing.analog.model.config.LogConfigEntry;
+import ru.ftc.upc.testing.analog.util.Util;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,6 +26,7 @@ import static java.lang.String.format;
  * @author Toparvion
  * @since v0.7
  */
+@SuppressWarnings("NullableProblems")
 abstract class AbstractWatchHandler extends ChannelInterceptorAdapter implements ExecutorChannelInterceptor {
   private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -66,28 +68,47 @@ abstract class AbstractWatchHandler extends ChannelInterceptorAdapter implements
   @Override
   public void afterMessageHandled(Message<?> message, MessageChannel channel, MessageHandler handler, Exception ex) { }
 
-  LogConfigEntry findMatchingLogConfigEntry(String uid) {
-    LogConfigEntry matchingEntry = choiceProperties.getChoices().stream()
-        .flatMap(choiceGroup -> choiceGroup.getLogs().stream())
-        .filter(entry -> entry.getUid().equals(uid))
-        .findAny()
-        .orElseThrow(() -> new IllegalArgumentException(format("No log configuration entry found for uid=%s", uid)));
-    log.debug("Found matching log config entry: {}", matchingEntry);
-    return matchingEntry;
-  }
+  String buildFullPath(LogConfigEntry logConfigEntry) {
+    // The absence of timestamp indirectly points that this entry is "artificial" one and thus doesn't belong to
+    // any group. Hence there is no need to build full path for it. It is not the most reliable way to do it though.
+    if (logConfigEntry.isPlain()) {
+      return logConfigEntry.getPath();
+    }
 
-  String buildFullPath(LogConfigEntry matchingEntry) {
     String groupPathBase = choiceProperties.getChoices().stream()
         .filter(group -> group.getPathBase() != null)
-        .filter(group -> group.getLogs().contains(matchingEntry))
+        .filter(group -> group.getLogs().contains(logConfigEntry))
         .findAny()
         .map(ChoiceGroup::getPathBase)
         .orElse("");
-    return groupPathBase + matchingEntry.getPath();
+    return groupPathBase + logConfigEntry.getPath();
   }
 
-  String getUid(Message<?> message) {
-    String subscriptionId = SimpMessageHeaderAccessor.getSubscriptionId(message.getHeaders());
-    return subscriptionId.substring(subscriptionId.lastIndexOf('-')+1);
+  LogConfigEntry findOrCreateLogConfigEntry(Message<?> message) {
+    String subId = SimpMessageHeaderAccessor.getSubscriptionId(message.getHeaders());
+    int keyStartPos;
+    if ((keyStartPos = subId.indexOf("uid=")) != -1) {
+      String uid = subId.substring(keyStartPos + "uid=".length());
+      LogConfigEntry matchingEntry = choiceProperties.getChoices().stream()
+          .flatMap(choiceGroup -> choiceGroup.getLogs().stream())
+          .filter(entry -> entry.getUid().equals(uid))
+          .findAny()
+          .orElseThrow(() -> new IllegalArgumentException(format("No log configuration entry found for uid=%s", uid)));
+      log.debug("Found matching log config entry: {}", matchingEntry);
+      return matchingEntry;
+    }
+
+    if ((keyStartPos = subId.indexOf("path=")) != -1) {
+      String path = subId.substring(keyStartPos + "path=".length());
+      LogConfigEntry artificialEntry = new LogConfigEntry();
+      artificialEntry.setPath(path);
+      // TODO parse and set node here as well
+      artificialEntry.setTitle(Util.extractFileName(path));
+      return artificialEntry;
+
+    } else {
+      throw new IllegalArgumentException("Couldn't extract logId from subscription id: " + subId);
+    }
   }
+
 }

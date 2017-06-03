@@ -36,12 +36,19 @@ public class WebSocketRecordSender {
     RecordLevel level = recordMessage.getHeaders().get(RECORD_LEVEL__HEADER, RecordLevel.class);
     LocalDateTime localDateTime = recordMessage.getHeaders().get(LOG_TIMESTAMP_VALUE__HEADER, LocalDateTime.class);
 
-    @SuppressWarnings("unchecked")
-    List<String> payload = (List<String>) recordMessage.getPayload();
-    String record = payload.stream().collect(joining("\n< ", "\n< ", ""));
+    Object payload = recordMessage.getPayload();
+    String record;
+    if (payload instanceof List<?>) {
+      @SuppressWarnings("unchecked")
+      List<String> payloadAsList = (List<String>) payload;
+      record = payloadAsList.stream().collect(joining("\n< ", "\n< ", ""));
+    } else {
+      String payloadAsString = (String) payload;
+      record = "\n< " + payloadAsString;
+    }
     log.info("Рассылается запись с меткой {}, уровнем {}, UID {}:{}", localDateTime, level, uid, record);
-//    }
 
+//    }
     messagingTemplate.convertAndSend(WEBSOCKET_TOPIC_PREFIX + uid, record);
   }
 }

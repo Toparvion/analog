@@ -2,9 +2,12 @@ package ru.ftc.upc.testing.analog.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.messaging.Message;
 import org.w3c.tidy.Tidy;
 import ru.ftc.upc.testing.analog.model.ReadingMetaData;
+import ru.ftc.upc.testing.analog.model.RecordLevel;
 
+import javax.annotation.Nonnull;
 import javax.servlet.http.HttpSession;
 import javax.websocket.CloseReason;
 import javax.websocket.Session;
@@ -15,8 +18,10 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import static java.lang.String.format;
+import static ru.ftc.upc.testing.analog.model.RecordLevel.UNKNOWN;
 
 /**
  * Created with IntelliJ IDEA.
@@ -320,5 +325,15 @@ public class AnaLogUtils {
     // оформляем конец ответа
     responseBuilder.append("]");
     responseBuilder.append("}");
+  }
+
+  @Nonnull
+  public static RecordLevel detectRecordLevel(Message<String> recordMessage) {
+    String recordLine = recordMessage.getPayload();
+    return Stream.of(RecordLevel.values())
+        .filter(level -> !UNKNOWN.equals(level))
+        .filter(level -> recordLine.contains(level.name()))    // this is potential subject to change in future
+        .findAny()
+        .orElse(UNKNOWN);
   }
 }

@@ -103,7 +103,7 @@ public class TrackingService {
       //log.info("Found existing log tracking flow with id={}.", trackingRegistrationId);
       log.info("Найдено существующее слежение с id={}.", trackingRegistrationId);
 
-    } else {
+    } else if (!request.isPlain()) {
       IntegrationFlowRegistration trackingRegistration = flowContext
           .registration(trackingFlowProvider.provideAggregatingFlow(logPath))
           .autoStartup(true)
@@ -111,8 +111,19 @@ public class TrackingService {
       trackingRegistry.put(logPath, trackingRegistration.getId());
       trackingFlow = (StandardIntegrationFlow) trackingRegistration.getIntegrationFlow();
       timestampExtractor.registerNewTimestampFormat(timestampFormat, logPath);
+      //log.info("Created new aggregating log tracking flow with id={}.", registration.getId());
+      log.info("Создано новое агрегирующее слежение для лога '{}' с id={}.", logPath, trackingRegistration.getId());
+
+    } else {
+      IntegrationFlowRegistration trackingRegistration = flowContext
+          .registration(trackingFlowProvider.providePlainFlow(logPath))
+          .autoStartup(true)
+          .register();
+      trackingRegistry.put(logPath, trackingRegistration.getId());
+      trackingFlow = (StandardIntegrationFlow) trackingRegistration.getIntegrationFlow();
       //log.info("Created new log tracking flow with id={}.", registration.getId());
-      log.info("Создано новое слежение для лога '{}' с id={}.", logPath, trackingRegistration.getId());
+      log.info("Создано новое простое слежение для лога '{}' с id={}.", logPath, trackingRegistration.getId());
+
     }
 
     PublishSubscribeChannel outChannel = extractOutChannel(trackingFlow);

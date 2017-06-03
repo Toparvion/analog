@@ -10,17 +10,16 @@ import org.springframework.stereotype.Component;
 import ru.ftc.upc.testing.analog.model.RecordLevel;
 import ru.ftc.upc.testing.analog.remote.agent.misc.CorrelationIdHeaderEnricher;
 import ru.ftc.upc.testing.analog.remote.agent.misc.SequenceNumberHeaderEnricher;
+import ru.ftc.upc.testing.analog.service.AnaLogUtils;
 import ru.ftc.upc.testing.analog.util.timestamp.TimestampExtractor;
 
 import java.io.File;
 import java.util.Comparator;
 import java.util.concurrent.PriorityBlockingQueue;
-import java.util.stream.Stream;
 
 import static org.springframework.integration.IntegrationMessageHeaderAccessor.CORRELATION_ID;
 import static org.springframework.integration.dsl.channel.MessageChannels.queue;
 import static org.springframework.integration.file.dsl.Files.tailAdapter;
-import static ru.ftc.upc.testing.analog.model.RecordLevel.UNKNOWN;
 import static ru.ftc.upc.testing.analog.remote.RemotingConstants.*;
 
 /**
@@ -85,6 +84,7 @@ public class TailingFlowProvider {
   IntegrationFlow providePlainFlow(String logPath) {
     return IntegrationFlows
         .from(tailAdapter(new File(logPath)).id("tailSource"))
+        .enrichHeaders(e -> e.headerFunction(RECORD_LEVEL__HEADER, AnaLogUtils::detectRecordLevel))
         .channel(channels -> channels.publishSubscribe(logPath))
         .get();
   }
@@ -93,12 +93,7 @@ public class TailingFlowProvider {
     if (!recordMessage.getHeaders().containsKey(LOG_TIMESTAMP_VALUE__HEADER)) {
       return null;
     }
-    String recordFirstLine = recordMessage.getPayload();
-    return Stream.of(RecordLevel.values())
-        .filter(level -> !UNKNOWN.equals(level))
-        .filter(level -> recordFirstLine.contains(level.name()))    // this is potential subject to change in future
-        .findAny()
-        .orElse(UNKNOWN);
+    return AnaLogUtils.detectRecordLevel(recordMessage);
   }
 
 }

@@ -49,19 +49,19 @@ public class StartWatchHandler extends AbstractWatchHandler {
 
   @Override
   public Message<?> beforeHandleInternal(Message<?> message, MessageChannel channel, SimpleBrokerMessageHandler handler) {
-    String uid = getUid(message);
-    int clientsCount = clientCounters.computeIfAbsent(uid, s -> new AtomicInteger()).get();
-    log.debug("{} client(s) are tracking log with uid={} (not including new one).", clientsCount, uid);
+    // Pick up the log config entry corresponding the one received from the client (creating it by the way if needed)
+    LogConfigEntry logConfig = findOrCreateLogConfigEntry(message);
+    String uid = logConfig.getUid();
+    int clientsCount = clientCounters.computeIfAbsent(logConfig.getUid(), s -> new AtomicInteger()).get();
+    log.debug("{} client(s) are tracking log with uid={} (not including new one).", clientsCount, logConfig.getUid());
 
     if (clientsCount == 0) {
-      log.info("There was no tracking clients for uid={} before this moment. Starting tracking for this node...", uid);
-      // 1. Pick up the log config entry corresponding the one received from the client
-      LogConfigEntry logConfig = findMatchingLogConfigEntry(uid);
+      log.info("There was no tracking clients for uid={} before this moment. Starting tracking for this node...", logConfig.getUid());
 
-      // 2. Then ensure that all RMI registration channels are created
+      // 1. Then ensure that all RMI registration channels are created
       ensureRegistrationChannelsCreated(logConfig);
 
-      // 3. And now register the tracking on specified nodes
+      // 2. And now register the tracking on specified nodes
       initiateTracking(logConfig);
     }
 

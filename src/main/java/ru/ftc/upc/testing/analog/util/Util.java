@@ -11,7 +11,7 @@ public final class Util {
 
   public static final String DEFAULT_TITLE_FORMAT = "$f ($g)";
 
-  static String extractFileName(String path) {
+  public static String extractFileName(String path) {
     int lastSlashPosition = Math.max(
             path.lastIndexOf('/'),
             path.lastIndexOf('\\'));

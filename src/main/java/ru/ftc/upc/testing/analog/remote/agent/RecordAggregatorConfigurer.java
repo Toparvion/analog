@@ -14,7 +14,6 @@ import reactor.util.function.Tuples;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.integration.IntegrationMessageHeaderAccessor.CORRELATION_ID;
@@ -75,7 +74,7 @@ class RecordAggregatorConfigurer {
   private Object outputProcessor(MessageGroup group) {
     assert group.size() > 0;
     if (group.size() == 1) {      // the singleton group is special case and must be handled separately
-      return withPayload(singletonList(group.getOne().getPayload()))
+      return withPayload(group.getOne().getPayload())
           .copyHeaders(group.getOne().getHeaders())
           .build();
     }
