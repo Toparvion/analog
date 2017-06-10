@@ -1,7 +1,5 @@
 server:
   port: 8080
-#logging:
-#  file: application.log
 
 clusterNodes:
   - name: angara
@@ -15,21 +13,27 @@ clusterNodes:
 choices:
   - group: Samples
     pathBase: C:\lang\analog\log-samples\
-    logs:
+    plainLogs:
+      - cluster/local/static-source.log as "$f - $g (plain)"
+      - core-all.log as "$f - $g (plain)"
+      - core.log as "$f - $g (plain)"
+      - pppinfo.log as "$f -$g (plain)"
+
+    compositeLogs:
       - path: bankplus.log
-        title: $g - $f
+        title: $f - $g (composite)
         selected: false
         encoding: CP-1251
         timestamp: dd.MM.yy HH:mm:ss,SSS
 
       - path: logSample.log
-        title: $g - $f
+        title: $f - $g (composite)
         selected: false
         timestamp: dd.MM.yy HH:mm:ss,SSS
 
       - path: cluster\local\growing.log
         node: angara
-        title: $g - $f
+        title: $f - $g (composite)
         selected: true
         encoding: CP-1251
         timestamp: dd.MM.yy HH:mm:ss,SSS

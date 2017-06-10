@@ -9,11 +9,12 @@ import java.util.List;
 @SuppressWarnings("unused")       // setters are used by Spring while processing @ConfigurationProperties
 public class ChoiceGroup {
 
-  private String group                = "(non-grouped)";
-  private String encoding             = null;
-  private String pathBase             = "";
-  private String scanDir              = null;
-  private List<LogConfigEntry> logs   = new ArrayList<>();
+  private String group                          = "(non-grouped)";
+  private String encoding                       = null;
+  private String pathBase                       = "";
+  private String scanDir                        = null;
+  private List<LogConfigEntry> compositeLogs    = new ArrayList<>();
+  private List<String> plainLogs                = new ArrayList<>();
 
   public ChoiceGroup() { }
 
@@ -49,11 +50,19 @@ public class ChoiceGroup {
     this.scanDir = scanDir;
   }
 
-  public List<LogConfigEntry> getLogs() {
-    return logs;
+  public List<LogConfigEntry> getCompositeLogs() {
+    return compositeLogs;
   }
 
-  public void setLogs(List<LogConfigEntry> logs) {
-    this.logs = logs;
+  public void setCompositeLogs(List<LogConfigEntry> compositeLogs) {
+    this.compositeLogs = compositeLogs;
+  }
+
+  public List<String> getPlainLogs() {
+    return plainLogs;
+  }
+
+  public void setPlainLogs(List<String> plainLogs) {
+    this.plainLogs = plainLogs;
   }
 }

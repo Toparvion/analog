@@ -39,7 +39,7 @@ public class EncodingDetector {
 
   private void processGroup(ChoiceGroup group) {
     long groupProcessingStart = System.currentTimeMillis();
-    for (LogConfigEntry logConfigEntry : group.getLogs()) {
+    for (LogConfigEntry logConfigEntry : group.getCompositeLogs()) {
       if (logConfigEntry.getEncoding() != null) {
         log.trace("Log entry '{}' has encoding explicitly set. Skip.", logConfigEntry.getPath());
         continue;

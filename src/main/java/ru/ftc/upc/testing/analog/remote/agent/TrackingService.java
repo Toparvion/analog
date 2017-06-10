@@ -145,8 +145,8 @@ public class TrackingService {
 
     sendingRegistry.computeIfAbsent(logPath, s -> new HashSet<>())
                    .add(sendingRegistration.getId());
-    log.debug("Зарегистрирован новый слушатель лога: {} (регистрация: '{}').", payloadOutGateway.getGatewayAddress(),
-        sendingRegistration.getId());
+    log.debug("Для лога {} зарегистрирован новый слушатель: {} (регистрация: '{}').", logPath,
+        payloadOutGateway.getGatewayAddress(), sendingRegistration.getId());
     //log.debug("Registered new payloadOutGateway with address {}", payloadOutGateway.getGatewayAddress());
   }
 

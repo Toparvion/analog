@@ -10,42 +10,24 @@ import ru.ftc.upc.testing.analog.model.Line;
 import ru.ftc.upc.testing.analog.model.LogChoice;
 import ru.ftc.upc.testing.analog.model.Part;
 import ru.ftc.upc.testing.analog.model.ReadingMetaData;
-import ru.ftc.upc.testing.analog.model.config.ChoiceGroup;
-import ru.ftc.upc.testing.analog.model.config.ChoiceProperties;
-import ru.ftc.upc.testing.analog.model.config.LogConfigEntry;
-import ru.ftc.upc.testing.analog.util.Util;
 
 import javax.servlet.http.HttpSession;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
 
-import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 import static ru.ftc.upc.testing.analog.service.AnaLogUtils.detectMessageType;
 import static ru.ftc.upc.testing.analog.service.AnaLogUtils.distinguishXml;
-import static ru.ftc.upc.testing.analog.util.Util.DEFAULT_TITLE_FORMAT;
 
 @RestController
 public class MainController {
   private static final Logger log = LoggerFactory.getLogger(MainController.class);
 
-  private final List<ChoiceGroup> choices;
-  private final EncodingDetector encodingDetector;
+  private final LogChoicesProvider logChoicesProvider;
 
   @Autowired
-  public MainController(ChoiceProperties choiceProperties,
-                        EncodingDetector encodingDetector) {
-    this.choices = choiceProperties.getChoices();
-    this.encodingDetector = encodingDetector;
+  public MainController(LogChoicesProvider logChoicesProvider) {
+    this.logChoicesProvider = logChoicesProvider;
   }
 
   @RequestMapping("/provide")
@@ -106,57 +88,7 @@ public class MainController {
 
   @RequestMapping("/choices")
   public List<LogChoice> choices() {
-    return choices.stream()
-            .flatMap(this::flattenGroup)
-            .collect(toList());
+    return logChoicesProvider.provideLogChoices();
   }
 
-  private Stream<LogChoice> flattenGroup(ChoiceGroup group) {
-    Set<LogChoice> choices = new LinkedHashSet<>();
-    String groupName = group.getGroup();
-
-    // first let's traverse and process all of the path entries as they are commonly used in groups
-    for (LogConfigEntry logConfigEntry : group.getLogs()) {
-      String path = logConfigEntry.getPath();
-      String titleFormat = Util.nvls(logConfigEntry.getTitle(), DEFAULT_TITLE_FORMAT);
-      String title = Util.expandTitle(path, titleFormat, groupName);
-      Path rawPath = Paths.get(group.getPathBase(), path);
-      Path absPath = rawPath.isAbsolute()
-              ? rawPath
-              : rawPath.toAbsolutePath();
-      String fullPath = absPath.toString();
-      String encoding = encodingDetector.getEncodingFor(fullPath);
-      choices.add(new LogChoice(groupName,
-              fullPath,
-              encoding,
-              title,
-              logConfigEntry.isSelected(),
-              logConfigEntry.getUid()));
-    }
-
-    // then let's add scanned directory logs to set being composed
-    if (group.getScanDir() != null) {
-      String groupEncoding = (group.getEncoding() != null)
-              ? Util.formatEncodingName(group.getEncoding())
-              : null;   // this value will provoke encoding detection
-      Path scanDirPath = Paths.get(group.getScanDir());
-      try (Stream<Path> scannedPaths = Files.list(scanDirPath)) {
-        choices.addAll(scannedPaths   // such sets merging allows to exclude duplicates while preserving explicit paths
-                .filter(Files::isRegularFile)   // the scanning is not recursive so we bypass nested directories
-                .map(logPath -> new LogChoice(groupName,
-                        logPath.toAbsolutePath().toString(),
-                        (groupEncoding != null)
-                                ? groupEncoding
-                                : encodingDetector.getEncodingFor(logPath.toAbsolutePath().toString()),
-                        Util.expandTitle(logPath.toString(), DEFAULT_TITLE_FORMAT, groupName),
-                        false,
-                        null /*TODO decide how to support auto scan feature after v0.7*/))
-                .collect(toSet()));
-      } catch (IOException e) {
-        log.error(format("Failed to scan directory '%s'; will be ignored.", group.getScanDir()), e);
-      }
-    }
-
-    return choices.stream();
-  }
 }

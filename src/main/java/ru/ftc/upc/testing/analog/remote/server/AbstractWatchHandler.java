@@ -77,7 +77,7 @@ abstract class AbstractWatchHandler extends ChannelInterceptorAdapter implements
 
     String groupPathBase = choiceProperties.getChoices().stream()
         .filter(group -> group.getPathBase() != null)
-        .filter(group -> group.getLogs().contains(logConfigEntry))
+        .filter(group -> group.getCompositeLogs().contains(logConfigEntry))
         .findAny()
         .map(ChoiceGroup::getPathBase)
         .orElse("");
@@ -86,10 +86,11 @@ abstract class AbstractWatchHandler extends ChannelInterceptorAdapter implements
 
   LogConfigEntry findOrCreateLogConfigEntry(Message<?> message) {
     String subId = SimpMessageHeaderAccessor.getSubscriptionId(message.getHeaders());
+    assert (subId != null);
     if (subId.startsWith("uid=")) {
       String uid = subId.substring("uid=".length());
       LogConfigEntry matchingEntry = choiceProperties.getChoices().stream()
-          .flatMap(choiceGroup -> choiceGroup.getLogs().stream())
+          .flatMap(choiceGroup -> choiceGroup.getCompositeLogs().stream())
           .filter(entry -> entry.getUid().equals(uid))
           .findAny()
           .orElseThrow(() -> new IllegalArgumentException(format("No log configuration entry found for uid=%s", uid)));
