@@ -81,6 +81,7 @@ public class ClusterNode {
     try {
       InetAddress hostAddress = InetAddress.getByName(host);
       InetAddress loopbackAddress = InetAddress.getLoopbackAddress();
+      // TODO search for myself node not by comparison with loopback address only but with all the network interfaces
       myself = loopbackAddress.equals(hostAddress);
       log.trace("Host address: {}; loopbackAddress: {}; myself: {}", hostAddress, loopbackAddress, myself);
 

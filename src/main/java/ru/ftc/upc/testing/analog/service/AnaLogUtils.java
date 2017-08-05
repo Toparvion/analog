@@ -9,8 +9,6 @@ import ru.ftc.upc.testing.analog.model.RecordLevel;
 
 import javax.annotation.Nonnull;
 import javax.servlet.http.HttpSession;
-import javax.websocket.CloseReason;
-import javax.websocket.Session;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -130,6 +128,102 @@ public class AnaLogUtils {
     }
 
     return rawLines.get(startingLineIndex);
+  }
+  public static String distinguishXmlComposite(List<String> rawLines, int startingLineIndex) {
+    String startingLine = rawLines.get(startingLineIndex);
+    if (startingLine.startsWith("__XML__")) {   // if the line marker as XML before
+      return startingLine;
+    }
+    Matcher xmlOpenMatcher = XML_OPEN_EXTRACTOR.matcher(startingLine);
+    if (!xmlOpenMatcher.find()) {
+      return startingLine;
+    }
+    String openTagName = xmlOpenMatcher.group(1);
+    int startPositionForXmlCloseSearch = xmlOpenMatcher.end(1);
+    Pattern xmlCloseExtractor = Pattern.compile("</" + openTagName + ">");
+
+    // пытаемся отдельно обработать ПЕРВУЮ СТРОКУ
+    Matcher xmlCloseMatcher = xmlCloseExtractor.matcher(startingLine);
+    if (xmlCloseMatcher.find(startPositionForXmlCloseSearch)) {            // значит, весь XML "упрятан" в одной строке
+      int xmlOpenIndex = xmlOpenMatcher.start(1) - 1;
+      int xmlCloseIndex = xmlCloseMatcher.end();
+      String xml = startingLine.substring(xmlOpenIndex, xmlCloseIndex);
+      xml = reindentXml(xml);
+      xml = prefix(xml);      // to mark the start of XML string among other records' strings
+      boolean lineHasNonXmlBeginning = (xmlOpenIndex != 0);
+      boolean lineHasNonXmlEnding = (xmlCloseIndex < startingLine.length());
+      if (lineHasNonXmlEnding) {
+        String nonXmlEnding = startingLine.substring(xmlCloseIndex, startingLine.length());
+        rawLines.add(startingLineIndex + 1, nonXmlEnding);
+      }
+      if (lineHasNonXmlBeginning) {
+        String nonXmlBeginning = startingLine.substring(0, xmlOpenIndex);
+        rawLines.set(startingLineIndex, nonXmlBeginning);
+        rawLines.add(startingLineIndex + 1, xml);
+      }
+      if (!lineHasNonXmlBeginning && !lineHasNonXmlEnding) {
+        rawLines.set(startingLineIndex, xml);
+      }
+      return rawLines.get(startingLineIndex);
+    }
+    // дочитываем ХВОСТ ДОКУМЕНТА
+    int i = startingLineIndex + 1;
+    boolean isXmlCloseTagFound = false;
+    StringBuilder accumulator = new StringBuilder(startingLine);
+    while (i < rawLines.size()) {
+      String curLine = rawLines.get(i);
+      accumulator.append(curLine);
+      xmlCloseMatcher = xmlCloseExtractor.matcher(curLine);
+      if (xmlCloseMatcher.find()) {
+        isXmlCloseTagFound = true;
+        break;
+      }
+      i++;
+    }
+    // удостоверяемся в успешности поиска
+    if (!isXmlCloseTagFound) {
+      if (log.isTraceEnabled()) {
+        log.trace("No XML close tag found for document starting with '{}'.", accumulator);
+      } else {
+        log.debug("No XML close tag found for document starting with '{}'. Skipped.", startingLine);
+      }
+      return startingLine;
+    }
+    // если найден закрывающий тег
+    // (1) удаляем старое "растянутое" представление XML
+    for (int j = startingLineIndex + 1; j <= i; j++) {
+      rawLines.remove(startingLineIndex + 1);
+    }
+    // (2) подготавливаем XML-строку к вставке и вставляем ее
+    String accumulatedString = accumulator.toString();
+    int xmlOpenIndex = xmlOpenMatcher.start(1) - 1;
+    int xmlCloseIndex = accumulatedString.lastIndexOf(xmlCloseMatcher.group()) + xmlCloseMatcher.group().length();
+    boolean lineHasNonXmlBeginning = (xmlOpenIndex != 0);
+    boolean lineHasNonXmlEnding = (xmlCloseIndex < accumulatedString.length());
+    if (lineHasNonXmlEnding) {
+      String nonXmlEnding = accumulatedString.substring(xmlCloseIndex, accumulatedString.length());
+      rawLines.add(startingLineIndex + 1, nonXmlEnding);
+      accumulatedString = accumulatedString.substring(0, xmlCloseIndex);
+    }
+    if (lineHasNonXmlBeginning) {
+      String nonXmlBeginning = accumulatedString.substring(0, xmlOpenIndex);
+      rawLines.set(startingLineIndex, nonXmlBeginning);
+      accumulatedString = accumulatedString.substring(xmlOpenIndex, accumulatedString.length());
+      accumulatedString = reindentXml(accumulatedString);
+      accumulatedString = prefix(accumulatedString);
+
+      rawLines.add(startingLineIndex + 1, accumulatedString);
+    } else {
+      accumulatedString = reindentXml(accumulatedString);
+      accumulatedString = prefix(accumulatedString);
+      rawLines.set(startingLineIndex, accumulatedString);
+    }
+
+    return rawLines.get(startingLineIndex);
+  }
+
+  private static String prefix(String stringToPrefix) {
+    return "__XML__" + stringToPrefix;
   }
 
   private static String reindentXml(String rawSourceXml) {
@@ -274,15 +368,6 @@ public class AnaLogUtils {
     }
 
     return rawLines;
-  }
-
-  public static void closeWebSocket(Session session, CloseReason.CloseCodes code, String message) {
-    try {
-      session.close(new CloseReason(code, message));
-
-    } catch (IOException e) {
-      log.error("Не получилось закрыть сессию webSocket'а: ", e);
-    }
   }
 
   static ReadingMetaData retrieveMetaData(HttpSession session, String inputFileName) {

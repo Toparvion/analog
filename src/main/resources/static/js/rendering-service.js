@@ -1,4 +1,4 @@
-app.factory('renderingService', ['$interval', '$log', function($interval, $log) {
+app.factory('renderingService', ['$interval', '$log', function($interval) {
     var appendingRenderQueue = [];
     var prependingRenderQueue = [];
     var consolePanel = $('#consolePanel');

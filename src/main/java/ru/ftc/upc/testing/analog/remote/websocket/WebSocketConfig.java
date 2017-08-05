@@ -1,4 +1,4 @@
-package ru.ftc.upc.testing.analog.remote.server;
+package ru.ftc.upc.testing.analog.remote.websocket;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

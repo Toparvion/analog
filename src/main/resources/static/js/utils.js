@@ -10,14 +10,14 @@ function arePathsEqual(path1, path2) {
     return (path1.toLowerCase().replace(new RegExp("\\\\", 'g'), "/") === path2.toLowerCase().replace(new RegExp("\\\\", 'g'), "/"));
 }
 
-function prepareMessages(responseData) {
+function prepareMessages(newPart) {
     var preparedMessages = [];
-    angular.forEach(responseData.items, function (item) {
+    angular.forEach(newPart.lines, function (line) {
         var $messageLine;
-        if (item.level !== 'XML') {
-            $messageLine = $('<div class="' + item.level + '">' + item.text + '</div>');
+        if (line.style !== 'XML') {
+            $messageLine = $('<div class="' + line.style + '">' + line.text + '</div>');
         } else {
-            $messageLine = $('<pre class="xml"><code>' + item.text + '</code></pre>');
+            $messageLine = $('<pre class="xml"><code>' + line.text + '</code></pre>');
             hljs.highlightBlock($messageLine[0]);
         }
         preparedMessages.push($messageLine);

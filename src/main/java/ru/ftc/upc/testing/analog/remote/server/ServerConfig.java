@@ -24,7 +24,7 @@ import static ru.ftc.upc.testing.analog.remote.RemotingConstants.*;
 public class ServerConfig {
 
   @Bean
-  public IntegrationFlow serverRmiPayloadFlow(ClusterProperties clusterProperties, WebSocketRecordSender sender) {
+  public IntegrationFlow serverRmiPayloadFlow(ClusterProperties clusterProperties, RecordSender sender) {
     DirectChannel payloadRmiInChannel = direct(SERVER_RMI_PAYLOAD_IN__CHANNEL).get();
     int myPort = clusterProperties.getMyselfNode().getPort();
 

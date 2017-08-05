@@ -14,6 +14,7 @@ import ru.ftc.upc.testing.analog.service.AnaLogUtils;
 import ru.ftc.upc.testing.analog.util.timestamp.TimestampExtractor;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.concurrent.PriorityBlockingQueue;
 
@@ -31,16 +32,17 @@ import static ru.ftc.upc.testing.analog.remote.RemotingConstants.*;
 public class TailingFlowProvider {
 
   private final TimestampExtractor timestampExtractor;
-
-  @Value("${tracking.groupSizeThreshold}")
-  private int groupSizeThreshold = 50;
-  @Value("${tracking.groupTimeoutMs}")
-  private int groupTimeoutMs = 1_000;
+  private final int groupSizeThreshold;
+  private final int groupTimeoutMs;
 
 
   @Autowired
-  public TailingFlowProvider(TimestampExtractor timestampExtractor) {
+  public TailingFlowProvider(TimestampExtractor timestampExtractor,
+                             @Value("${tracking.groupSizeThreshold}") int groupSizeThreshold,
+                             @Value("${tracking.groupTimeoutMs}") int groupTimeoutMs) {
     this.timestampExtractor = timestampExtractor;
+    this.groupSizeThreshold = groupSizeThreshold;
+    this.groupTimeoutMs = groupTimeoutMs;
   }
 
   /**
@@ -62,6 +64,7 @@ public class TailingFlowProvider {
     messages can be corrupted as the early arrived messages must leave the queue early as well (since the queue is of
     FIFO discipline). To avoid this, the queue is created as priority one. The priority is specified as simple
     sequence number (much like the one built in FileSplitter) and provided by dedicated header enricher. */
+    //noinspection ConstantConditions     // null value for the header is prevented by message composing logic
     PriorityBlockingQueue<Message<?>> queue = new PriorityBlockingQueue<>(100,
         Comparator.comparingLong(message -> message.getHeaders().get(SEQUENCE_NUMBER__HEADER, Long.class)));
     MessageChannel preAggregatorQueueChannel = queue(RECORD_AGGREGATOR_INPUT_CHANNEL, queue).get();
@@ -84,7 +87,13 @@ public class TailingFlowProvider {
   IntegrationFlow providePlainFlow(String logPath) {
     return IntegrationFlows
         .from(tailAdapter(new File(logPath)).id("tailSource"))
-        .enrichHeaders(e -> e.headerFunction(RECORD_LEVEL__HEADER, AnaLogUtils::detectRecordLevel))
+        .aggregate(aggregatorSpec -> aggregatorSpec
+            .correlationStrategy(message -> BigDecimal.ONE)
+            .releaseStrategy(group -> group.size() > groupSizeThreshold)
+            .groupTimeout(groupTimeoutMs)
+            .expireGroupsUponTimeout(true)
+            .expireGroupsUponCompletion(true)
+            .sendPartialResultOnExpiry(true))
         .channel(channels -> channels.publishSubscribe(logPath))
         .get();
   }

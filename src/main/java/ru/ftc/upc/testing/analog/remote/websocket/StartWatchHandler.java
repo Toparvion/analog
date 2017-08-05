@@ -1,4 +1,4 @@
-package ru.ftc.upc.testing.analog.remote.server;
+package ru.ftc.upc.testing.analog.remote.websocket;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +13,8 @@ import ru.ftc.upc.testing.analog.model.config.ChoiceProperties;
 import ru.ftc.upc.testing.analog.model.config.ClusterNode;
 import ru.ftc.upc.testing.analog.model.config.ClusterProperties;
 import ru.ftc.upc.testing.analog.model.config.LogConfigEntry;
+import ru.ftc.upc.testing.analog.remote.server.RegistrationChannelCreator;
+import ru.ftc.upc.testing.analog.remote.server.RemoteGateway;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

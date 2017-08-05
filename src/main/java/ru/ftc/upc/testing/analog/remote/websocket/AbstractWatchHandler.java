@@ -1,4 +1,4 @@
-package ru.ftc.upc.testing.analog.remote.server;
+package ru.ftc.upc.testing.analog.remote.websocket;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,7 +102,9 @@ abstract class AbstractWatchHandler extends ChannelInterceptorAdapter implements
       String path = subId.substring("path=".length());
       LogConfigEntry artificialEntry = new LogConfigEntry();
       artificialEntry.setPath(path);
-      // TODO parse and set node here as well
+      // Perhaps it's worth here to parse the path and extract node name if it is specified like
+      // '~~angara~~/pub/home/analog/out.log'. This would be however applicable to paths specified in URL only
+      // because paths configured in file may conflict with each other's node specification.
       artificialEntry.setTitle(Util.extractFileName(path));
       return artificialEntry;
     }

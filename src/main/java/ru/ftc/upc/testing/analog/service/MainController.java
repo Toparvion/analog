@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.ftc.upc.testing.analog.model.Line;
 import ru.ftc.upc.testing.analog.model.LogChoice;
-import ru.ftc.upc.testing.analog.model.Part;
 import ru.ftc.upc.testing.analog.model.ReadingMetaData;
+import ru.ftc.upc.testing.analog.model.api.LinesPart;
+import ru.ftc.upc.testing.analog.model.api.StyledLine;
 
 import javax.servlet.http.HttpSession;
 import java.io.FileNotFoundException;
@@ -31,11 +31,11 @@ public class MainController {
   }
 
   @RequestMapping("/provide")
-  public Part provide(@RequestParam("log") String inputFileName,
-                      @RequestParam(required = false, name = "prependingSize") Long prependingSize,
-                      @RequestParam(required = false, defaultValue = "UTF-8") String encoding,
-                      @RequestParam(required = false, defaultValue = "false") boolean readBackAllowed,
-                      HttpSession session) {
+  public LinesPart provide(@RequestParam("log") String inputFileName,
+                           @RequestParam(required = false, name = "prependingSize") Long prependingSize,
+                           @RequestParam(required = false, defaultValue = "UTF-8") String encoding,
+                           @RequestParam(required = false, defaultValue = "false") boolean readBackAllowed,
+                           HttpSession session) {
     // получаем данные о предыдущем чтении
     ReadingMetaData readingMetaData = AnaLogUtils.retrieveMetaData(session, inputFileName);
 
@@ -47,7 +47,7 @@ public class MainController {
       rawLines = fetchRawLines(inputFileName, prependingSize, encoding, readingMetaData);
     }
 
-    List<Line> parsedLines = new ArrayList<>();
+    List<StyledLine> parsedLines = new ArrayList<>();
     for (int i = 0; i < rawLines.size(); i++) {
       // проверяем строку на начало в ней XML-кода
       String curLine = distinguishXml(rawLines, i);
@@ -58,10 +58,10 @@ public class MainController {
       String messageType = detectMessageType(curLine);
 
       // завершаем оформление текущей строки
-      parsedLines.add(new Line(text, messageType));
+      parsedLines.add(new StyledLine(text, messageType));
     }
 
-    return new Part(parsedLines);
+    return new LinesPart(parsedLines);
   }
 
   private List<String> fetchRawLines(String inputFileName,

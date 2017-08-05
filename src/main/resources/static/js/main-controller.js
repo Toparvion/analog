@@ -84,8 +84,9 @@ app.controller('controlPanelController', function ($scope, $rootScope,
             watching.stompClient.connect({}, function (frame) {
                 $log.log('Connected: ' + frame);
                 var callback = function (serverMessage) {
-                    $log.log('Message from server: ' + serverMessage);
-                    // $log.log(JSON.parse(serverMessage.body).content);
+                    var newPart = JSON.parse(serverMessage.body);
+                    var preparedLines = prepareMessages(newPart);
+                    renderingService.appendMessages(preparedLines)
                 };
                 var subId, logId;
                 if ($scope.selectedLog.uid) {

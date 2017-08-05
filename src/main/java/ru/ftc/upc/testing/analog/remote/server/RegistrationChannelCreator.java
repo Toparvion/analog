@@ -54,7 +54,7 @@ public class RegistrationChannelCreator implements BeanFactoryAware, Initializin
    * Checks whether channel for specified {@code nodeName} already exists in Spring context and, if not, creates it.
    * @param nodeName name of cluster node to which the channel should be created
    */
-  void createRegistrationChannelIfNeeded(String nodeName) {
+  public void createRegistrationChannelIfNeeded(String nodeName) {
     try {
       beanFactory.getBean(SERVER_REGISTRATION_RMI_OUT__CHANNEL_PREFIX + nodeName);
 
