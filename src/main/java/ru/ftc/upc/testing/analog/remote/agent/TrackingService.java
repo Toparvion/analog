@@ -26,8 +26,7 @@ import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
-import static ru.ftc.upc.testing.analog.remote.RemotingConstants.LOG_CONFIG_ENTRY_UID__HEADER;
-import static ru.ftc.upc.testing.analog.remote.RemotingConstants.SERVER_RMI_PAYLOAD_IN__CHANNEL;
+import static ru.ftc.upc.testing.analog.remote.RemotingConstants.*;
 
 /**
  * Applied logical service providing routines for remote log tracking.
@@ -138,6 +137,7 @@ public class TrackingService {
         IntegrationFlows
             .from(outChannel)
             .enrichHeaders(e -> e.header(LOG_CONFIG_ENTRY_UID__HEADER, request.getUid()))
+            .enrichHeaders(e -> e.header(SOURCE_NODE__HEADER, request.getNodeName()))
             .handle(payloadOutGateway, spec -> spec.id(PAYLOAD_OUT_GATEWAY_BEAN_NAME))
             .get())
         .autoStartup(true)

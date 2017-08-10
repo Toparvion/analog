@@ -5,8 +5,8 @@ import java.io.Serializable;
 
 /**
  * A set of parameters needed to establish log tracking on remote agent. The need of the set originates from the fact
- * that configurations on various AnaLog nodes do not have to be the same and hence an agent cannot rely on its
- * configuration in order to extract any parameters to establish remote tracking.
+ * that configurations on various AnaLog nodes do not have to be the same and hence an agent cannot rely on its own
+ * configuration in order to extract any parameters for establishing of remote tracking.
  * @author Toparvion
  * @since v0.7
  */
@@ -33,7 +33,7 @@ public class TrackingRequest implements Serializable {
     return timestampFormat;
   }
 
-  @SuppressWarnings("unused")     // the method is called by means of Reflection API (through SpEL)
+  @SuppressWarnings("unused")     // the method is called by means of SpEL (see ServerConfig.serverRegistrationRouter)
   public String getNodeName() {
     return nodeName;
   }

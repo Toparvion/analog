@@ -16,4 +16,5 @@ public class LinesPart {
   public List<StyledLine> getLines() {
     return lines;
   }
+
 }

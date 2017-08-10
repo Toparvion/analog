@@ -46,9 +46,9 @@ public class ServerConfig {
     flows for every one of them. Therefore, the flows are created separately and dynamically. But this brings another
     problem - how to address them during messages dispatching? To solve this problem the input channel of every
     integration flow is named by format "SERVER_REGISTRATION_RMI_OUT__CHANNEL_PREFIX + nodeName". The first one is
-    a constant and the second is given as corresponding message payload field. The following intermediate flow uses SpEL
-    to extract the field value, combine it with the constant value and thus define the channel name to redirect the
-    message to. */
+    a constant and the second is given as corresponding message's payload field. The following intermediate flow uses
+    SpEL to extract the field value, combine it with the constant value and thus define the channel name to redirect
+    the message to. */
     return IntegrationFlows.from(direct(SERVER_REGISTRATION_ROUTER__CHANNEL))
         .route(format("'%s'.concat(payload.nodeName)", SERVER_REGISTRATION_RMI_OUT__CHANNEL_PREFIX))
         .get();

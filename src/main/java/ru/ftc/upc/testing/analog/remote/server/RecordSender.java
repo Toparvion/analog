@@ -7,11 +7,13 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import ru.ftc.upc.testing.analog.model.RecordLevel;
+import ru.ftc.upc.testing.analog.model.api.CompositeLinesPart;
 import ru.ftc.upc.testing.analog.model.api.LinesPart;
 import ru.ftc.upc.testing.analog.model.api.StyledLine;
 import ru.ftc.upc.testing.analog.service.AnaLogUtils;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -38,6 +40,7 @@ public class RecordSender {
 
   void sendRecord(Message<?> recordMessage) {
     String uid = recordMessage.getHeaders().get(LOG_CONFIG_ENTRY_UID__HEADER, String.class);
+    String sourceNode = recordMessage.getHeaders().get(SOURCE_NODE__HEADER, String.class);
     RecordLevel level = recordMessage.getHeaders().get(RECORD_LEVEL__HEADER, RecordLevel.class);
     LocalDateTime timestamp = recordMessage.getHeaders().get(LOG_TIMESTAMP_VALUE__HEADER, LocalDateTime.class);
 
@@ -57,7 +60,14 @@ public class RecordSender {
           .collect(joining("\n")));
     }
 
-    messagingTemplate.convertAndSend(WEBSOCKET_TOPIC_PREFIX + uid, new LinesPart(styledLines));
+    LinesPart linesPart;
+    if (isPlainRecords) {
+      linesPart = new LinesPart(styledLines);
+    } else {
+      long timestampMillis = timestamp.toInstant(ZoneOffset.UTC).toEpochMilli();
+      linesPart = new CompositeLinesPart(styledLines, sourceNode, timestampMillis);
+    }
+    messagingTemplate.convertAndSend(WEBSOCKET_TOPIC_PREFIX + uid, linesPart);
   }
 
   /*private*/ List<StyledLine> prepareCompositeRecords(List<String> payloadAsList, RecordLevel firstLineLevel) {
