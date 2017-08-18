@@ -11,33 +11,42 @@ clusterNodes:
     address: tobol.ftc.ru:7803
 
 choices:
-  - group: Samples
+  - group: MT
     pathBase: C:\lang\analog\log-samples\
     plainLogs:
-      - cluster/local/static-source.log as "$f - $g (plain)"
-      - core-all.log as "$f - $g (plain)"
-      - core.log as "$f - $g (plain)"
-      - pppinfo.log as "$f -$g (plain)"
+      - core.log as "$f - $g"
+      - pppinfo.log as "$f -$g"
+
+    compositeLogs:
+      - path: cluster\local\growing.log
+        node: angara
+        title: $f - $g
+        selected: true
+        encoding: CP-1251
+        timestamp: dd.MM.yy HH:mm:ss,SSS
+# TODO завести отдельный Java класс для включений
+#        includes:
+#          - path: C:\lang\analog\log-samples\cluster\local\growing.log
+#            node: volga
+#            timestamp: dd.MM.yy HH:mm:ss,SSS
+#          - node: tobol
+#            path: C:\lang\analog\log-samples\cluster\local\growing.log
+#            timestamp: dd.MM.yy HH:mm:ss,SSS
+
+  - group: Микросервисы
+    pathBase: C:\lang\analog\log-samples\
+    plainLogs:
+      - cluster/local/static-source.log as "$f - $g"
+      - core-all.log as "$f - $g"
 
     compositeLogs:
       - path: bankplus.log
-        title: $f - $g (composite)
+        title: $f - $g
         selected: false
         encoding: CP-1251
         timestamp: dd.MM.yy HH:mm:ss,SSS
 
       - path: logSample.log
-        title: $f - $g (composite)
+        title: $f - $g
         selected: false
         timestamp: dd.MM.yy HH:mm:ss,SSS
-
-      - path: cluster\local\growing.log
-        node: angara
-        title: $f - $g (composite)
-        selected: true
-        encoding: CP-1251
-        timestamp: dd.MM.yy HH:mm:ss,SSS
-#        includes:
-#          - node: angara
-#            path: C:\lang\analog\log-samples\cluster\local\growing.log
-#            timestamp: dd.MM.yy HH:mm:ss,SSS

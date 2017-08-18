@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import ru.ftc.upc.testing.analog.model.LogChoice;
 import ru.ftc.upc.testing.analog.model.config.ChoiceGroup;
 import ru.ftc.upc.testing.analog.model.config.ChoiceProperties;
+import ru.ftc.upc.testing.analog.model.config.ClusterProperties;
 import ru.ftc.upc.testing.analog.model.config.LogConfigEntry;
 import ru.ftc.upc.testing.analog.util.Util;
 
@@ -35,11 +36,15 @@ public class LogChoicesProvider {
 
   private final List<ChoiceGroup> choices;
   private final EncodingDetector encodingDetector;
+  private final ClusterProperties clusterProperties;
 
   @Autowired
-  public LogChoicesProvider(ChoiceProperties choiceProperties, EncodingDetector encodingDetector) {
+  public LogChoicesProvider(ChoiceProperties choiceProperties,
+                            EncodingDetector encodingDetector,
+                            ClusterProperties clusterProperties) {
     this.choices = choiceProperties.getChoices();
     this.encodingDetector = encodingDetector;
+    this.clusterProperties = clusterProperties;
   }
 
   List<LogChoice> provideLogChoices() {
@@ -77,7 +82,7 @@ public class LogChoicesProvider {
           encoding,
           title,
           coms.isSelectedByDefault(),
-          null /* to explicitly denote that this choice is plain one */));
+          null, null /* to explicitly denote that this choice is plain one */));
     }
     return choices;
   }
@@ -96,12 +101,16 @@ public class LogChoicesProvider {
           : rawPath.toAbsolutePath();
       String fullPath = absPath.toString();
       String encoding = encodingDetector.getEncodingFor(fullPath);
+      String node = (logConfigEntry.getNode() == null)
+          ? clusterProperties.getMyselfNode().getName()
+          : logConfigEntry.getNode();
       choices.add(new LogChoice(groupName,
           fullPath,
           encoding,
           title,
           logConfigEntry.isSelected(),
-          logConfigEntry.getUid()));
+          logConfigEntry.getUid(),
+          node));
     }
     return choices;
   }
@@ -128,7 +137,7 @@ public class LogChoicesProvider {
                   : encodingDetector.getEncodingFor(logPath.toAbsolutePath().toString()),
               expandTitle(logPath.toString(), DEFAULT_TITLE_FORMAT, groupName),
               false,
-              null /* to explicitly denote that this choice is plain one */))
+              null, null /* to explicitly denote that this choice is plain one */))
           .collect(toSet()));
 
     } catch (IOException e) {

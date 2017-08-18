@@ -1,29 +1,34 @@
-app = angular.module("AnaLog", []);
+app = angular.module("AnaLog", ['ngSanitize', 'ui.select']);
 
 app.run(function ($rootScope) { $rootScope.watchingLog = "АнаЛог v0.7 (загрузка...)"; });
 
 app.controller('controlPanelController', function ($scope, $rootScope,
                                                    choicesService, providerService, renderingService,
                                                    $location, $log, $interval) {
+    var vm = this;
+
     var onAirPromise;
     var watching = null;
     $scope.encoding = 'utf8';
     $scope.onAir = false;
     $scope.prependingSize = "1";
+    $scope.choices = [];
+
+    vm.selectedLog = undefined;
 
     initChoicesAndLog();
 
-    $scope.onLogChange = function () {
-        $log.log("New choice: " + $scope.selectedLog.path + " (" + $scope.selectedLog.encoding + ")");
-        $scope.encoding = $scope.selectedLog.encoding;
-        $rootScope.watchingLog = $scope.selectedLog.title + " - АнаЛог";
-        $location.path($scope.selectedLog.path);
+    vm.onLogChange = function() {
+        $log.log("New choice: " + vm.selectedLog.path + " (" + vm.selectedLog.encoding + ")");
+        $scope.encoding = vm.selectedLog.encoding;
+        $rootScope.watchingLog = vm.selectedLog.title + " - АнаЛог";
+        $location.path(vm.selectedLog.path);
         $scope.onAir = false;
         renderingService.clearQueue();
         $scope.updateLog(/*readBackAllowed:*/true);
     };
     $scope.updateLog = function (isReadBackAllowed) {
-        providerService($scope.selectedLog.path, $scope.encoding, $scope.stopOnAir, isReadBackAllowed)
+        providerService(vm.selectedLog.path, $scope.encoding, $scope.stopOnAir, isReadBackAllowed)
     };
     $scope.disableOnAirPoller = function() {
         if (angular.isDefined(onAirPromise)) {
@@ -37,7 +42,7 @@ app.controller('controlPanelController', function ($scope, $rootScope,
     });
     $scope.prepend = function () {
         $scope.onAir = false;
-        providerService($scope.selectedLog.path, $scope.encoding, $scope.stopOnAir, false, $scope.prependingSize);
+        providerService(vm.selectedLog.path, $scope.encoding, $scope.stopOnAir, false, $scope.prependingSize);
     };
     $scope.clear = function () {
         renderingService.clearQueue();
@@ -51,7 +56,7 @@ app.controller('controlPanelController', function ($scope, $rootScope,
     function initChoicesAndLog() {
         choicesService(function (choices, selectedChoice) {
             $scope.choices = choices;
-            $scope.selectedLog = selectedChoice;
+            vm.selectedLog = selectedChoice;
             $scope.encoding = selectedChoice.encoding;
             $rootScope.watchingLog = selectedChoice.title + " - АнаЛог";
             $scope.updateLog(/*readBackAllowed:*/true);
@@ -63,8 +68,8 @@ app.controller('controlPanelController', function ($scope, $rootScope,
     }, function (value) {
         // $log.log("Raw value: " + value); // helpful for troubleshooting paths starting with 'C:\'
         var newPath = value;
-        if ($scope.selectedLog && !arePathsEqual($scope.selectedLog.path, newPath)) {
-            $log.log("Path change detected from: '" + $scope.selectedLog.path + "' to: '" + newPath +"'.");
+        if (vm.selectedLog && !arePathsEqual(vm.selectedLog.path, newPath)) {
+            $log.log("Path change detected from: '" + vm.selectedLog.path + "' to: '" + newPath +"'.");
             $scope.onAir = false;
             $scope.clear();
             initChoicesAndLog();
@@ -89,11 +94,11 @@ app.controller('controlPanelController', function ($scope, $rootScope,
                     renderingService.appendMessages(preparedLines)
                 };
                 var subId, logId;
-                if ($scope.selectedLog.uid) {
-                    logId = $scope.selectedLog.uid;
+                if (vm.selectedLog.uid) {
+                    logId = vm.selectedLog.uid;
                     subId = 'uid=' + logId;
                 } else {
-                    logId = $scope.selectedLog.path;
+                    logId = vm.selectedLog.path;
                     subId = 'path=' + logId;
                 }
                 watching.subscription = watching.stompClient.subscribe('/topic/'+logId, callback, {id: subId});

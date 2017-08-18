@@ -1,5 +1,6 @@
 body {
     background-color: #282727;
+    padding-top: 70px;
 }
 
 .TRACE {
@@ -90,4 +91,23 @@ body {
 /* The next definition prevents highlighted code sections from overlapping the substrate. */
 .hljs {
     background: none;
+}
+
+.log-choice-detail {
+    color: #b2b2b2;
+}
+.log-choice-accent {
+    color: white;
+    background-color: salmon;
+}
+
+/***************************** Frameworks tunings Tunings **************************************** */
+/********* Bootstrap *************/
+.navbar-form .form-control {
+    width: 450px;
+}
+
+/********* Angular IU Select *************/
+.ui-select-bootstrap > .ui-select-choices ,.ui-select-bootstrap > .ui-select-no-choice {
+    max-height: 50vh;
 }

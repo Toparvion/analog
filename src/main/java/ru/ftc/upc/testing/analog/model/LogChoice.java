@@ -1,5 +1,7 @@
 package ru.ftc.upc.testing.analog.model;
 
+import javax.annotation.Nullable;
+
 /**
  * @author Toparvion
  */
@@ -10,10 +12,20 @@ public class LogChoice {
   private final String encoding;
   private final String title;
   private final boolean selectedByDefault;
+  @Nullable   // null in case of plain (not composite) log
   private final String uid;
+  @Nullable   // null in case of not explicitly specified node
+  private final String node;
 
-  public LogChoice(String group, String path, String encoding, String title, boolean selectedByDefault, String uid) {
+  public LogChoice(String group, String path, String encoding, String title, boolean selectedByDefault,
+                 String uid) {
+    this(group, path, encoding, title, selectedByDefault, uid, null);
+  }
+
+  public LogChoice(String group, String path, String encoding, String title, boolean selectedByDefault,
+                   @Nullable String uid, @Nullable String node) {
     this.group = group;
+    this.node = node;
     String forwardSlashedPath = path.replaceAll("\\\\", "/");
     this.path = forwardSlashedPath.startsWith("/")
             ? forwardSlashedPath
@@ -44,8 +56,14 @@ public class LogChoice {
     return selectedByDefault;
   }
 
+  @Nullable
   public String getUid() {
     return uid;
+  }
+
+  @Nullable
+  public String getNode() {
+    return node;
   }
 
   @Override
