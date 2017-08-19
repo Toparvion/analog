@@ -51,7 +51,7 @@ app.controller('controlPanelController', function ($scope, $rootScope,
         $scope.onAir = false;
     };
     /**
-     * Queries log choice options (choices) from backend and initiates loading of selected log.
+     * Queries log choice options (choices) from server and initiates loading of selected log.
      */
     function initChoicesAndLog() {
         choicesService(function (choices, selectedChoice) {

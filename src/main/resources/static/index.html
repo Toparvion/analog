@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <title ng-bind="watchingLog">АнаЛог v0.7</title>
+
     <script src="webjars/jquery/1.11.1/jquery.js" type="text/javascript"></script>
     <!--<script src="js/jquery-smooth-scroll.js" type="text/javascript"></script>-->
     <script src="webjars/highlightjs/9.7.0/highlight.js" type="text/javascript"></script>
@@ -15,6 +16,7 @@
     <script src="webjars/angularjs/1.5.8/angular.js"></script>
     <script src="webjars/angularjs/1.5.8/angular-sanitize.js"></script>
     <script src="webjars/angular-ui-select/0.19.6/select.js"></script>
+
     <script src="js/main-controller.js" type="text/javascript"></script>
     <script src="js/choice-service.js" type="text/javascript"></script>
     <script src="js/provider-service.js" type="text/javascript"></script>
@@ -23,120 +25,53 @@
 
     <link href="webjars/bootstrap/3.3.7/css/bootstrap.css" rel="stylesheet">
     <link rel="stylesheet" href="webjars/highlightjs/9.7.0/styles/atelier-dune-dark.css">
-    <link rel="stylesheet" href="webjars/angular-ui-select/0.19.6/select.css">
     <!--<link rel="stylesheet" href="webjars/highlightjs/9.7.0/styles/github-gist.css">-->
+    <link rel="stylesheet" href="webjars/angular-ui-select/0.19.6/select.css">
     <link rel="stylesheet" href="css/main.css" type="text/css"/> <!-- This should go after link to HLJS style sheet -->
 </head>
+
 <body>
 <nav class="navbar navbar-default navbar-fixed-top" ng-controller="controlPanelController as ctrl">
     <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
+        <!-- Brand -->
         <div class="navbar-header">
-            <a class="navbar-brand" href="#">
+            <div class="navbar-brand">
                 <img alt="АнаЛог v0.7" title="АнаЛог v0.7" src="img/logo-20-20.png">
-            </a>
+            </div>
+        </div>
+        <!-- Watching toggle control -->
+        <label class="checkbox-inline navbar-text"><input type="checkbox" ng-model="onAir">
+            Следить за логом
+        </label>
+        <!-- Choices field-->
+        <div class="navbar-form navbar-left form-group">
+            <ui-select ng-model="ctrl.selectedLog" on-select="ctrl.onLogChange()">
+                <ui-select-match placeholder="Введи что-нибудь о нужном логе или выбери его из списка..."
+                                 allow-clear="false">
+                    <span ng-bind-html="$select.selected.title"></span>
+                </ui-select-match>
+                <ui-select-choices group-by="'group'"
+                                   repeat="item in choices | filter: $select.search">
+                    <div ng-bind-html="item.title | highlight: $select.search"></div>
+                    <small class="log-choice-detail">
+                        <span ng-bind-html="item.path | highlight: $select.search"></span>
+                    </small>
+                    <div ng-show="item.uid != null">
+                        <small class="log-choice-accent">
+                            кластерный: <span ng-bind-html="item.node | highlight: $select.search"></span>
+                        </small>
+                    </div>
+                </ui-select-choices>
+            </ui-select>
         </div>
 
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
-                <li><a href="#">Link</a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something else here</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">Separated link</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">One more separated link</a></li>
-                    </ul>
-                </li>
-            </ul>
-            <div class="navbar-form navbar-left">
-                <div class="form-group">
-                    <ui-select ng-model="ctrl.selectedLog" on-select="ctrl.onLogChange()">
-                        <ui-select-match placeholder="Введи что-нибудь о нужном логе или выбери его из списка..."
-                                         allow-clear="false">
-                            <span ng-bind-html="$select.selected.title"></span>
-                        </ui-select-match>
-                        <ui-select-choices group-by="'group'"
-                                           repeat="item in choices | filter: $select.search">
-                            <div ng-bind-html="item.title | highlight: $select.search"></div>
-                            <small class="log-choice-detail">
-                                <span ng-bind-html="item.path | highlight: $select.search"></span>
-                            </small>
-                            <div ng-show="item.uid != null">
-                                <small class="log-choice-accent">
-                                    кластерный: <span ng-bind-html="item.node | highlight: $select.search"></span>
-                                </small>
-                            </div>
-                        </ui-select-choices>
-                    </ui-select>
-                </div>
-            </div>
-            <p class="navbar-text">Выбран лог: {{ctrl.selectedLog.title}}</p>
-
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">Link</a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something else here</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">Separated link</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div><!-- /.navbar-collapse -->
+        <!-- Clear button -->
+        <div class="nav navbar-nav navbar-right">
+            <p class="navbar-text">Выбран лог: "{{ctrl.selectedLog.title}}"</p>
+            <button class="btn btn-default navbar-btn navbar-last-item" ng-click="clear()">Очистить</button>
+        </div>
     </div><!-- /.container-fluid -->
 </nav>
-
-
-<div id="controlPanel">
-    <label>
-        <input type="checkbox" name="updateToggler" ng-model="onAir"/>Обновлять ежесекундно&nbsp;
-    </label>
-    <button name="updateNowButton" ng-click="updateLog(false)" ng-disabled="onAir">Обновить сейчас</button>
-    &nbsp;
-    <label for="combobox" title="{{selectedLog.path}}">&nbsp;&nbsp;Файл:&nbsp;</label>
-    <select id="combobox" name="logFileName"
-            ng-options="choice.title group by choice.group for choice in choices"
-            ng-model="selectedLog"
-            ng-change="onLogChange()">
-    </select>
-    <label>
-        <select id="encoding" name="encoding" ng-model="encoding">
-            <option value="WINDOWS-1251">CP-1251</option>
-            <option value="UTF-8">UTF-8</option>
-        </select>
-    </label>
-
-    &nbsp;
-    <div id="loader" ng-class="{loading: onAir}">&nbsp;</div>
-    &nbsp;&nbsp;
-    <button ng-click="prepend()" id="prependingMode">Промотать вверх</button>
-    <label>
-        <select name="prependingSize" ng-model="prependingSize">
-            <option value="1" selected="selected">на 1%</option>
-            <option value="5">на 5%</option>
-            <option value="10">на 10%</option>
-            <option value="20">на 20%</option>
-            <option value="30">на 30%</option>
-            <option value="50">на 50%</option>
-            <option value="100">до начала</option>
-        </select>
-    </label>
-
-    &nbsp;&nbsp;
-    <button ng-click="clear()">Очистить</button>
-</div>
-<br/>
-<br/>
 
 <div id="consolePanel"></div>
 <img id="substrate" src="img/magnifier.png"/>
