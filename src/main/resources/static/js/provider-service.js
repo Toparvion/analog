@@ -10,7 +10,7 @@ function ProviderService($http, $window, renderingService) {
         }
         $http.get("/provide", {params: params})
             .then(function success(response) {
-                    var preparedMessages = prepareMessages(response.data);
+                    var preparedMessages = preparePlainMessages(response.data);
                     if (!prependingSize) {
                         renderingService.appendMessages(preparedMessages);
                     } else {

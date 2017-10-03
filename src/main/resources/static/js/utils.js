@@ -10,17 +10,26 @@ function arePathsEqual(path1, path2) {
     return (path1.toLowerCase().replace(new RegExp("\\\\", 'g'), "/") === path2.toLowerCase().replace(new RegExp("\\\\", 'g'), "/"));
 }
 
-function prepareMessages(newPart) {
+function preparePlainMessages(newPart) {
+    console.log("Preparing PLAIN messages: ", newPart);
     var preparedMessages = [];
+    var $partLines = $("<div></div>").hide();
     angular.forEach(newPart.lines, function (line) {
         var $messageLine;
         if (line.style !== 'XML') {
-            $messageLine = $('<div class="' + line.style + '">' + line.text + '</div>');
+            $messageLine = $("<div></div>")
+                .addClass(line.style)
+                .html(line.text);
         } else {
-            $messageLine = $('<pre class="xml"><code>' + line.text + '</code></pre>');
+            var $code = $("<code></code>")
+                .addClass("xml")
+                .html(line.text);
+            $messageLine = $("<pre></pre>").append($code);
             hljs.highlightBlock($messageLine[0]);
         }
-        preparedMessages.push($messageLine);
+        $partLines.append($messageLine);
     });
+    $("#consolePanel").append($partLines);
+    $partLines.slideDown();         // TODO animate like composite ones (including scroll down button)
     return preparedMessages;
 }

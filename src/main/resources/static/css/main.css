@@ -4,10 +4,11 @@ body {
 }
 
 .TRACE {
-    color: #bcbbba;
+    color: #696969;
+    /*color: #bcbbba;*/
 }
 .DEBUG {
-    color: #696969;
+    color: #bcbbba;
 }
 .INFO {
     color: #3a9546;
@@ -16,21 +17,12 @@ body {
     color: #de891b;
 }
 .ERROR {
-    color: rgba(255, 7, 0, 0.65);
+    color: #de0000;
 }
 .FATAL {
-    color: #de0000;
+    color: rgb(255, 7, 0);
     font-weight: bold;
 }
-
-/*
-.XML {
-    color: #ffffff;
-    background-color: #009900;
-    font-weight: bold;
-}
-*/
-
 .UNKNOWN {
     color: #808080;
     font-style: italic;
@@ -39,42 +31,6 @@ body {
 #consolePanel {
     font-family: Courier New, monospace;
     font-size: 13px;
-    /*background-color: #1d1f21;*/
-}
-
-#controlPanel {
-    position: fixed;
-    top: 100px;
-    right: 2%;
-    text-align: center;
-    color: #505050;
-
-    padding: 5px;
-    -moz-border-radius: 0 0 10px 10px;
-    -webkit-border-radius: 0 0 10px 10px;
-    border-radius: 0 0 10px 10px;
-    border: 1px solid #000000;
-
-    background: url("../img/console_background_wood.jpg") repeat scroll left center rgba(0, 0, 0, 0);
-
-    font-family: calibri, serif, arial;
-}
-
-#controlPanel button {
-    display: inline-block;
-}
-
-#controlPanel form {
-    display: inline-block;
-}
-
-#loader {
-    width: 16px;
-    display: inline-block;
-}
-
-.loading {
-    background: url(../img/preloader.gif) no-repeat left top;
 }
 
 #substrate {
@@ -88,21 +44,90 @@ body {
   z-index: -1;
 }
 
+html {
+    overflow: -moz-scrollbars-vertical;
+    overflow-y: scroll;
+}   /* in order to avoid page changes on scroll bar appearance */
+
 /* The next definition prevents highlighted code sections from overlapping the substrate. */
 .hljs {
     background: none;
+    border: none;
 }
 
-.log-choice-detail {
-    color: #b2b2b2;
-}
-.log-choice-accent {
-    color: white;
-    background-color: salmon;
-}
 .navbar-last-item {
     margin-right: 10px;
 }
+
+.scroll-down-btn {
+    position: fixed;
+    right: 15px;
+    bottom: 43%;
+    height: 15%;
+    opacity: 0.3;
+}
+.scroll-down-btn:hover {
+    opacity: 1;
+}
+
+/*<editor-fold desc="blinking cursor">*/
+.invisible-cursor {
+    visibility: hidden;
+}
+.on-air-cursor {
+    color: #3a9546;
+    font-weight: bolder;
+    font-family: fantasy, monospace;
+    font-size: large;
+}
+.blinking-cursor {
+    -webkit-animation: 1s blink step-end infinite;
+    -moz-animation: 1s blink step-end infinite;
+    -ms-animation: 1s blink step-end infinite;
+    -o-animation: 1s blink step-end infinite;
+    animation: 1s blink step-end infinite;
+}
+@keyframes blink {
+    from, to {
+        color: transparent;
+    }
+    50% {
+        color: #3a9546;
+    }
+}
+@-moz-keyframes blink {
+    from, to {
+        color: transparent;
+    }
+    50% {
+        color: #3a9546;
+    }
+}
+@-webkit-keyframes blink {
+    from, to {
+        color: transparent;
+    }
+    50% {
+        color: #3a9546;
+    }
+}
+@-ms-keyframes blink {
+    from, to {
+        color: transparent;
+    }
+    50% {
+        color: #3a9546;
+    }
+}
+@-o-keyframes blink {
+    from, to {
+        color: transparent;
+    }
+    50% {
+        color: #3a9546;
+    }
+}
+/*</editor-fold>*/
 
 /***************************** Frameworks tunings Tunings **************************************** */
 /********* Bootstrap *************/
@@ -112,8 +137,39 @@ body {
 .navbar-brand {
     cursor: help;
 }
+.dropdown-header {
+    font-weight: bold;
+    color: #de891b;
+}
 
-/********* Angular IU Select *************/
+/********* Angular UI Select *************/
 .ui-select-bootstrap > .ui-select-choices ,.ui-select-bootstrap > .ui-select-no-choice {
     max-height: 50vh;
+}
+.ui-select-bootstrap .ui-select-choices-row>span {
+    color: #f3f3f3;
+}
+.ui-select-bootstrap .ui-select-choices-row>span:hover,
+.ui-select-bootstrap .ui-select-choices-row>span:focus {
+    text-decoration: none;
+    color: #262626;
+    background-color: #f5f5f5;
+}
+.ui-select-bootstrap .ui-select-choices-row .log-choice-detail {
+    color: #a0a0a0;
+    text-shadow: none;
+}
+.ui-select-bootstrap .ui-select-choices-row.active .log-choice-detail {
+    color: #dcdcdc;
+}
+.ui-select-bootstrap .ui-select-choices-row>span:hover .log-choice-detail,
+.ui-select-bootstrap .ui-select-choices-row>span:focus .log-choice-detail {
+    text-decoration: none;
+    color: #848484;
+}
+.log-choice-accent {
+    color: white;
+    background-color: #de891b; /*salmon;*/
+    padding-left: 5px;
+    padding-right: 5px;
 }

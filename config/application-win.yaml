@@ -15,7 +15,7 @@ choices:
     pathBase: C:\lang\analog\log-samples\
     plainLogs:
       - core.log as "$f - $g"
-      - pppinfo.log as "$f -$g"
+      - pppinfo.log as "$f - $g"
 
     compositeLogs:
       - path: cluster\local\growing.log

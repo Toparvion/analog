@@ -6,7 +6,7 @@ app.factory('renderingService', ['$interval', '$log', function($interval) {
     var isFirstPrependingString = false;
 
     function renderMessages() {
-        if (appendingRenderQueue.length == 0 && prependingRenderQueue.length == 0) {
+        if (appendingRenderQueue.length === 0 && prependingRenderQueue.length === 0) {
             return;
         }
         var i, nextLine;
@@ -21,12 +21,13 @@ app.factory('renderingService', ['$interval', '$log', function($interval) {
                 consolePanel.prepend(nextLine);
             }
 
-            if (prependingRenderQueue.length == 0) {
+            if (prependingRenderQueue.length === 0) {
                 isFirstPrependingString = true;
             }
             angular.element(window).scrollTop(0);
 
-        } else {
+        }
+        else {
             var renderPart = Math.ceil(appendingRenderQueue.length/5);
             for (i = 0; i < renderPart; i++) {
                 nextLine = appendingRenderQueue.shift();

@@ -57,11 +57,12 @@ dependencies {
 
     // FrontEnd deps
     compile group: 'org.webjars', name: 'angularjs', version: '1.5.8'
-    compile group: 'org.webjars', name: 'highlightjs', version: '9.7.0'
+    compile group: 'org.webjars', name: 'highlightjs', version: '9.8.0'
     compile group: 'org.webjars', name: 'jquery', version: '1.11.1'
+    compile group: 'org.webjars.npm', name: 'jquery.scrollto', version: '2.1.2'
     compile group: 'org.webjars', name: 'sockjs-client', version: '1.1.2'
     compile group: 'org.webjars.bower', name: 'stomp-websocket', version: '2.3.4'
-    compile group: 'org.webjars', name: 'bootstrap', version: '3.3.7'
+    // compile group: 'org.webjars', name: 'bootstrap', version: '3.3.7' // imported as downloaded themed version
     compile group: 'org.webjars', name: 'angular-ui-select', version: '0.19.6'
 
     //	runtime('com.h2database:h2')
@@ -70,7 +71,6 @@ dependencies {
     // Test deps
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
     testCompile("org.junit.jupiter:junit-jupiter-api:5.0.0-M5")
-    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.0.0-M5")
 }
 
 junitPlatform {
