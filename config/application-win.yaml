@@ -16,28 +16,30 @@ choices:
     plainLogs:
       - core.log as "$f - $g"
       - pppinfo.log as "$f - $g"
+#      - cluster\composite.log as "$f (growing)" (selected)
 
     compositeLogs:
-      - path: cluster\local\growing.log
+      - path: cluster\composite.log
         node: angara
         title: $f - $g
         selected: true
         encoding: CP-1251
         timestamp: dd.MM.yy HH:mm:ss,SSS
-# TODO завести отдельный Java класс для включений
-#        includes:
-#          - path: C:\lang\analog\log-samples\cluster\local\growing.log
-#            node: volga
-#            timestamp: dd.MM.yy HH:mm:ss,SSS
-#          - node: tobol
-#            path: C:\lang\analog\log-samples\cluster\local\growing.log
-#            timestamp: dd.MM.yy HH:mm:ss,SSS
+        # TODO завести отдельный Java класс для включений
+        #        includes:
+        #          - path: C:\lang\analog\log-samples\cluster\composite.log
+        #            node: volga
+        #            timestamp: dd.MM.yy HH:mm:ss,SSS
+        #          - node: tobol
+        #            path: C:\lang\analog\log-samples\cluster\composite.log
+        #            timestamp: dd.MM.yy HH:mm:ss,SSS
 
   - group: Микросервисы
     pathBase: C:\lang\analog\log-samples\
     plainLogs:
-      - cluster/local/static-source.log as "$f - $g"
+      - cluster/static-source.log as "$f - $g"
       - core-all.log as "$f - $g"
+      - cluster\composite.log as "$f (plain)"
 
     compositeLogs:
       - path: bankplus.log

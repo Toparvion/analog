@@ -18,10 +18,11 @@ logging:
     ru.ftc.upc.testing.analog.service.EncodingDetector: INFO
     ru.ftc.upc.testing.analog.remote.agent.misc.AddressAwareRmiOutboundGateway: INFO
     ru.ftc.upc.testing.analog.remote.agent.RecordAggregatorConfigurer: INFO
-    ru.ftc.upc.testing.analog.remote.DevLogSource: INFO
+    ru.ftc.upc.testing.analog.util.dev.DevLogSource: INFO
     org.springframework.integration: INFO
     org.springframework.web.socket: DEBUG
     org.springframework.messaging.simp.stomp: TRACE
+    org.springframework.messaging.simp.broker: DEBUG
 
 tracking:
   groupSizeThreshold: 50

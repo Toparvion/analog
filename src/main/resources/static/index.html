@@ -12,15 +12,17 @@
     <script src="webjars/highlightjs/9.8.0/highlight.min.js" type="text/javascript"></script>
     <script src="webjars/highlightjs/9.8.0/languages/xml.min.js" type="text/javascript"></script>
     <script src="webjars/sockjs-client/1.1.2/sockjs.js" type="text/javascript"></script>
-    <script src="webjars/stomp-websocket/2.3.4/lib/stomp.js" type="text/javascript"></script>
+    <!--<script src="webjars/stomp-websocket/2.3.3/stomp.js" type="text/javascript"></script>-->
+    <!--<script src="webjars/stomp-websocket/2.3.4/lib/stomp.js" type="text/javascript"></script>-->
+    <script src="js/lib/stomp.js" type="text/javascript"></script>
     <script src="webjars/angularjs/1.5.8/angular.js"></script>
     <script src="webjars/angularjs/1.5.8/angular-sanitize.js"></script>
     <script src="webjars/angular-ui-select/0.19.6/select.js"></script>
 
     <script src="js/main-controller.js" type="text/javascript"></script>
     <script src="js/choice-service.js" type="text/javascript"></script>
-    <script src="js/provider-service.js" type="text/javascript"></script>
     <script src="js/rendering-service.js" type="text/javascript"></script>
+    <script src="js/directives.js" type="text/javascript"></script>
     <script src="js/utils.js" type="text/javascript"></script>
 
     <link href="css/bootstrap-with-slate-theme.min.css" rel="stylesheet">
@@ -39,13 +41,13 @@
             </div>
         </div>
         <!-- Watching toggle control -->
-        <label class="checkbox-inline navbar-text"><input type="checkbox" ng-model="onAir">
-            Следить за логом
+        <label class="checkbox-inline navbar-text"><input type="checkbox" ng-model="ctrl.onAir">
+            Отслеживать лог
         </label>
         <!-- Choices field-->
         <div class="navbar-form navbar-left form-group">
             <ui-select ng-model="ctrl.selectedLog" on-select="ctrl.onLogChange()">
-                <ui-select-match placeholder="Имя лога, путь, нода, группа, ..." allow-clear="false">
+                <ui-select-match allow-clear="false" placeholder="Имя лога, путь, нода, группа, ...">
                     <span ng-bind-html="$select.selected.title"></span>
                 </ui-select-match>
                 <ui-select-choices group-by="'group'"
@@ -66,11 +68,11 @@
         <div class="nav navbar-nav navbar-right">
             <!-- Text wrapping control -->
             <label class="checkbox-inline navbar-text">
-                <input type="checkbox" ng-model="textWrap">Перенос строк
+                <input type="checkbox" ng-model="ctrl.textWrap">Перенос строк
             </label>
             <!--<p class="navbar-text">Выбран лог: "{{ctrl.selectedLog.title}}"</p>-->
             <!-- Clear button -->
-            <button class="btn btn-default navbar-btn navbar-last-item" ng-click="clear()">Очистить</button>
+            <button class="btn btn-default navbar-btn navbar-last-item" ng-click="ctrl.clear()">Очистить</button>
         </div>
     </div><!-- /.container-fluid -->
 </nav>
@@ -78,12 +80,10 @@
 <!-- Console -->
 <div class="container-fluid">
     <div class="row">
-        <div class="col-xs-12" ng-class="{'text-nowrap': !textWrap}" id="consolePanel">
-
-        </div>
+        <div class="col-xs-12" ng-class="{'text-nowrap': !ctrl.textWrap}" id="consolePanel"></div>
     </div>
     <!-- cursor showing the active watching process -->
-    <div class="row" ng-class="{'invisible-cursor': !onAir}">
+    <div class="row" ng-class="{'invisible-cursor': !ctrl.onAir}">
         <div class="col-xs-12 on-air-cursor">
             <span class="blinking-cursor">&ndash;</span>
         </div>
@@ -91,8 +91,8 @@
 </div>
 
 <!-- Scroll down button (auto-hiding) -->
-<button type="button" class="btn btn-primary scroll-down-btn" ng-hide="autoScroll"
-        title="Промотать вниз" ng-click="scrollDown()">
+<button type="button" class="btn btn-primary scroll-down-btn ng-hide" hide-upon-auto-scroll
+        title="Промотать вниз" ng-click="ctrl.scrollDown()">
     <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
 </button>
 <img id="substrate" src="img/magnifier.png"/>

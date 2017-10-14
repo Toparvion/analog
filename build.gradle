@@ -1,7 +1,7 @@
 buildscript {
     ext {
-        springBootVersion = '2.0.0.M2'
-        springIntegrationVersion = '5.0.0.M5'
+        springBootVersion = '2.0.0.M5'
+        springIntegrationVersion = '5.0.0.M7'
     }
     repositories {
         mavenCentral()
@@ -61,7 +61,8 @@ dependencies {
     compile group: 'org.webjars', name: 'jquery', version: '1.11.1'
     compile group: 'org.webjars.npm', name: 'jquery.scrollto', version: '2.1.2'
     compile group: 'org.webjars', name: 'sockjs-client', version: '1.1.2'
-    compile group: 'org.webjars.bower', name: 'stomp-websocket', version: '2.3.4'
+//    compile 'org.webjars:stomp-websocket:2.3.3'
+//    compile group: 'org.webjars.bower', name: 'stomp-websocket', version: '2.3.4'
     // compile group: 'org.webjars', name: 'bootstrap', version: '3.3.7' // imported as downloaded themed version
     compile group: 'org.webjars', name: 'angular-ui-select', version: '0.19.6'
 

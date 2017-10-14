@@ -28,7 +28,6 @@ function ChoicesService($http, $location, $log, $window) {
                             selectedChoice = {
                                 group: "Указан через URL",
                                 title: extractFileName(proposedLogPath),
-                                encoding: "UTF-8",
                                 path: proposedLogPath,
                                 uid: null   // to explicitly denote the absence of logConfigEntry on the server side
                             };

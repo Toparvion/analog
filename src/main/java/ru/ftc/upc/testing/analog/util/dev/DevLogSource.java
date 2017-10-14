@@ -1,4 +1,4 @@
-package ru.ftc.upc.testing.analog.remote;
+package ru.ftc.upc.testing.analog.util.dev;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
-import org.springframework.integration.file.support.FileExistsMode;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 
@@ -23,6 +22,7 @@ import java.util.regex.Pattern;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.springframework.integration.dsl.Pollers.fixedDelay;
 import static org.springframework.integration.file.dsl.Files.outboundAdapter;
+import static org.springframework.integration.file.support.FileExistsMode.APPEND;
 
 /**
  * @author Toparvion
@@ -34,11 +34,12 @@ public class DevLogSource {
 
   private static final Pattern LOG_RECORD_START_REGEX = Pattern.compile("^\\d{2}\\.\\d{2}\\.\\d{2} \\d{2}:\\d{2}:\\d{2}");
   private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.uu HH:mm:ss,SSS");
+  private static final int FETCH_PERIOD_SEC = 4;
 
   private final List<String> records;
 
   public DevLogSource() throws IOException {
-    records = Files.readAllLines(Paths.get("log-samples/cluster/local/exceptional-source.log"));
+    records = Files.readAllLines(Paths.get("log-samples/cluster/source/bankplus-source.log"));
 //    Files.deleteIfExists(Paths.get("log-samples/cluster/local/growing.log"));
   }
 
@@ -90,11 +91,11 @@ public class DevLogSource {
     return IntegrationFlows
         .from(this::getSingleRandomRecord,
             conf -> conf
-                .poller(fixedDelay(5, SECONDS))
+                .poller(fixedDelay(FETCH_PERIOD_SEC, SECONDS))
                 .autoStartup(true))
-        .handle(outboundAdapter(new File("log-samples/cluster/local"))
-            .fileNameGenerator(name -> "growing.log")
-            .fileExistsMode(FileExistsMode.APPEND)
+        .handle(outboundAdapter(new File("log-samples/cluster"))
+            .fileNameGenerator(name -> "composite.log")
+            .fileExistsMode(APPEND)
             .appendNewLine(true))
         .get();
   }

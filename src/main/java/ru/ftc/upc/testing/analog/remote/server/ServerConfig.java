@@ -30,7 +30,7 @@ public class ServerConfig {
 
     RmiInboundGateway inboundRmiGateway = new RmiInboundGateway();
     inboundRmiGateway.setRequestChannel(payloadRmiInChannel);
-    // inboundRmiGateway.setRegistryHost(host); // this causes application failure at startup due to connection refused
+    // inboundRmiGateway.setRegistryHost(host);// this causes application failure at startup due to 'connection refused'
     inboundRmiGateway.setRegistryPort(myPort);
     inboundRmiGateway.setExpectReply(false);    // to avoid 1 sec delay on every request/response exchange
 
