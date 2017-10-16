@@ -120,6 +120,14 @@
       return frame.toString() + Byte.NULL;
     };
 
+    Frame.unescape = function (value) {
+        return value
+            .replace(new RegExp("\\r", 'g'), '\r')
+            .replace(new RegExp("\\c", 'g'), ':')
+            .replace(new RegExp("\\n", 'g'), '\n')
+            .replace(new RegExp("\\\\", 'g'), '\\')
+    };
+
     return Frame;
 
   })();
@@ -304,7 +312,7 @@
                 results.push(typeof _this.connectCallback === "function" ? _this.connectCallback(frame) : void 0);
                 break;
               case "MESSAGE":
-                subscription = frame.headers.subscription;
+                subscription = Frame.unescape(frame.headers.subscription);
                 onreceive = _this.subscriptions[subscription] || _this.onreceive;
                 if (onreceive) {
                   client = _this;

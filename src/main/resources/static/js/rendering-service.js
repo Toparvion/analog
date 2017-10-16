@@ -71,6 +71,7 @@ app.factory('renderingService', ['$log', function($log) {
             }
             $partLines.append($messageLine);
         });
+        $consolePanel.append($partLines);
         render($partLines);
     }
 
