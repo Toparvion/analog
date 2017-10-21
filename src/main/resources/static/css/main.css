@@ -132,7 +132,7 @@ html {
 /***************************** Frameworks tunings Tunings **************************************** */
 /********* Bootstrap *************/
 .navbar-form .form-control {
-    width: 450px;
+    width: 430px;
 }
 .navbar-brand {
     cursor: help;

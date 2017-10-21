@@ -5,10 +5,9 @@ app.run(function ($rootScope) {
 });
 
 app.controller('mainController', function ($scope, $rootScope, $window,
-                                           choicesService, renderingService,
+                                           choicesService, renderingService, watchingService,
                                            $location, $log) {
     var vm = this;
-    vm.watching = undefined;
     vm.selectedLog = undefined;
     vm.onAir = false;
     vm.textWrap = true;
@@ -26,6 +25,7 @@ app.controller('mainController', function ($scope, $rootScope, $window,
         });
     };
     vm.initChoicesAndLog();         // in order to initialize console panel at the time of loading
+    watchingService.connect();
 
     vm.onLogChange = function() {
         $log.log("New choice: " + vm.selectedLog.path);
@@ -36,6 +36,7 @@ app.controller('mainController', function ($scope, $rootScope, $window,
     };
     $scope.$on('$destroy', function() {
         vm.onAir = false;
+        watchingService.disconnect();
     });
     vm.clear = function () {
         renderingService.clearQueue();
@@ -60,37 +61,9 @@ app.controller('mainController', function ($scope, $rootScope, $window,
     }, function () {
         $log.log("Turning onAir to: " + vm.onAir);
         if (vm.onAir) {
-            // TODO extract to separate Angular service
-            vm.watching = {};
-            vm.watching.stompClient = Stomp.over(function () {return new SockJS('/watch-endpoint');});
-            vm.watching.stompClient.connect({}, function (frame) {
-                $log.log('Connected: ' + frame);
-                var callback = function (serverMessage) {
-                    var newPart = JSON.parse(serverMessage.body);
-                    if (newPart.timestamp) {
-                        renderingService.renderCompositeMessages(newPart)
-                    } else {
-                        renderingService.renderPlainMessages(newPart);
-                    }
-                };
-                var subId, logId;
-                if (vm.selectedLog.uid) {
-                    logId = vm.selectedLog.uid;
-                    subId = 'uid=' + logId;
-                } else {
-                    logId = vm.selectedLog.path;
-                    subId = 'path=' + logId;
-                }
-                vm.watching.subscription = vm.watching.stompClient.subscribe('/topic/'+logId, callback, {id: subId});
-            });
+            watchingService.startWatching(vm.selectedLog)
         } else {
-            if (angular.isDefined(vm.watching)) {
-                vm.watching.subscription.unsubscribe();
-                vm.watching.stompClient.disconnect(function () {
-                    vm.watching = undefined
-                });
-                $log.log("Watching has been turned off.");
-            }
+            watchingService.stopWatching();
         }
     });
 

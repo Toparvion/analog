@@ -30,7 +30,9 @@ public final class RemotingConstants {
   public static final String SOURCE_NODE__HEADER = "sourceNode";
   //</editor-fold>
 
-  //<editor-fold desc="Other values">
+  //<editor-fold desc="Websocket">
   public static final String WEBSOCKET_TOPIC_PREFIX = "/topic/";
+  public static final String WEBSOCKET_APP_PREFIX = "/app";
+  public static final String WEBSOCKET_ENDPOINT = "/watch-endpoint";
   //</editor-fold>
 }
