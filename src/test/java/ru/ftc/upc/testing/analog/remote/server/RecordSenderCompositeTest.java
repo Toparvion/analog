@@ -94,7 +94,7 @@ class RecordSenderCompositeTest {
     assertEquals("&lt;payment&gt;\n" +
         "  &lt;amount&gt;100.00&lt;/amount&gt;\n" +
         "&lt;/payment&gt;\n", records.get(1).getText());
-    assertEquals("UNKNOWN", records.get(2).getStyle());
+    assertEquals("PLAIN", records.get(2).getStyle());
     assertEquals("], docHash: com.tfc.web.mdse.model.DocHash@135ecf1", records.get(2).getText());
   }
 
@@ -149,7 +149,7 @@ class RecordSenderCompositeTest {
     assertEquals(DEBUG.name(), records.get(0).getStyle());
     assertEquals("2012-10-24 13:08:00,323 [http-9014-Processor23] DEBUG [LiteEngine] generateOTP",
         records.get(0).getText());
-    assertEquals("UNKNOWN", records.get(1).getStyle());
+    assertEquals("PLAIN", records.get(1).getStyle());
     assertEquals("doc4hash: [", records.get(1).getText());
     assertEquals("XML", records.get(2).getStyle());
     assertEquals("&lt;payment&gt;\n" +
@@ -157,9 +157,9 @@ class RecordSenderCompositeTest {
         "  &lt;payee account=&quot;40911810100060000005&quot; /&gt;\n" +
         "  &lt;payment-info&gt;2196946604 Tax Free&lt;/payment-info&gt;\n" +
         "&lt;/payment&gt;\n", records.get(2).getText());
-    assertEquals("UNKNOWN", records.get(3).getStyle());
+    assertEquals("PLAIN", records.get(3).getStyle());
     assertEquals("]", records.get(3).getText());
-    assertEquals("UNKNOWN", records.get(4).getStyle());
+    assertEquals("PLAIN", records.get(4).getStyle());
     assertEquals("docHash: ru.cft.web.mDSE.model.DocHash@135ecf1", records.get(4).getText());
   }
 
@@ -187,7 +187,7 @@ class RecordSenderCompositeTest {
     assertEquals("&lt;payment&gt;\n" +
         "  &lt;amount&gt;100.00&lt;/amount&gt;\n" +
         "&lt;/payment&gt;\n", records.get(2).getText());
-    assertEquals("UNKNOWN", records.get(5).getStyle());
+    assertEquals("PLAIN", records.get(5).getStyle());
     assertEquals("&lt;payee account=&quot;40911810100060000005&quot;/&gt;", records.get(5).getText());
     assertEquals("XML", records.get(6).getStyle());
     assertEquals("&lt;payment-info&gt;2196946604 Tax Free&lt;/payment-info&gt;\n", records.get(6).getText());

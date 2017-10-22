@@ -83,7 +83,7 @@ public class RecordSender {
     }
     parsedLines.add(new StyledLine(AnaLogUtils.escapeSpecialCharacters(firstLine), firstLineLevel.name()));
 
-    // остальные проверяем в цикле и проставляем им либо XML, либо UNKNOWN, так как других уровней быть не должно
+    // остальные проверяем в цикле и проставляем им либо XML, либо PLAIN, так как других уровней быть не должно
     for (int i = 1; i < payloadAsList.size(); i++) {
       // check the line for the presence of XML
       String curLine = AnaLogUtils.distinguishXmlComposite(payloadAsList, i);
@@ -95,7 +95,7 @@ public class RecordSender {
         style = "XML";
         text = stripXmlPrefix(text);
       } else {
-        style = "UNKNOWN";
+        style = "PLAIN";
       }
       // завершаем оформление текущей строки
       parsedLines.add(new StyledLine(text, style));

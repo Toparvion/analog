@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
-import static ru.ftc.upc.testing.analog.model.RecordLevel.UNKNOWN;
+import static ru.ftc.upc.testing.analog.model.RecordLevel.PLAIN;
 
 /**
  * Created with IntelliJ IDEA.
@@ -265,7 +265,7 @@ public class AnaLogUtils {
     if (xmlMatcher.find()) {
       return "XML";
     }
-    return "UNKNOWN";
+    return "PLAIN";
   }
 
   static List<String> getRawLines(String inputFileName,
@@ -416,9 +416,9 @@ public class AnaLogUtils {
   public static RecordLevel detectRecordLevel(Message<String> recordMessage) {
     String recordLine = recordMessage.getPayload();
     return Stream.of(RecordLevel.values())
-        .filter(level -> !UNKNOWN.equals(level))
+        .filter(level -> !PLAIN.equals(level))
         .filter(level -> recordLine.contains(level.name()))    // this is potential subject to change in future
         .findAny()
-        .orElse(UNKNOWN);
+        .orElse(PLAIN);
   }
 }

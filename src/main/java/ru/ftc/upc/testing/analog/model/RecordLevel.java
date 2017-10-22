@@ -11,5 +11,5 @@ public enum RecordLevel {
   WARN,
   ERROR,
   FATAL,
-  UNKNOWN     // special level that applied if no other detected
+  PLAIN     // special level that applied if no other detected
 }
