@@ -1,4 +1,5 @@
-app.factory('watchingService', ['$log', 'renderingService', function ($log, renderingService) {
+app.factory('watchingService', ['$log', '$rootScope', 'renderingService',
+                        function ($log, $rootScope, renderingService) {
     var stompClient = Stomp.over(function () {
         return new SockJS('/watch-endpoint');
     });
@@ -6,12 +7,17 @@ app.factory('watchingService', ['$log', 'renderingService', function ($log, rend
 
 
     function connect() {
+        stompClient.reconnect_delay = 10000;     // to repeat failed connection attempts every 10 seconds
         stompClient.connect({},
             function () {
                 $log.log('Watching service has connected to the server.');
+                $rootScope.$broadcast('serverConnected');
+                $rootScope.$apply();        // since we're not in "Angular realm", we need to trigger it manually
             },
             function () {
                 $log.log('Watching service failed to connect to the server.');
+                $rootScope.$broadcast('serverDisconnected');
+                $rootScope.$apply();        // since we're not in "Angular realm", we need to trigger it manually
             });
     }
 

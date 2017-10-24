@@ -1,7 +1,7 @@
-app = angular.module("AnaLog", ['ngSanitize', 'ui.select']);
+app = angular.module("AnaLog", ['ngSanitize', 'ngAnimate', 'ui.select']);
 
 app.run(function ($rootScope) {
-    $rootScope.watchingLog = "АнаЛог v0.7 (загрузка...)";
+    $rootScope.watchingLog = "АнаЛ&oacute;г v0.7 (загрузка...)";
 });
 
 app.controller('mainController', function ($scope, $rootScope, $window,
@@ -22,10 +22,10 @@ app.controller('mainController', function ($scope, $rootScope, $window,
             $scope.choices = choices;
             vm.selectedLog = selectedChoice;
             $rootScope.watchingLog = selectedChoice.title + " - АнаЛог";
+            watchingService.connect();
         });
     };
     vm.initChoicesAndLog();         // in order to initialize console panel at the time of loading
-    watchingService.connect();
 
     vm.onLogChange = function() {
         $log.log("New choice: " + vm.selectedLog.path);
@@ -34,10 +34,6 @@ app.controller('mainController', function ($scope, $rootScope, $window,
         vm.onAir = false;
         renderingService.clearQueue();
     };
-    $scope.$on('$destroy', function() {
-        vm.onAir = false;
-        watchingService.disconnect();
-    });
     vm.clear = function () {
         renderingService.clearQueue();
     };
@@ -65,6 +61,15 @@ app.controller('mainController', function ($scope, $rootScope, $window,
         } else {
             watchingService.stopWatching();
         }
+    });
+    // to stop watching in case the server gets disconnected
+    $scope.$on('serverDisconnected', function () {
+        vm.onAir = false;
+    });
+    // to explicitly stop watching and close server connection upon termination
+    $scope.$on('$destroy', function() {
+        vm.onAir = false;
+        watchingService.disconnect();
     });
 
 });

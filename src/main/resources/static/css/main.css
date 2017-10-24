@@ -70,6 +70,24 @@ html {
     opacity: 1;
 }
 
+/* Notification balloons */
+.alert {
+    position: fixed;
+    z-index: 1000;
+    right: 15px;
+    top: 65px;
+}
+.alert p {
+    font-size: 13px;
+}
+.alert.ng-hide {
+    opacity: 0;
+}
+.alert.ng-hide-add,
+.alert.ng-hide-remove {
+    transition: all linear 0.5s;
+}
+
 /*<editor-fold desc="blinking cursor">*/
 .invisible-cursor {
     visibility: hidden;
