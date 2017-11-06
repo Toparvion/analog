@@ -1,0 +1,2 @@
+# the following is added to exclude the tail files from code statistics on Github
+tail/* linguist-vendored
