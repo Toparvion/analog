@@ -5,14 +5,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
+import ru.ftc.upc.testing.analog.model.ServerFailure;
 import ru.ftc.upc.testing.analog.model.TrackingRequest;
 import ru.ftc.upc.testing.analog.model.config.*;
+import ru.ftc.upc.testing.analog.remote.RemotingConstants.MessageType;
 import ru.ftc.upc.testing.analog.remote.server.RegistrationChannelCreator;
 import ru.ftc.upc.testing.analog.remote.server.RemoteGateway;
 import ru.ftc.upc.testing.analog.util.Util;
@@ -21,6 +24,9 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 import static java.lang.String.format;
+import static java.time.ZonedDateTime.now;
+import static java.util.Collections.singletonMap;
+import static ru.ftc.upc.testing.analog.remote.RemotingConstants.MESSAGE_TYPE_HEADER;
 import static ru.ftc.upc.testing.analog.remote.RemotingConstants.WEBSOCKET_TOPIC_PREFIX;
 import static ru.ftc.upc.testing.analog.util.Util.nvls;
 
@@ -40,18 +46,21 @@ public class WebSocketEventListener {
   private final RegistrationChannelCreator registrationChannelCreator;
   private final ClusterProperties clusterProperties;
   private final RemoteGateway remoteGateway;
+  private final SimpMessagingTemplate messagingTemplate;
 
   @Autowired
   public WebSocketEventListener(ChoiceProperties choiceProperties,
                                 WatchRegistry registry,
                                 RegistrationChannelCreator registrationChannelCreator,
                                 ClusterProperties clusterProperties,
-                                RemoteGateway remoteGateway) {
+                                RemoteGateway remoteGateway,
+                                SimpMessagingTemplate messagingTemplate) {
     this.choiceProperties = choiceProperties;
     this.registry = registry;
     this.registrationChannelCreator = registrationChannelCreator;
     this.clusterProperties = clusterProperties;
     this.remoteGateway = remoteGateway;
+    this.messagingTemplate = messagingTemplate;
   }
 
   @EventListener
@@ -84,23 +93,31 @@ public class WebSocketEventListener {
     // Find out whether this log is already being watched by any client(s)
     List<String> watchingSessionIds = registry.findWatchingSessionsFor(logConfig);
     if (watchingSessionIds == null) {
-      log.debug("No watching existed for {} log '{}' before. Starting new one...", (isPlain ? "plain" : "composite"),
-          logConfig.getUid());
-      // 1. Ensure that all RMI registration channels are created
-      ensureRegistrationChannelsCreated(logConfig);
-      // 2. Register the tracking on specified nodes
-      initiateTracking(logConfig);
-      // 3. Remember the tracking in the registry
-      registry.addEntry(logConfig, sessionId);
-      log.info("New tracking for log '{}' has started within session id={}.", logConfig, sessionId);
+      try {
+        log.debug("No watching existed for {} log '{}' before. Starting new one...", (isPlain ? "plain" : "composite"),
+            logConfig.getUid());
+        // 1. Ensure that all RMI registration channels are created
+        ensureRegistrationChannelsCreated(logConfig);
+        // 2. Register the tracking on specified nodes
+        initiateTracking(logConfig);
+        // 3. Remember the tracking in the registry
+        registry.addEntry(logConfig, sessionId);
+        log.info("New tracking for log '{}' has started within session id={}.", logConfig.getUid(), sessionId);
+
+      } catch (Exception e) {
+        log.error(format("Failed to start watching of log '%s'.", logConfig.getUid()), e);
+        ServerFailure failure = new ServerFailure(e.getMessage(), now());
+        messagingTemplate.convertAndSend(WEBSOCKET_TOPIC_PREFIX + logConfig.getUid(),
+            failure, singletonMap(MESSAGE_TYPE_HEADER, MessageType.FAILURE));
+      }
 
     } else {    // i.e. if there are watching sessions already in registry
       assert !watchingSessionIds.contains(sessionId)
-          : String.format("Session id=%s is already watching log '%s'. Double subscription is prohibited.",
-          sessionId, logConfig);
+          : format("Session id=%s is already watching log '%s'. Double subscription is prohibited.",
+          sessionId, logConfig.getUid());
       watchingSessionIds.add(sessionId);
       log.info("There were {} sessions already watching log '{}'. New session {} has been added to them.",
-          watchingSessionIds.size()-1, logConfig, sessionId);
+          watchingSessionIds.size()-1, logConfig.getUid(), sessionId);
     }
   }
 
@@ -155,6 +172,7 @@ public class WebSocketEventListener {
   private LogConfigEntry createPlainLogConfigEntry(String path) {
     LogConfigEntry artificialEntry = new LogConfigEntry();
     artificialEntry.setPath(path);
+    artificialEntry.setNode(clusterProperties.getMyselfNode().getName());
     // Perhaps it's worth here to parse the path and extract node name if it is specified like
     // '~~angara~~/pub/home/analog/out.log'. This would be however applicable to paths specified in URL only
     // because paths configured in file may conflict with each other's node specification.

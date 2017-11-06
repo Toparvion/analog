@@ -20,7 +20,7 @@ public final class RemotingConstants {
   public static final String RECORD_AGGREGATOR_INPUT_CHANNEL = "recordAggregatorInputChannel";
   //</editor-fold>
 
-  //<editor-fold desc="Headers names">
+  //<editor-fold desc="Server-side headers names">
   public static final String REGISTRATION_MODE__HEADER = "registrationMode";
   public static final String REPLY_ADDRESS__HEADER = "replyAddress";
   public static final String LOG_TIMESTAMP_VALUE__HEADER = "logTimestampValue";
@@ -34,5 +34,7 @@ public final class RemotingConstants {
   public static final String WEBSOCKET_TOPIC_PREFIX = "/topic/";
   public static final String WEBSOCKET_APP_PREFIX = "/app";
   public static final String WEBSOCKET_ENDPOINT = "/watch-endpoint";
+  public static final String MESSAGE_TYPE_HEADER = "type";
+  public enum MessageType { RECORD, METADATA, FAILURE }
   //</editor-fold>
 }

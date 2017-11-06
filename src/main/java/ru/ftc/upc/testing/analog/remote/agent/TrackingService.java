@@ -7,12 +7,14 @@ import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.integration.channel.PublishSubscribeChannel;
+import org.springframework.integration.core.MessagingTemplate;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.dsl.StandardIntegrationFlow;
 import org.springframework.integration.dsl.context.IntegrationFlowContext;
 import org.springframework.integration.dsl.context.IntegrationFlowRegistration;
-import org.springframework.integration.file.tail.FileTailingMessageProducerSupport;
+import org.springframework.integration.file.tail.FileTailingMessageProducerSupport.FileTailingEvent;
 import org.springframework.integration.rmi.RmiInboundGateway;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import ru.ftc.upc.testing.analog.model.TrackingRequest;
 import ru.ftc.upc.testing.analog.remote.agent.misc.AddressAwareRmiOutboundGateway;
@@ -50,13 +52,14 @@ public class TrackingService {
    */
   private final Map<String, Set<String>> sendingRegistry = new HashMap<>();
 
-  private IntegrationFlowContext flowContext;
+  private final IntegrationFlowContext flowContext;
   private final TimestampExtractor timestampExtractor;
   private final TailingFlowProvider trackingFlowProvider;
 
 
   @Autowired
-  public TrackingService(@SuppressWarnings("SpringJavaAutowiringInspection") IntegrationFlowContext flowContext,
+  public TrackingService(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+                         IntegrationFlowContext flowContext,
                          TimestampExtractor timestampExtractor,
                          TailingFlowProvider trackingFlowProvider) {
     this.flowContext = flowContext;
@@ -88,7 +91,7 @@ public class TrackingService {
         .map(this::findGateway)
         .map(AddressAwareRmiOutboundGateway::getGatewayAddress)
         .anyMatch(knownAddress -> knownAddress.equals(watcherAddress))) {
-      log.warn("Watcher {} is already registered for log '{}'.", watcherAddress, logPath);
+      log.warn("Watcher {} is already registered for log '{}'. Skip registration.", watcherAddress, logPath);
       return;
     }
 
@@ -109,8 +112,8 @@ public class TrackingService {
       trackingRegistry.put(logPath, trackingRegistration.getId());
       trackingFlow = (StandardIntegrationFlow) trackingRegistration.getIntegrationFlow();
       timestampExtractor.registerNewTimestampFormat(request.getTimestampFormat(), logPath);
-      //log.info("Created new aggregating log tracking flow with id={}.", registration.getId());
-      log.info("Создано новое агрегирующее слежение для лога '{}' с id={}.", logPath, trackingRegistration.getId());
+      //log.info("Created new AGGREGATING log tracking flow with id={}.", registration.getId());
+      log.info("Создано новое АГРЕГИРУЮЩЕЕ слежение для лога '{}' с id={}.", logPath, trackingRegistration.getId());
 
     } else {
       IntegrationFlowRegistration trackingRegistration = flowContext
@@ -119,13 +122,12 @@ public class TrackingService {
           .register();
       trackingRegistry.put(logPath, trackingRegistration.getId());
       trackingFlow = (StandardIntegrationFlow) trackingRegistration.getIntegrationFlow();
-      //log.info("Created new log tracking flow with id={}.", registration.getId());
-      log.info("Создано новое простое слежение для лога '{}' с id={}.", logPath, trackingRegistration.getId());
-
+      //log.info("Created new PLAIN log tracking flow with id={}.", registration.getId());
+      log.info("Создано новое ПРОСТОЕ слежение для лога '{}' с id={}.", logPath, trackingRegistration.getId());
     }
 
+    // now that tracking is up, let's establish outbound sending channel
     PublishSubscribeChannel outChannel = extractOutChannel(trackingFlow);
-
     String payloadSendingUrl = format("rmi://%s:%d/%s%s",
         watcherAddress.getHostName(),
         watcherAddress.getPort(),
@@ -191,8 +193,23 @@ public class TrackingService {
   }
 
   @EventListener
-  public void processFileTailingEvent(FileTailingMessageProducerSupport.FileTailingEvent event) {
-    log.info("Caught file tailing event: {}", event.toString());
+  public void processFileTailingEvent(FileTailingEvent tailingEvent) {
+    log.debug("Received file tailing event: {}", tailingEvent.toString());
+    String logPath = tailingEvent.getFile().getAbsolutePath();
+    // in case of working on Windows we need to format the path to Linux style
+    logPath = logPath.replaceAll("\\\\", "/");
+    if (!logPath.startsWith("/")) {
+      logPath = "/" + logPath;
+    }
+    Set<String> watchersFlowIds = sendingRegistry.get(logPath);
+    assert (watchersFlowIds != null);
+    for (String flowId : watchersFlowIds) {
+      IntegrationFlowRegistration registration = flowContext.getRegistrationById(flowId);
+      assert (registration != null);
+      MessagingTemplate messagingTemplate = registration.getMessagingTemplate();
+      messagingTemplate.send(MessageBuilder.withPayload(tailingEvent).build());
+      log.trace("Sent tailing event of file '{}' to the flow id='{}'", tailingEvent.getFile().getAbsolutePath(), flowId);
+    }
   }
 
   private PublishSubscribeChannel extractOutChannel(StandardIntegrationFlow logTrackingFlow) {

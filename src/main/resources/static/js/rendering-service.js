@@ -13,6 +13,14 @@ app.factory('renderingService', ['$log', function($log) {
      */
     var isAnimating = false;
 
+    function render(newPart) {
+        if (angular.isDefined(newPart.timestamp)) {
+            renderCompositeMessages(newPart)
+        } else {
+            renderPlainMessages(newPart);
+        }
+    }
+
     function renderCompositeMessages(newPart) {
         $log.log("Preparing COMPOSITE messages: ", newPart);
         var $newRecord = $("<div></div>")
@@ -50,7 +58,7 @@ app.factory('renderingService', ['$log', function($log) {
             $consolePanel.append($newRecord);
         }
 
-        render($newRecord);
+        animate($newRecord);
     }
 
     function renderPlainMessages(newPart) {
@@ -72,7 +80,7 @@ app.factory('renderingService', ['$log', function($log) {
             $partLines.append($messageLine);
         });
         $consolePanel.append($partLines);
-        render($partLines);
+        animate($partLines);
     }
 
     function scrollDown() {
@@ -85,7 +93,7 @@ app.factory('renderingService', ['$log', function($log) {
     }
 
     // Animated output logic:
-    function render($newRecord) {
+    function animate($newRecord) {
         var isConsoleUnScrollable = ($body.height() < $window.height());
         var isScrolledToBottom = ($window.scrollTop() === ($document.height() - $window.height()));
         if (isConsoleUnScrollable) {       // should we use slide animation to output new record?
@@ -109,7 +117,6 @@ app.factory('renderingService', ['$log', function($log) {
     return {
         clearQueue: clearQueue,
         scrollDown: scrollDown,
-        renderCompositeMessages: renderCompositeMessages,
-        renderPlainMessages: renderPlainMessages
+        render: render
     }
 }]);

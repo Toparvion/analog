@@ -76,6 +76,7 @@ html {
     z-index: 1000;
     right: 15px;
     top: 65px;
+    max-width: 450px;
 }
 .alert p {
     font-size: 13px;
@@ -86,6 +87,28 @@ html {
 .alert.ng-hide-add,
 .alert.ng-hide-remove {
     transition: all linear 0.5s;
+}
+.alert-info .highlight {
+    font-weight: bold;
+    color: lightgoldenrodyellow;
+}
+
+.alert-success .highlight {
+    font-weight: bold;
+    color: palegoldenrod;
+}
+
+.alert-danger .highlight {
+    font-weight: bold;
+    color: cornsilk;
+}
+
+.alert-danger .failure-message {
+    font-weight: bold;
+    color: limegreen;
+    font-family: monospace;
+    background-color: black;
+    padding: 1px 3px 1px 3px;
 }
 
 /*<editor-fold desc="blinking cursor">*/

@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.ftc.upc.testing.analog.model.RecordLevel;
 import ru.ftc.upc.testing.analog.model.api.CompositeLinesPart;
 import ru.ftc.upc.testing.analog.model.api.LinesPart;
@@ -19,15 +19,18 @@ import java.util.Collection;
 import java.util.List;
 
 import static java.lang.String.format;
+import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.joining;
 import static ru.ftc.upc.testing.analog.remote.RemotingConstants.*;
 import static ru.ftc.upc.testing.analog.service.AnaLogUtils.detectMessageType;
 
 /**
+ * A service for sending main payload - log records - to clients.
+ *
  * @author Toparvion
  * @since v0.7
  */
-@Component
+@Service
 public class RecordSender {
   private static final Logger log = LoggerFactory.getLogger(RecordSender.class);
 
@@ -67,7 +70,8 @@ public class RecordSender {
       long timestampMillis = timestamp.toInstant(ZoneOffset.UTC).toEpochMilli();
       linesPart = new CompositeLinesPart(styledLines, sourceNode, timestampMillis);
     }
-    messagingTemplate.convertAndSend(WEBSOCKET_TOPIC_PREFIX + uid, linesPart);
+    messagingTemplate.convertAndSend(WEBSOCKET_TOPIC_PREFIX + uid,
+        linesPart, singletonMap(MESSAGE_TYPE_HEADER, MessageType.RECORD));
   }
 
   /*private*/ List<StyledLine> prepareCompositeRecords(List<String> payloadAsList, RecordLevel firstLineLevel) {

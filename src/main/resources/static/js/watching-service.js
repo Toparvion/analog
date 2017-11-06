@@ -1,12 +1,16 @@
 app.factory('watchingService', ['$log', '$rootScope', 'renderingService',
                         function ($log, $rootScope, renderingService) {
-    var stompClient = Stomp.over(function () {
-        return new SockJS('/watch-endpoint');
-    });
+    var stompClient = undefined;
     var subscription = undefined;
 
 
     function connect() {
+        if (angular.isDefined(stompClient)) {
+            return;             // to prevent double connection
+        }
+        stompClient = Stomp.over(function () {
+            return new SockJS('/watch-endpoint');
+        });
         stompClient.reconnect_delay = 10000;     // to repeat failed connection attempts every 10 seconds
         stompClient.connect({},
             function () {
@@ -15,7 +19,7 @@ app.factory('watchingService', ['$log', '$rootScope', 'renderingService',
                 $rootScope.$apply();        // since we're not in "Angular realm", we need to trigger it manually
             },
             function () {
-                $log.log('Watching service failed to connect to the server.');
+                // $log.log('Watching service failed to connect to the server.');     // to avoid flooding the console
                 $rootScope.$broadcast('serverDisconnected');
                 $rootScope.$apply();        // since we're not in "Angular realm", we need to trigger it manually
             });
@@ -34,11 +38,23 @@ app.factory('watchingService', ['$log', '$rootScope', 'renderingService',
     }
 
     function onServerMessage(message) {
-        var newPart = JSON.parse(message.body);
-        if (newPart.timestamp) {
-            renderingService.renderCompositeMessages(newPart)
-        } else {
-            renderingService.renderPlainMessages(newPart);
+        var payload = JSON.parse(message.body);
+        var messageType = message.headers['type'];
+
+        switch (messageType) {
+            case 'RECORD':
+                renderingService.render(payload);
+                break;
+            case 'METADATA':
+                $rootScope.$broadcast(payload.eventType, payload);
+                $rootScope.$apply();        // since we're not in "Angular realm", we need to trigger it manually
+                break;
+            case 'FAILURE':
+                $rootScope.$broadcast('serverFailure', payload);
+                $rootScope.$apply();        // since we're not in "Angular realm", we need to trigger it manually
+                break;
+            default:
+                $log.log("ERROR: received a message of unknown type: " + payload);
         }
     }
 
@@ -55,6 +71,7 @@ app.factory('watchingService', ['$log', '$rootScope', 'renderingService',
         stompClient.disconnect(function () {
             $log.log("Watching service has disconnected from peer.");
         });
+        stompClient = undefined;
     }
 
     return {

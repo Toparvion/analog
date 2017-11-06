@@ -23,6 +23,9 @@ logging:
     org.springframework.web.socket: DEBUG
     org.springframework.messaging.simp.stomp: TRACE
     org.springframework.messaging.simp.broker: DEBUG
+    org.springframework.integration.file.tail.OSDelegatingFileTailingMessageProducer: TRACE
+  pattern:
+    console: "%clr(%d{HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
 
 tracking:
   groupSizeThreshold: 50

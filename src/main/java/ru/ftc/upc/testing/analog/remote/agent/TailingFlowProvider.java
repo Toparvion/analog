@@ -11,6 +11,7 @@ import ru.ftc.upc.testing.analog.model.RecordLevel;
 import ru.ftc.upc.testing.analog.remote.agent.misc.CorrelationIdHeaderEnricher;
 import ru.ftc.upc.testing.analog.remote.agent.misc.SequenceNumberHeaderEnricher;
 import ru.ftc.upc.testing.analog.service.AnaLogUtils;
+import ru.ftc.upc.testing.analog.service.tail.TailSpecificsProvider;
 import ru.ftc.upc.testing.analog.util.timestamp.TimestampExtractor;
 
 import java.io.File;
@@ -32,15 +33,18 @@ import static ru.ftc.upc.testing.analog.remote.RemotingConstants.*;
 public class TailingFlowProvider {
 
   private final TimestampExtractor timestampExtractor;
+  private final TailSpecificsProvider tailSpecificsProvider;
   private final int groupSizeThreshold;
   private final int groupTimeoutMs;
 
 
   @Autowired
   public TailingFlowProvider(TimestampExtractor timestampExtractor,
+                             TailSpecificsProvider tailSpecificsProvider,
                              @Value("${tracking.groupSizeThreshold}") int groupSizeThreshold,
                              @Value("${tracking.groupTimeoutMs}") int groupTimeoutMs) {
     this.timestampExtractor = timestampExtractor;
+    this.tailSpecificsProvider = tailSpecificsProvider;
     this.groupSizeThreshold = groupSizeThreshold;
     this.groupTimeoutMs = groupTimeoutMs;
   }
@@ -73,7 +77,11 @@ public class TailingFlowProvider {
         = new RecordAggregatorConfigurer(preAggregatorQueueChannel, groupSizeThreshold, groupTimeoutMs);
 
     return IntegrationFlows
-        .from(tailAdapter(new File(logPath)).id("tailSource"))
+        .from(tailAdapter(new File(logPath))
+            .id("tailSource")
+            .nativeOptions(tailSpecificsProvider.getTailNativeOptions())
+            .fileDelay(tailSpecificsProvider.getAttemptsDelay())
+            .enableStatusReader(true))   // to receive events of log rotation, etc.
         .enrichHeaders(e -> e.headerFunction(LOG_TIMESTAMP_VALUE__HEADER, timestampExtractor::extractTimestamp))
         .enrichHeaders(e -> e.headerFunction(CORRELATION_ID, correlationProvider::obtainCorrelationId))
         .enrichHeaders(e -> e.headerFunction(RECORD_LEVEL__HEADER, this::detectRecordLevel))
@@ -86,7 +94,11 @@ public class TailingFlowProvider {
 
   IntegrationFlow providePlainFlow(String logPath) {
     return IntegrationFlows
-        .from(tailAdapter(new File(logPath)).id("tailSource"))
+        .from(tailAdapter(new File(logPath))
+            .id("tailSource")
+            .nativeOptions(tailSpecificsProvider.getTailNativeOptions())
+            .fileDelay(tailSpecificsProvider.getAttemptsDelay())
+            .enableStatusReader(true))   // to receive events log rotation, etc.
         .aggregate(aggregatorSpec -> aggregatorSpec
             .correlationStrategy(message -> BigDecimal.ONE)
             .releaseStrategy(group -> group.size() > groupSizeThreshold)

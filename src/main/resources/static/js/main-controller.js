@@ -21,7 +21,7 @@ app.controller('mainController', function ($scope, $rootScope, $window,
         choicesService(function (choices, selectedChoice) {
             $scope.choices = choices;
             vm.selectedLog = selectedChoice;
-            $rootScope.watchingLog = selectedChoice.title + " - АнаЛог";
+            $rootScope.watchingLog = selectedChoice.title + " - АнаЛ&oacute;г";
             watchingService.connect();
         });
     };
@@ -64,6 +64,10 @@ app.controller('mainController', function ($scope, $rootScope, $window,
     });
     // to stop watching in case the server gets disconnected
     $scope.$on('serverDisconnected', function () {
+        vm.onAir = false;
+    });
+    // to stop watching in case of server failure
+    $scope.$on('serverFailure', function () {
         vm.onAir = false;
     });
     // to explicitly stop watching and close server connection upon termination

@@ -40,7 +40,8 @@ public class RegistrationChannelCreator implements BeanFactoryAware, Initializin
   @Autowired
   public RegistrationChannelCreator(
       ClusterProperties clusterProperties,
-      @SuppressWarnings("SpringJavaAutowiringInspection") IntegrationFlowContext dynamicRegistrar) {
+      @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+          IntegrationFlowContext dynamicRegistrar) {
     this.clusterProperties = clusterProperties;
     this.dynamicRegistrar = dynamicRegistrar;
   }
@@ -89,7 +90,7 @@ public class RegistrationChannelCreator implements BeanFactoryAware, Initializin
   }
 
   @Override
-  public void afterPropertiesSet() throws Exception {
+  public void afterPropertiesSet() {
     ClusterNode myselfNode = clusterProperties.getMyselfNode();
     createChannelTo(myselfNode);
   }
