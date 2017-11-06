@@ -1,62 +1,122 @@
-app.factory('renderingService', ['$interval', '$log', function($interval, $log) {
-    var appendingRenderQueue = [];
-    var prependingRenderQueue = [];
-    var consolePanel = $('#consolePanel');
-    var body = $('body');
-    var isFirstPrependingString = false;
+app.factory('renderingService', ['$log', function($log) {
+    var $window = $(window);
+    var $document = $(document);
+    var $body = $('body');
+    var $consolePanel = $('#consolePanel');
+    /**
+     * When the service is about to render a record it first checks for reaching of the viewport bottom to decide
+     * whether scrolling down should be applied or not. It works perfectly, almost always. But if there are several
+     * consequent records in a short period of time then some of then may check the reaching of bottom while some
+     * others are doing their animation. It causes checking to lie and scrolling doesn't get applied. To prevent such
+     * behavior the following additional variable is introduced.
+     * @type {boolean}
+     */
+    var isAnimating = false;
 
-    function renderMessages() {
-        if (appendingRenderQueue.length == 0 && prependingRenderQueue.length == 0) {
-            return;
-        }
-        var i, nextLine;
-        if (prependingRenderQueue.length > 0) {
-            if (isFirstPrependingString) {
-                consolePanel.find('div:first').replaceWith(prependingRenderQueue.pop());
-                isFirstPrependingString = false;
-            }
-
-            for (i = 0; i < Math.ceil(prependingRenderQueue.length / 5); i++) {
-                nextLine = prependingRenderQueue.pop();
-                consolePanel.prepend(nextLine);
-            }
-
-            if (prependingRenderQueue.length == 0) {
-                isFirstPrependingString = true;
-            }
-            angular.element(window).scrollTop(0);
-
+    function render(newPart) {
+        if (angular.isDefined(newPart.timestamp)) {
+            renderCompositeMessages(newPart)
         } else {
-            var renderPart = Math.ceil(appendingRenderQueue.length/5);
-            for (i = 0; i < renderPart; i++) {
-                nextLine = appendingRenderQueue.shift();
-                consolePanel.append(nextLine);
+            renderPlainMessages(newPart);
+        }
+    }
+
+    function renderCompositeMessages(newPart) {
+        $log.log("Preparing COMPOSITE messages: ", newPart);
+        var $newRecord = $("<div></div>")
+            .data("timestamp", newPart.timestamp)
+            .addClass('node-'+newPart.sourceNode)
+            .hide();
+
+        angular.forEach(newPart.lines, function (line) {
+            var $messageLine;
+            if (line.style === 'XML') {
+                var $code = $("<code></code>")
+                    .addClass("xml")
+                    .html(line.text);
+                $messageLine = $("<pre></pre>").append($code);
+                hljs.highlightBlock($messageLine[0]);
+            } else {
+                $messageLine = $("<div></div>")
+                    .addClass(line.style)
+                    .html(line.text);
             }
-            // $.smoothScroll({
-            //     scrollTarget: '#scrollTarget',
-            //     speed: 400
-            //     // autoCoefficient: 2
-            // });
-            angular.element(window).scrollTop(body.height());
+            $newRecord.append($messageLine);
+        });
+        // determine correct position to insert new record
+        var $records = $consolePanel.find("> div"), $precedingRecord;
+        for (var i = $records.length; i-- > 0;) {
+            if (jQuery.data($records[i], 'timestamp') <= newPart.timestamp) {
+                $precedingRecord = $($records[i]);
+                break;
+            }
+        }
+        // and use the position to insert new record
+        if ($precedingRecord) {
+            $precedingRecord.after($newRecord);
+        } else {
+            $consolePanel.append($newRecord);
         }
 
-    }
-    function appendMessages(messages) {
-        appendingRenderQueue.push.apply(appendingRenderQueue, messages);
-    }
-    function prependMessages(messages) {
-        prependingRenderQueue.push.apply(prependingRenderQueue, messages);
-    }
-    function clearQueue() {
-        appendingRenderQueue = [];
-        consolePanel.empty();
+        animate($newRecord);
     }
 
-    $interval(renderMessages, 150);
+    function renderPlainMessages(newPart) {
+        console.log("Preparing PLAIN messages: ", newPart);
+        var $partLines = $("<div></div>").hide();
+        angular.forEach(newPart.lines, function (line) {
+            var $messageLine;
+            if (line.style !== 'XML') {
+                $messageLine = $("<div></div>")
+                    .addClass(line.style)
+                    .html(line.text);
+            } else {
+                var $code = $("<code></code>")
+                    .addClass("xml")
+                    .html(line.text);
+                $messageLine = $("<pre></pre>").append($code);
+                hljs.highlightBlock($messageLine[0]);
+            }
+            $partLines.append($messageLine);
+        });
+        $consolePanel.append($partLines);
+        animate($partLines);
+    }
+
+    function scrollDown() {
+        $window.scrollTo("max", 400, {
+            easing: 'swing',
+            axis: 'y',
+            start: function() {isAnimating=true},
+            always: function () {isAnimating=false}
+        });
+    }
+
+    // Animated output logic:
+    function animate($newRecord) {
+        var isConsoleUnScrollable = ($body.height() < $window.height());
+        var isScrolledToBottom = ($window.scrollTop() === ($document.height() - $window.height()));
+        if (isConsoleUnScrollable) {       // should we use slide animation to output new record?
+            $newRecord.slideDown(400, scrollDown);
+            /* In most cases scrolling down before the viewport is totally filled has no effect. But if the new record
+             * comes out of viewport, it's end won't be visible. This is the only case that makes us use
+             * scrolling animation regardless of actual scrolling presence. */
+        } else if (isScrolledToBottom || isAnimating) {     // should we smoothly scroll down?
+            /* Because new record initially appears out of visible area, there is no need to use slide
+             * animation. Instead we render it immediately and then make visible by scrolling the viewport down.*/
+            $newRecord.slideDown(0, scrollDown);
+        } else {
+            $newRecord.show();    // when user manually scrolled up, we just "collect" new records at the bottom
+        }
+    }
+
+    function clearQueue() {
+        $consolePanel.empty();
+    }
 
     return {
-        appendMessages: appendMessages,
-        prependMessages: prependMessages,
-        clearQueue: clearQueue
+        clearQueue: clearQueue,
+        scrollDown: scrollDown,
+        render: render
     }
 }]);

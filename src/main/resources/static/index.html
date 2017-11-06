@@ -2,71 +2,113 @@
 <html lang="en" ng-app="AnaLog">
 <head>
     <meta charset="UTF-8">
-    <title ng-bind="watchingLog">АнаЛог v0.6</title>
-    <script src="webjars/jquery/1.8.2/jquery.min.js" type="text/javascript"></script>
-    <!--<script src="js/jquery-smooth-scroll.js" type="text/javascript"></script>-->
-    <script src="webjars/highlightjs/9.7.0/highlight.min.js" type="text/javascript"></script>
-    <!--<script src="js/main.js" type="text/javascript"></script>-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title ng-bind-html="watchingLog">АнаЛ&oacute;г v0.7</title>
 
+    <script src="webjars/jquery/1.11.1/jquery.js" type="text/javascript"></script>
+    <script src="webjars/jquery.scrollto/2.1.2/jquery.scrollTo.js" type="text/javascript"></script>
+    <script src="webjars/highlightjs/9.8.0/highlight.min.js" type="text/javascript"></script>
+    <script src="webjars/highlightjs/9.8.0/languages/xml.min.js" type="text/javascript"></script>
+    <script src="webjars/sockjs-client/1.1.2/sockjs.js" type="text/javascript"></script>
+    <script src="webjars/stomp__stompjs/3.1.2/lib/stomp.js" type="text/javascript"></script>
     <script src="webjars/angularjs/1.5.8/angular.js"></script>
+    <script src="webjars/angularjs/1.5.8/angular-sanitize.js"></script>
+    <script src="webjars/angularjs/1.5.8/angular-animate.js"></script>
+    <script src="webjars/angular-ui-select/0.19.6/select.js"></script>
+
     <script src="js/main-controller.js" type="text/javascript"></script>
+    <script src="js/notification-controller.js" type="text/javascript"></script>
+    <script src="js/notifications.js" type="text/javascript"></script>
     <script src="js/choice-service.js" type="text/javascript"></script>
-    <script src="js/provider-service.js" type="text/javascript"></script>
     <script src="js/rendering-service.js" type="text/javascript"></script>
+    <script src="js/watching-service.js" type="text/javascript"></script>
+    <script src="js/directives.js" type="text/javascript"></script>
     <script src="js/utils.js" type="text/javascript"></script>
 
-    <link rel="stylesheet" href="webjars/highlightjs/9.7.0/styles/github-gist.css">
-    <link rel="stylesheet" href="css/main.css" type="text/css"/> <!-- This should go after link to HLJS style sheet -->
+    <link rel="stylesheet" href="css/bootstrap-with-slate-theme.min.css">
+    <link rel="stylesheet" href="webjars/highlightjs/9.8.0/styles/darkula.css">
+    <link rel="stylesheet" href="webjars/angular-ui-select/0.19.6/select.css">
+    <link rel="stylesheet" href="css/main.css" type="text/css"/> <!-- This should go last -->
 </head>
-<body>
-<div id="controlPanel" ng-controller="controlPanelController">
-    <label>
-        <input type="checkbox" name="updateToggler" ng-model="onAir"/>Обновлять ежесекундно&nbsp;
-    </label>
-    <button name="updateNowButton" ng-click="updateLog(false)" ng-disabled="onAir">Обновить сейчас</button>
-    &nbsp;
-<!--
-    <label>
-        <input type="checkbox" name="watchToggler" onchange="toggleWatching();" disabled="disabled"/>Следить
-    </label>
--->
-    <label for="combobox" title="{{selectedLog.path}}">&nbsp;&nbsp;Файл:&nbsp;</label>
-    <select id="combobox" name="logFileName"
-            ng-options="choice.title group by choice.group for choice in choices"
-            ng-model="selectedLog"
-            ng-change="onLogChange()">
-    </select>
-    <label>
-        <select id="encoding" name="encoding" ng-model="encoding">
-            <option value="WINDOWS-1251">CP-1251</option>
-            <option value="UTF-8">UTF-8</option>
-        </select>
-    </label>
 
-    &nbsp;
-    <div id="loader" ng-class="{loading: onAir}">&nbsp;</div>
-    &nbsp;&nbsp;
-    <button ng-click="prepend()" id="prependingMode">Промотать вверх</button>
-    <label>
-        <select name="prependingSize" ng-model="prependingSize">
-            <option value="1" selected="selected">на 1%</option>
-            <option value="5">на 5%</option>
-            <option value="10">на 10%</option>
-            <option value="20">на 20%</option>
-            <option value="30">на 30%</option>
-            <option value="50">на 50%</option>
-            <option value="100">до начала</option>
-        </select>
-    </label>
+<body ng-controller="mainController as ctrl">
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand -->
+        <div class="navbar-header">
+            <div class="navbar-brand">
+                <img alt="АнаЛ&oacute;г v0.7" title="АнаЛ&oacute;г v0.7" src="img/logo-20-20.png">
+            </div>
+        </div>
+        <!-- Watching toggle control -->
+        <label class="checkbox-inline navbar-text"><input type="checkbox" ng-model="ctrl.onAir">
+            Отслеживать лог
+        </label>
+        <!-- Choices field-->
+        <div class="navbar-form navbar-left form-group">
+            <ui-select ng-model="ctrl.selectedLog" on-select="ctrl.onLogChange()">
+                <ui-select-match allow-clear="false" placeholder="Имя лога, путь, нода, группа, ...">
+                    <span ng-bind-html="$select.selected.title"></span>
+                </ui-select-match>
+                <ui-select-choices group-by="'group'"
+                                   repeat="item in choices | filter: $select.search">
+                    <div ng-bind-html="item.title | highlight: $select.search"></div>
+                    <small class="log-choice-detail">
+                        <span ng-bind-html="item.path | highlight: $select.search"></span>
+                    </small>
+                    <div ng-show="item.uid != null">
+                        <small class="log-choice-accent">
+                            композитный: <span ng-bind-html="item.node | highlight: $select.search"></span>
+                        </small>
+                    </div>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+        <!-- Right part of the navbar -->
+        <div class="nav navbar-nav navbar-right">
+            <!-- Text wrapping control -->
+            <label class="checkbox-inline navbar-text">
+                <input type="checkbox" ng-model="ctrl.textWrap">Перенос строк
+            </label>
+            <!--<p class="navbar-text">Выбран лог: "{{ctrl.selectedLog.title}}"</p>-->
+            <!-- Clear button -->
+            <button class="btn btn-default navbar-btn navbar-last-item" ng-click="ctrl.clear()">Очистить</button>
+        </div>
+    </div><!-- /.container-fluid -->
+</nav>
 
-    &nbsp;&nbsp;
-    <button ng-click="clear()">Очистить</button>
+<!-- Console -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12" ng-class="{'text-nowrap': !ctrl.textWrap}" id="consolePanel"></div>
+    </div>
+    <!-- cursor showing the active watching process -->
+    <div class="row" ng-class="{'invisible-cursor': !ctrl.onAir}">
+        <div class="col-xs-12 on-air-cursor">
+            <span class="blinking-cursor">&ndash;</span>
+        </div>
+    </div>
 </div>
-<br/>
-<br/>
 
-<div id="consolePanel"></div>
-<img id="substrate" src="img/magnifier.jpg"/>
-<div id="scrollTarget" style="size: 0"></div>
+<!-- Scroll down button (auto-hiding) -->
+<button type="button" class="btn btn-primary scroll-down-btn ng-hide" hide-upon-auto-scroll
+        title="Промотать в самый вниз" ng-click="ctrl.scrollDown()">
+    <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+</button>
+
+<!-- Notification balloon -->
+<div class="alert alert-dismissible"
+     ng-controller="notificationController as notifier"
+     ng-class="'alert-'+notifier.message.level"
+     ng-show="notifier.showing">
+    <button type="button" class="close" ng-click="notifier.close()">&times;</button>
+    <h4>{{notifier.message.title}}</h4>
+    <p ng-bind-html="notifier.message.text"></p>
+</div>
+
+<!-- Substrate -->
+<img id="substrate" src="img/magnifier.png"/>
 </body>
 </html>

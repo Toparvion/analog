@@ -7,20 +7,18 @@ function extractFileName(path) {
 
 function arePathsEqual(path1, path2) {
     // the following replacements allow us to correctly compare paths from different OS'es
-    return (path1.toLowerCase().replace(new RegExp("\\\\", 'g'), "/") == path2.toLowerCase().replace(new RegExp("\\\\", 'g'), "/"));
+    return (path1.toLowerCase().replace(new RegExp("\\\\", 'g'), "/") === path2.toLowerCase().replace(new RegExp("\\\\", 'g'), "/"));
 }
 
-function prepareMessages(responseData) {
-    var preparedMessages = [];
-    angular.forEach(responseData.items, function (item) {
-        var $messageLine;
-        if (item.level != 'XML') {
-            $messageLine = $('<div class="' + item.level + '">' + item.text + '</div>');
-        } else {
-            $messageLine = $('<pre class="xml"><code>' + item.text + '</code></pre>');
-            hljs.highlightBlock($messageLine[0]);
-        }
-        preparedMessages.push($messageLine);
-    });
-    return preparedMessages;
+// TODO move to Angular app initialization
+// First, checks if it isn't implemented yet.
+if (!String.prototype.format) {
+    String.prototype.format = function() {
+        var args = arguments;
+        return this.replace(/{(\w+)}/g, function(match, varName) {
+            return (typeof args[0][varName] !== 'undefined')
+                ? args[0][varName]
+                : match;
+        });
+    };
 }

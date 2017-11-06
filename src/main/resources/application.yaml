@@ -9,9 +9,24 @@ server:
     persistent: true
     cookie:
       max-age: 86400
+  display-name: AnaLog
 
 logging:
   level:
-    root: info
-    ru.ftc.upc.testing.analog: debug
-    ru.ftc.upc.testing.analog.service.EncodingDetector: trace
+    root: INFO
+    tech.toparvion.analog: TRACE
+    tech.toparvion.analog.service.EncodingDetector: INFO
+    tech.toparvion.analog.remote.agent.misc.AddressAwareRmiOutboundGateway: INFO
+    tech.toparvion.analog.remote.agent.RecordAggregatorConfigurer: INFO
+    tech.toparvion.analog.util.dev.DevLogSource: INFO
+    org.springframework.integration: INFO
+    org.springframework.web.socket: DEBUG
+    org.springframework.messaging.simp.stomp: TRACE
+    org.springframework.messaging.simp.broker: DEBUG
+    org.springframework.integration.file.tail.OSDelegatingFileTailingMessageProducer: TRACE
+  pattern:
+    console: "%clr(%d{HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+
+tracking:
+  groupSizeThreshold: 50
+  groupTimeoutMs: 1000
