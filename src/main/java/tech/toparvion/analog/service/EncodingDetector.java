@@ -11,6 +11,7 @@ import tech.toparvion.analog.model.config.LogConfigEntry;
 import tech.toparvion.analog.util.Util;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -66,6 +67,9 @@ public class EncodingDetector {
         log.warn("UniversalCharDet couldn't recognize the encoding of log '{}'; {} has been selected as default. " +
                 "(took {} ms).", path, DEFAULT_ENCODING, (System.currentTimeMillis() - fileProcessingStart));
       }
+
+    } catch (FileNotFoundException e) {
+      log.warn("Couldn't detect encoding of log '{}' because it wasn't found.", path);
 
     } catch (IOException e) {
       detectedEncodings.put(path, DEFAULT_ENCODING);
