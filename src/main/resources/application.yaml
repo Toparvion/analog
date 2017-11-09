@@ -18,7 +18,7 @@ logging:
     tech.toparvion.analog.service.EncodingDetector: INFO
     tech.toparvion.analog.remote.agent.misc.AddressAwareRmiOutboundGateway: INFO
     tech.toparvion.analog.remote.agent.RecordAggregatorConfigurer: INFO
-    tech.toparvion.analog.util.dev.DevLogSource: INFO
+    tech.toparvion.analog.util.dev.LogFileGenerator: DEBUG
     org.springframework.integration: INFO
     org.springframework.web.socket: DEBUG
     org.springframework.messaging.simp.stomp: TRACE

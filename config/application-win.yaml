@@ -1,5 +1,9 @@
 server:
   port: 8080
+jmx:
+  rmi:
+    host: localhost
+    port: 1099
 
 clusterNodes:
   - name: angara
@@ -17,7 +21,6 @@ choices:
       - core.log as "$f - $g"
       - pppinfo.log as "$f - $g"
 #      - cluster\composite.log as "$f (growing)" (selected)
-
     compositeLogs:
       - path: cluster\composite.log
         node: angara
@@ -40,7 +43,6 @@ choices:
       - cluster/static-source.log as "$f - $g"
       - core-all.log as "$f - $g"
       - cluster\composite.log as "$f (plain)"
-
     compositeLogs:
       - path: bankplus.log
         title: $f - $g
