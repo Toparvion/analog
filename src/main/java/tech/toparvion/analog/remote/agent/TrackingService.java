@@ -14,6 +14,8 @@ import org.springframework.integration.dsl.context.IntegrationFlowContext;
 import org.springframework.integration.dsl.context.IntegrationFlowRegistration;
 import org.springframework.integration.file.tail.FileTailingMessageProducerSupport.FileTailingEvent;
 import org.springframework.integration.rmi.RmiInboundGateway;
+import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import tech.toparvion.analog.model.TrackingRequest;
@@ -29,6 +31,7 @@ import java.util.Set;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
+import static tech.toparvion.analog.service.AnaLogUtils.normalizePath;
 
 /**
  * Applied logical service providing routines for remote log tracking.
@@ -37,9 +40,10 @@ import static tech.toparvion.analog.remote.RemotingConstants.*;
  * @since v0.7
  */
 @Service
+@ManagedResource
 public class TrackingService {
   private static final Logger log = LoggerFactory.getLogger(TrackingService.class);
-  private static final String PAYLOAD_OUT_GATEWAY_BEAN_NAME = "payloadOutGateway";
+  private static final String PAYLOAD_OUT_GATEWAY_BEAN_NAME_PREFIX = "payloadOutGateway:";
 
   /**
    * The registry of logs being tracked, where the key is log path being watched and the value is corresponding
@@ -88,7 +92,7 @@ public class TrackingService {
     // first let's check if it is a duplicate registration request
     Set<String> knownWatcherFlowIds = sendingRegistry.get(logPath);
     if (knownWatcherFlowIds != null && knownWatcherFlowIds.stream()
-        .map(this::findGateway)
+        .map(flowId -> findGateway(flowId, logPath))
         .map(AddressAwareRmiOutboundGateway::getGatewayAddress)
         .anyMatch(knownAddress -> knownAddress.equals(watcherAddress))) {
       log.warn("Watcher {} is already registered for log '{}'. Skip registration.", watcherAddress, logPath);
@@ -140,7 +144,7 @@ public class TrackingService {
             .from(outChannel)
             .enrichHeaders(e -> e.header(LOG_CONFIG_ENTRY_UID__HEADER, request.getUid()))
             .enrichHeaders(e -> e.header(SOURCE_NODE__HEADER, request.getNodeName()))
-            .handle(payloadOutGateway, spec -> spec.id(PAYLOAD_OUT_GATEWAY_BEAN_NAME))
+            .handle(payloadOutGateway, spec -> spec.id(PAYLOAD_OUT_GATEWAY_BEAN_NAME_PREFIX+logPath))
             .get())
         .autoStartup(true)
         .register();
@@ -172,9 +176,10 @@ public class TrackingService {
 
     // находим соответствующего наблюдателя
     Set<String> watchersFlowIds = sendingRegistry.get(logPath);
-    assert watchersFlowIds != null;
+    assert (watchersFlowIds != null)
+        : String.format("No watchersFlowIds found in sending registry for logPath '%s'", logPath);
     String registeredFlowId = watchersFlowIds.stream()
-        .filter(flowId -> findGateway(flowId).getGatewayAddress().equals(watcherAddress))
+        .filter(flowId -> findGateway(flowId, logPath).getGatewayAddress().equals(watcherAddress))
         .findAny()
         .orElseThrow(IllegalStateException::new);
 
@@ -187,28 +192,9 @@ public class TrackingService {
     if (watchersFlowIds.isEmpty()) {
       flowContext.remove(trackingLogFlowId);
       trackingRegistry.remove(logPath);
+      sendingRegistry.remove(logPath);
       log.debug("Для лога '{}' не осталось наблюдателей. Слежение прекращено.", logPath);
 //      log.debug("There is no watchers for log {} anymore. Tracking removed.", logPath);
-    }
-  }
-
-  @EventListener
-  public void processFileTailingEvent(FileTailingEvent tailingEvent) {
-    log.debug("Received file tailing event: {}", tailingEvent.toString());
-    String logPath = tailingEvent.getFile().getAbsolutePath();
-    // in case of working on Windows we need to format the path to Linux style
-    logPath = logPath.replaceAll("\\\\", "/");
-    if (!logPath.startsWith("/")) {
-      logPath = "/" + logPath;
-    }
-    Set<String> watchersFlowIds = sendingRegistry.get(logPath);
-    assert (watchersFlowIds != null);
-    for (String flowId : watchersFlowIds) {
-      IntegrationFlowRegistration registration = flowContext.getRegistrationById(flowId);
-      assert (registration != null);
-      MessagingTemplate messagingTemplate = registration.getMessagingTemplate();
-      messagingTemplate.send(MessageBuilder.withPayload(tailingEvent).build());
-      log.trace("Sent tailing event of file '{}' to the flow id='{}'", tailingEvent.getFile().getAbsolutePath(), flowId);
     }
   }
 
@@ -225,20 +211,42 @@ public class TrackingService {
                                                   .collect(joining()))));
   }
 
-  private AddressAwareRmiOutboundGateway findGateway(String flowId) {
+  private AddressAwareRmiOutboundGateway findGateway(String flowId, String logPath) {
     IntegrationFlowRegistration registration = flowContext.getRegistrationById(flowId);
     assert registration != null;
+    String gatewayName = PAYLOAD_OUT_GATEWAY_BEAN_NAME_PREFIX + logPath;
     StandardIntegrationFlow flow = (StandardIntegrationFlow) registration.getIntegrationFlow();
 
     Object lastComponent = flow.getIntegrationComponents().entrySet()
         .stream()
-        .filter(entry -> PAYLOAD_OUT_GATEWAY_BEAN_NAME.equals(entry.getValue()))
+        .filter(entry -> gatewayName.equals(entry.getValue()))
         .map(Map.Entry::getKey)
         .findAny()
         .orElseThrow(() -> new IllegalArgumentException(format("No bean with name '%s' found among components of " +
-                "flow with id=%s", PAYLOAD_OUT_GATEWAY_BEAN_NAME, flowId)));
+                "flow with id=%s", gatewayName, flowId)));
     ConfigurablePropertyAccessor propertyAccessor = PropertyAccessorFactory.forDirectFieldAccess(lastComponent);
     return  (AddressAwareRmiOutboundGateway) propertyAccessor.getPropertyValue("handler");
+  }
+
+  @EventListener
+  public void processFileTailingEvent(FileTailingEvent tailingEvent) {
+    log.debug("Received file tailing event: {}", tailingEvent.toString());
+    String logPath = normalizePath(tailingEvent.getFile().getAbsolutePath());
+    Set<String> watchersFlowIds = sendingRegistry.get(logPath);
+    assert (watchersFlowIds != null)
+        : String.format("No watching flow ID found in registry by logPath='%s'.", logPath);
+    for (String flowId : watchersFlowIds) {
+      IntegrationFlowRegistration registration = flowContext.getRegistrationById(flowId);
+      assert (registration != null);
+      MessagingTemplate messagingTemplate = registration.getMessagingTemplate();
+      messagingTemplate.send(MessageBuilder.withPayload(tailingEvent).build());
+      log.trace("Sent tailing event of file '{}' to the flow id='{}'", tailingEvent.getFile().getAbsolutePath(), flowId);
+    }
+  }
+
+  @ManagedAttribute
+  public String[] getSendingRegistryKeys() {
+    return sendingRegistry.keySet().toArray(new String[sendingRegistry.size()]);
   }
 
 }

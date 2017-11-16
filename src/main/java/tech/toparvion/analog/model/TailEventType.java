@@ -11,6 +11,7 @@ package tech.toparvion.analog.model;
 public enum TailEventType {
   FILE_NOT_FOUND("fileNotFound"),
   FILE_APPEARED("fileAppeared"),
+  FILE_ROTATED("fileRotated"),
   FILE_DISAPPEARED("fileDisappeared"),
   FILE_TRUNCATED("fileTruncated");
 

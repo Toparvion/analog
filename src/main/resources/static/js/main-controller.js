@@ -5,7 +5,7 @@ app.run(function ($rootScope) {
 });
 
 app.controller('mainController', function ($scope, $rootScope, $window,
-                                           choicesService, renderingService, watchingService,
+                                           choicesService, renderingService, watchingService, config,
                                            $location, $log) {
     var vm = this;
     vm.selectedLog = undefined;
@@ -21,7 +21,7 @@ app.controller('mainController', function ($scope, $rootScope, $window,
         choicesService(function (choices, selectedChoice) {
             $scope.choices = choices;
             vm.selectedLog = selectedChoice;
-            $rootScope.watchingLog = selectedChoice.title + " - АнаЛ&oacute;г";
+            $rootScope.watchingLog = selectedChoice.title + " - " + config.general.appTitle;
             watchingService.connect();
         });
     };
@@ -29,7 +29,7 @@ app.controller('mainController', function ($scope, $rootScope, $window,
 
     vm.onLogChange = function() {
         $log.log("New choice: " + vm.selectedLog.path);
-        $rootScope.watchingLog = vm.selectedLog.title + " - АнаЛ&oacute;г";
+        $rootScope.watchingLog = vm.selectedLog.title + " - " + config.general.appTitle;
         $location.path(vm.selectedLog.path);
         vm.onAir = false;
         renderingService.clearQueue();
@@ -73,6 +73,7 @@ app.controller('mainController', function ($scope, $rootScope, $window,
     // to explicitly stop watching and close server connection upon termination
     $scope.$on('$destroy', function() {
         vm.onAir = false;
+        renderingService.stopTimer();
         watchingService.disconnect();
     });
 

@@ -17,7 +17,6 @@ public final class RemotingConstants {
   public static final String SERVER_REGISTRATION_RMI_OUT__CHANNEL_PREFIX = "serverRegistrationRmiOutChannel_";
   public static final String AGENT_REGISTRATION_RMI_IN__CHANNEL = "agentRegistrationRmiInChannel";
   public static final String SERVER_RMI_PAYLOAD_IN__CHANNEL = "serverRmiPayloadInChannel";
-  public static final String RECORD_AGGREGATOR_INPUT_CHANNEL = "recordAggregatorInputChannel";
   //</editor-fold>
 
   //<editor-fold desc="Server-side headers names">

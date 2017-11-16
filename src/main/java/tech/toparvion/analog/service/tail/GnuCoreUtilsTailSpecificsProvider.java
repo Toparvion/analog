@@ -33,15 +33,23 @@ public class GnuCoreUtilsTailSpecificsProvider implements TailSpecificsProvider 
   @Override
   public TailEventType detectEventType(String tailsMessage) throws UnrecognizedTailEventException {
     if (tailsMessage.contains("cannot open")) {
+      // this happens on the very first attempt to open a file only (not during the watching)
       return FILE_NOT_FOUND;
+
     } else if (tailsMessage.contains("has appeared") || tailsMessage.contains("has become accessible")) {
       // the file might disappear or just become inaccessible in some sense
       return FILE_APPEARED;
-    } else if (tailsMessage.contains("has become inaccessible")) {
-      // when file vanished; there is no other events in case the file appears again
+
+    } else if (tailsMessage.contains("has been replaced") && tailsMessage.contains("following new file")) {
+      // this is when logging systems such as Logback apply their rotation policies
+      return FILE_ROTATED;
+
+    } else if (tailsMessage.contains("has become inaccessible") || tailsMessage.contains("has been replaced with an untailable")) {
+      // when file vanished or became inaccessible somehow else
       return FILE_DISAPPEARED;
+
     } else if (tailsMessage.contains("truncated")) {
-      // when file decreased in size (including down to 0); consequent changes do not produce events
+      // when file decreased in size (including down to 0); consequent change makes tail reload the whole file (!)
       return FILE_TRUNCATED;
     }
     throw new UnrecognizedTailEventException(tailsMessage);

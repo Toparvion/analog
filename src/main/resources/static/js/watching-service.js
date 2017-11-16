@@ -1,5 +1,5 @@
-app.factory('watchingService', ['$log', '$rootScope', 'renderingService',
-                        function ($log, $rootScope, renderingService) {
+app.factory('watchingService', ['$log', '$rootScope', 'renderingService', 'config',
+                        function ($log, $rootScope, renderingService, config) {
     var stompClient = undefined;
     var subscription = undefined;
 
@@ -9,9 +9,9 @@ app.factory('watchingService', ['$log', '$rootScope', 'renderingService',
             return;             // to prevent double connection
         }
         stompClient = Stomp.over(function () {
-            return new SockJS('/watch-endpoint');
+            return new SockJS(config.websocket.watchEndpoint);
         });
-        stompClient.reconnect_delay = 10000;     // to repeat failed connection attempts every 10 seconds
+        stompClient.reconnect_delay = config.websocket.reconnectDelayMs;     // to repeat failed connection attempts
         stompClient.connect({},
             function () {
                 $log.log('Watching service has connected to the server.');
@@ -34,7 +34,7 @@ app.factory('watchingService', ['$log', '$rootScope', 'renderingService',
             logId = selectedLog.path;
             isPlain = true;
         }
-        subscription = stompClient.subscribe('/topic/' + logId, onServerMessage, {isPlain: isPlain});
+        subscription = stompClient.subscribe(config.websocket.topicPrefix + logId, onServerMessage, {isPlain: isPlain});
     }
 
     function onServerMessage(message) {

@@ -1,6 +1,6 @@
 spring:
   application:
-    name: AnaLog
+    name: analog
     admin:
       enabled: true
 
@@ -19,6 +19,7 @@ logging:
     tech.toparvion.analog.remote.agent.misc.AddressAwareRmiOutboundGateway: INFO
     tech.toparvion.analog.remote.agent.RecordAggregatorConfigurer: INFO
     tech.toparvion.analog.util.dev.LogFileGenerator: DEBUG
+    tech.toparvion.analog.remote.server.RecordSender: DEBUG
     org.springframework.integration: INFO
     org.springframework.web.socket: DEBUG
     org.springframework.messaging.simp.stomp: TRACE
@@ -29,4 +30,4 @@ logging:
 
 tracking:
   groupSizeThreshold: 50
-  groupTimeoutMs: 1000
+  groupTimeoutMs: 500

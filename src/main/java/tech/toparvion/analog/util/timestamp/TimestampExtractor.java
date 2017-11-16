@@ -5,7 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
+import tech.toparvion.analog.service.AnaLogUtils;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -69,6 +71,7 @@ public class TimestampExtractor {
    * @param lineMessage a message wrapping single line of log
    * @return parsed line's timestamp or {@code null} in case of parsing fail
    */
+  @Nullable
   public LocalDateTime extractTimestamp(Message<String> lineMessage) {
     String line = lineMessage.getPayload();
     if (line.startsWith("\tat ")) {
@@ -79,8 +82,9 @@ public class TimestampExtractor {
     File logFile = lineMessage.getHeaders().get(ORIGINAL_FILE, File.class);
     assert (logFile != null) : "lineMessage doesn't contain 'file_originalFile' header; check tailAdapter.";
 
-    PatternAndFormatter paf = registry.get(logFile.getAbsolutePath());
-    assert (paf != null) : format("Log path '%s' is not registered but its line message was received.", logFile.getAbsolutePath());
+    String logPath = AnaLogUtils.normalizePath(logFile.getAbsolutePath());
+    PatternAndFormatter paf = registry.get(logPath);
+    assert (paf != null) : format("Log path '%s' is not registered but its line message was received.", logPath);
 
     Matcher timestampMatcher = paf.getPattern().matcher(line);
     if (!timestampMatcher.find()) {

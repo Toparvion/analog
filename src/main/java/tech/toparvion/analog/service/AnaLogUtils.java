@@ -37,6 +37,8 @@ public class AnaLogUtils {
   private static final long SHOWN_LOG_MAX_SIZE = 32768L;
   private static final int LINE_SEPARATOR_LENGTH = System.getProperty("line.separator").length();
 
+  private static final Pattern WIN_DISC_PATTERN = Pattern.compile("^\\w:");
+
   public static String escapeSpecialCharacters(String inputString) {
     String result = inputString.replaceAll("\"", "&quot;");
     result = result.replaceAll("<", "&lt;");
@@ -380,38 +382,6 @@ public class AnaLogUtils {
     return readingMetaData;
   }
 
-  public static void writeResponse(StringBuilder responseBuilder, List<String> rawLines) throws IOException {
-    // response.setCharacterEncoding("UTF-8");
-    // оформляем начало ответа
-    responseBuilder.append("{");
-    responseBuilder.append("\"items\": [");
-
-    for (int i = 0; i < rawLines.size(); i++) {
-      responseBuilder.append("{");
-      // проверяем строку на начало в ней XML-кода
-      String curLine = distinguishXml(rawLines, i);
-
-      // вставляем текст строки
-      responseBuilder.append("\"text\": \"")
-              .append(escapeSpecialCharacters(curLine))
-              .append("\"");
-
-      // определяем и вставляем уровень важности сообщения
-      String messageType = detectMessageType(curLine);
-      responseBuilder.append(", \"level\": \"")
-              .append(messageType)
-              .append("\"");
-      // завершаем JSON-оформление текущей строки
-      if (i == (rawLines.size() - 1))
-        responseBuilder.append("}");
-      else
-        responseBuilder.append("},");
-    }
-    // оформляем конец ответа
-    responseBuilder.append("]");
-    responseBuilder.append("}");
-  }
-
   @Nonnull
   public static RecordLevel detectRecordLevel(Message<String> recordMessage) {
     String recordLine = recordMessage.getPayload();
@@ -420,5 +390,14 @@ public class AnaLogUtils {
         .filter(level -> recordLine.contains(level.name()))    // this is potential subject to change in future
         .findAny()
         .orElse(PLAIN);
+  }
+
+  public static String normalizePath(String pathToNormalize) {
+    // in case of working on Windows the path needs to be formatted to Linux style
+    String result = pathToNormalize.replaceAll("\\\\", "/");
+    if (WIN_DISC_PATTERN.matcher(result).find()) {
+      result = "/" + result;
+    }
+    return result;
   }
 }

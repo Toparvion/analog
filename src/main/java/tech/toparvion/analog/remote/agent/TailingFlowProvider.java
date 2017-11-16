@@ -41,8 +41,8 @@ public class TailingFlowProvider {
   @Autowired
   public TailingFlowProvider(TimestampExtractor timestampExtractor,
                              TailSpecificsProvider tailSpecificsProvider,
-                             @Value("${tracking.groupSizeThreshold}") int groupSizeThreshold,
-                             @Value("${tracking.groupTimeoutMs}") int groupTimeoutMs) {
+                             @Value("${tracking.groupSizeThreshold:50}") int groupSizeThreshold,
+                             @Value("${tracking.groupTimeoutMs:1000}") int groupTimeoutMs) {
     this.timestampExtractor = timestampExtractor;
     this.tailSpecificsProvider = tailSpecificsProvider;
     this.groupSizeThreshold = groupSizeThreshold;
@@ -71,14 +71,14 @@ public class TailingFlowProvider {
     //noinspection ConstantConditions     // null value for the header is prevented by message composing logic
     PriorityBlockingQueue<Message<?>> queue = new PriorityBlockingQueue<>(100,
         Comparator.comparingLong(message -> message.getHeaders().get(SEQUENCE_NUMBER__HEADER, Long.class)));
-    MessageChannel preAggregatorQueueChannel = queue(RECORD_AGGREGATOR_INPUT_CHANNEL, queue).get();
+    MessageChannel preAggregatorQueueChannel = queue(queue).get();
 
-    RecordAggregatorConfigurer recordAggregatorConfigurer
-        = new RecordAggregatorConfigurer(preAggregatorQueueChannel, groupSizeThreshold, groupTimeoutMs);
+    CompositeRecordAggregatorConfigurer recordAggregatorConfigurer
+        = new CompositeRecordAggregatorConfigurer(preAggregatorQueueChannel, groupSizeThreshold, groupTimeoutMs);
 
     return IntegrationFlows
         .from(tailAdapter(new File(logPath))
-            .id("tailSource")
+            .id("tailSource:"+logPath)
             .nativeOptions(tailSpecificsProvider.getTailNativeOptions())
             .fileDelay(tailSpecificsProvider.getAttemptsDelay())
             .enableStatusReader(true))   // to receive events of log rotation, etc.
@@ -95,7 +95,7 @@ public class TailingFlowProvider {
   IntegrationFlow providePlainFlow(String logPath) {
     return IntegrationFlows
         .from(tailAdapter(new File(logPath))
-            .id("tailSource")
+            .id("tailSource:"+logPath)
             .nativeOptions(tailSpecificsProvider.getTailNativeOptions())
             .fileDelay(tailSpecificsProvider.getAttemptsDelay())
             .enableStatusReader(true))   // to receive events log rotation, etc.

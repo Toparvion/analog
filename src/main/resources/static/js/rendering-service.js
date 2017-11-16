@@ -1,17 +1,16 @@
-app.factory('renderingService', ['$log', function($log) {
+app.factory('renderingService', ['$log', '$interval', 'config', function($log, $interval, config) {
     var $window = $(window);
     var $document = $(document);
     var $body = $('body');
     var $consolePanel = $('#consolePanel');
-    /**
-     * When the service is about to render a record it first checks for reaching of the viewport bottom to decide
-     * whether scrolling down should be applied or not. It works perfectly, almost always. But if there are several
-     * consequent records in a short period of time then some of then may check the reaching of bottom while some
-     * others are doing their animation. It causes checking to lie and scrolling doesn't get applied. To prevent such
-     * behavior the following additional variable is introduced.
-     * @type {boolean}
-     */
-    var isAnimating = false;
+
+    var renderingQueue = [];
+    var intervalPromise;
+    init();
+
+    function init() {
+        intervalPromise = $interval(animate, config.rendering.periodMs, /*count:*/0, /*invokeApply:*/false);
+    }
 
     function render(newPart) {
         if (angular.isDefined(newPart.timestamp)) {
@@ -55,10 +54,10 @@ app.factory('renderingService', ['$log', function($log) {
         if ($precedingRecord) {
             $precedingRecord.after($newRecord);
         } else {
-            $consolePanel.append($newRecord);
+            $consolePanel.append($newRecord);       // for the very first insertion only
         }
 
-        animate($newRecord);
+        renderingQueue.push($newRecord);
     }
 
     function renderPlainMessages(newPart) {
@@ -80,43 +79,54 @@ app.factory('renderingService', ['$log', function($log) {
             $partLines.append($messageLine);
         });
         $consolePanel.append($partLines);
-        animate($partLines);
+        renderingQueue.push($partLines);
+    }
+
+    /**
+     * Animated output logic
+     */
+    function animate() {
+        var isConsoleUnScrollable = ($body.height() < $window.height());
+        var isScrolledToBottom = ($window.scrollTop() === ($document.height() - $window.height()));
+
+        while (renderingQueue.length > 0) {
+            var $newRecord = renderingQueue.shift();
+            if (isConsoleUnScrollable) {       // should we use slide animation to output new record?
+                $newRecord.slideDown(400, scrollDown);
+                /* In most cases scrolling down before the viewport is totally filled has no effect. But if the new
+                 * record comes out of viewport, its end won't be visible. This is the only case that makes AnaLog use
+                 * scrolling animation regardless of actual scrolling presence. */
+
+            } else {
+                // when user manually scrolled up, we just "collect" new records at the bottom
+                $newRecord.show(0, function () {
+                    // and scroll to bottom if necessary
+                    if (renderingQueue.length === 0 && isScrolledToBottom) scrollDown();
+                });
+            }
+        }
     }
 
     function scrollDown() {
         $window.scrollTo("max", 400, {
             easing: 'swing',
             axis: 'y',
-            start: function() {isAnimating=true},
-            always: function () {isAnimating=false}
+            interrupt: true
         });
-    }
-
-    // Animated output logic:
-    function animate($newRecord) {
-        var isConsoleUnScrollable = ($body.height() < $window.height());
-        var isScrolledToBottom = ($window.scrollTop() === ($document.height() - $window.height()));
-        if (isConsoleUnScrollable) {       // should we use slide animation to output new record?
-            $newRecord.slideDown(400, scrollDown);
-            /* In most cases scrolling down before the viewport is totally filled has no effect. But if the new record
-             * comes out of viewport, it's end won't be visible. This is the only case that makes us use
-             * scrolling animation regardless of actual scrolling presence. */
-        } else if (isScrolledToBottom || isAnimating) {     // should we smoothly scroll down?
-            /* Because new record initially appears out of visible area, there is no need to use slide
-             * animation. Instead we render it immediately and then make visible by scrolling the viewport down.*/
-            $newRecord.slideDown(0, scrollDown);
-        } else {
-            $newRecord.show();    // when user manually scrolled up, we just "collect" new records at the bottom
-        }
     }
 
     function clearQueue() {
         $consolePanel.empty();
     }
 
+    function stopTimer() {
+        $interval.cancel(intervalPromise);
+    }
+
     return {
         clearQueue: clearQueue,
         scrollDown: scrollDown,
+        stopTimer: stopTimer,
         render: render
     }
 }]);

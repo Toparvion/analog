@@ -26,6 +26,7 @@ import static java.lang.String.format;
 import static java.time.ZonedDateTime.now;
 import static java.util.Collections.singletonMap;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
+import static tech.toparvion.analog.service.AnaLogUtils.normalizePath;
 import static tech.toparvion.analog.util.Util.nvls;
 
 /**
@@ -97,7 +98,7 @@ public class WebSocketEventListener {
         // 1. Ensure that all RMI registration channels are created
         ensureRegistrationChannelsCreated(logConfig);
         // 2. Register the tracking on specified nodes
-        initiateTracking(logConfig);
+        switchTracking(logConfig, true);
         // 3. Remember the tracking in the registry
         registry.addEntry(logConfig, sessionId);
         log.info("New tracking for log '{}' has started within session id={}.", logConfig.getUid(), sessionId);
@@ -114,7 +115,7 @@ public class WebSocketEventListener {
           : format("Session id=%s is already watching log '%s'. Double subscription is prohibited.",
           sessionId, logConfig.getUid());
       watchingSessionIds.add(sessionId);
-      log.info("There were {} sessions already watching log '{}'. New session {} has been added to them.",
+      log.info("There were {} session(s) already watching log '{}'. New session {} has been added to them.",
           watchingSessionIds.size()-1, logConfig.getUid(), sessionId);
     }
   }
@@ -149,17 +150,14 @@ public class WebSocketEventListener {
     // check if there any other session(s) left (may require synchronization on registry object)
     if (fellows.size() > 1) {
       fellows.remove(sessionId);
-      log.info("There are still {} session(s) watching the same log as removed one (id={}). " +
+      log.info("There are still {} session(s) watching the same log as removed one (sessionId={}). " +
           "Will keep the tracking active.", fellows.size(), sessionId);
       return;
     }
     // in case it was the latest session watching that log we should stop the tracking
     LogConfigEntry watchingLog = registry.findLogConfigEntryBy(sessionId);
     log.debug("No sessions left watching log '{}'. Will deactivate the tracking...", watchingLog.getUid());
-    String fullPath = buildFullPath(watchingLog);
-    String nodeName = nvls(watchingLog.getNode(), clusterProperties.getMyselfNode().getName());
-    TrackingRequest request = new TrackingRequest(fullPath, watchingLog.getTimestamp(), nodeName, watchingLog.getUid());
-    remoteGateway.switchRegistration(request, false);
+    switchTracking(watchingLog, false);
     // now that the log is not tracked anymore we need to remove it from the registry
     registry.removeEntry(watchingLog);
     log.info("Current node has unregistered itself from tracking log '{}' as there is no watching sessions anymore.",
@@ -208,21 +206,33 @@ public class WebSocketEventListener {
         });
   }
 
-  private void initiateTracking(LogConfigEntry matchingEntry) {
+  private void switchTracking(LogConfigEntry logConfigEntry, boolean isOn) {
     ClusterNode myselfNode = clusterProperties.getMyselfNode();
-    String fullPath = buildFullPath(matchingEntry);
-    String nodeName = nvls(matchingEntry.getNode(), myselfNode.getName());
+    String fullPath = buildFullPath(logConfigEntry);
+    String nodeName = nvls(logConfigEntry.getNode(), myselfNode.getName());
+
     // send registration request for the main entry
-    TrackingRequest request = new TrackingRequest(fullPath, matchingEntry.getTimestamp(), nodeName, matchingEntry.getUid());
-    remoteGateway.switchRegistration(request, true);
+    TrackingRequest primaryRequest = new TrackingRequest(fullPath, logConfigEntry.getTimestamp(), nodeName, logConfigEntry.getUid());
+    log.debug("Switching {} the registration by PRIMARY request: {}", isOn ? "ON":"OFF", primaryRequest);
+    remoteGateway.switchRegistration(primaryRequest, isOn);
+
     // send registration requests for included entries
-    for (LogConfigEntry included : matchingEntry.getIncludes()) {
-      request = new TrackingRequest(included.getPath(),
-          included.getTimestamp(),
-          nvls(included.getNode(), myselfNode.getName()),
-          matchingEntry.getUid());
-      remoteGateway.switchRegistration(request, true);
-      // TODO provide isolation for included logs registration in order to avoid any of them capable of failing others
+    for (LogConfigEntry included : logConfigEntry.getIncludes()) {
+      TrackingRequest includedRequest = null;
+      try {
+        includedRequest = new TrackingRequest(
+            normalizePath(included.getPath()),
+            included.getTimestamp(),
+            nvls(included.getNode(), myselfNode.getName()),
+            logConfigEntry.getUid());
+        log.debug("Switching {} the registration by INCLUDED request: {}", isOn ? "ON":"OFF", includedRequest);
+        remoteGateway.switchRegistration(includedRequest, isOn);
+
+      } catch (Exception e) {
+        log.error(format("Failed to switch %s the registration by included request: %s",
+            isOn ? "ON":"OFF", (includedRequest==null) ? "n/a" : includedRequest), e);
+        // TODO inform the user about this partial failure by sending ServerFault notification
+      }
     }
   }
 
@@ -239,7 +249,7 @@ public class WebSocketEventListener {
         .findAny()
         .map(ChoiceGroup::getPathBase)
         .orElse("");
-    return groupPathBase + logConfigEntry.getPath();
+    return normalizePath((groupPathBase + logConfigEntry.getPath()));
   }
 
 }

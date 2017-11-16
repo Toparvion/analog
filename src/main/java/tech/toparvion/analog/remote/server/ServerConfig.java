@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.channel.DirectChannel;
+import org.springframework.integration.config.EnableIntegrationManagement;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.file.tail.FileTailingMessageProducerSupport.FileTailingEvent;
@@ -33,6 +34,7 @@ import static tech.toparvion.analog.remote.RemotingConstants.*;
  */
 @Configuration
 @IntegrationComponentScan
+@EnableIntegrationManagement(defaultCountsEnabled = "true", defaultStatsEnabled = "true")
 public class ServerConfig {
   private static final Logger log = LoggerFactory.getLogger(ServerConfig.class);
 
@@ -65,7 +67,7 @@ public class ServerConfig {
 
     return IntegrationFlows
         .from(inboundRmiGateway)
-        .<Object, Class<?>>   // Object stands for message payload; Class<?> stands for payload type
+        .<Object, Class<?>>   // 'Object' stands for message payload; 'Class<?>' stands for payload type
             route(this::detectPayloadClass, routerSpec -> routerSpec
                 .subFlowMapping(Collection.class, flow -> flow.handle(recordSender::sendRecord))
                 .subFlowMapping(FileTailingEvent.class, flow -> flow.handle(metaDataSender::sendMetaData)))
@@ -86,7 +88,7 @@ public class ServerConfig {
   }
 
   @Bean
-  @Lazy(false)      // to detect problems with tail ASAP
+  @Lazy(false)      // to reveal problems with tail ASAP
   public TailSpecificsProvider tailSpecificsProvider() throws Exception {
     String idfString = obtainTailIdfString();
     TailSpecificsProvider specificsProvider;

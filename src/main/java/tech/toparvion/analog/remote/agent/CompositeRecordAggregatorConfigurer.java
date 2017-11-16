@@ -8,9 +8,8 @@ import org.springframework.integration.store.MessageGroup;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.MessageBuilder;
-import reactor.util.function.Tuple2;
-import reactor.util.function.Tuples;
 
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -24,15 +23,15 @@ import static org.springframework.messaging.support.MessageBuilder.withPayload;
  * @author Toparvion
  * @since v0.7
  */
-class RecordAggregatorConfigurer {
-  private static final Logger log = LoggerFactory.getLogger(RecordAggregatorConfigurer.class);
+class CompositeRecordAggregatorConfigurer {
+  private static final Logger log = LoggerFactory.getLogger(CompositeRecordAggregatorConfigurer.class);
 
-  private final MessageChannel preAggregatorQueueChannel;
+  private final MessagingTemplate preAggregatorQueueSender;
   private final int groupSizeThreshold;
   private final long groupTimeout;
 
-  RecordAggregatorConfigurer(MessageChannel preAggregatorQueueChannel, int groupSizeThreshold, long groupTimeout) {
-    this.preAggregatorQueueChannel = preAggregatorQueueChannel;
+  CompositeRecordAggregatorConfigurer(MessageChannel preAggregatorQueueChannel, int groupSizeThreshold, long groupTimeout) {
+    this.preAggregatorQueueSender = new MessagingTemplate(preAggregatorQueueChannel);
     this.groupSizeThreshold = groupSizeThreshold;
     this.groupTimeout = groupTimeout;
   }
@@ -45,8 +44,7 @@ class RecordAggregatorConfigurer {
         .sendPartialResultOnExpiry(true)
         .expireGroupsUponCompletion(true)
         .expireGroupsUponTimeout(true)
-        .poller(p -> p.fixedDelay(50, MILLISECONDS))
-        .id("recordAggregator");
+        .poller(p -> p.fixedDelay(50, MILLISECONDS));
   }
 
   private boolean releaseStrategy(MessageGroup group) {
@@ -57,9 +55,9 @@ class RecordAggregatorConfigurer {
     if (group.size() >= groupSizeThreshold) {
       return true;
     }
-    Tuple2<Message<?>, Message<?>> prevAndLastMessages = findPrevAndLastMessages(group);
-    Message<?> lastMessage = prevAndLastMessages.getT1();
-    Message<?> second2LastMessage = prevAndLastMessages.getT2();
+    MessageTwain prevAndLastMessages = findPrevAndLastMessages(group);
+    Message<?> lastMessage = prevAndLastMessages.getM1();
+    Message<?> second2LastMessage = prevAndLastMessages.getM2();
     assert (lastMessage != null) && (second2LastMessage != null);   // relying on check for singleton group
     Long lastMessageCorrId = lastMessage.getHeaders().get(CORRELATION_ID, Long.class);
     Long prevMessageCorrId = second2LastMessage.getHeaders().get(CORRELATION_ID, Long.class);
@@ -83,9 +81,9 @@ class RecordAggregatorConfigurer {
       return composeRecord(group);
     }
 
-    Tuple2<Message<?>, Message<?>> prevAndLastMessages = findPrevAndLastMessages(group);
-    Message<?> lastMessage = prevAndLastMessages.getT1();
-    Message<?> second2LastMessage = prevAndLastMessages.getT2();
+    MessageTwain prevAndLastMessages = findPrevAndLastMessages(group);
+    Message<?> lastMessage = prevAndLastMessages.getM1();
+    Message<?> second2LastMessage = prevAndLastMessages.getM2();
     assert (lastMessage != null) && (second2LastMessage != null);   // relying on check for singleton group
     // extract correlation headers in order to find out if the group is released by timeout or by completion
     Long lastMessageCorrId = lastMessage.getHeaders().get(CORRELATION_ID, Long.class);
@@ -94,7 +92,7 @@ class RecordAggregatorConfigurer {
     boolean isGroupComplete = !Objects.equals(lastMessageCorrId, prevMessageCorrId);
     if (isGroupComplete) {
       group.remove(lastMessage);
-      new MessagingTemplate(preAggregatorQueueChannel).send(lastMessage);
+      preAggregatorQueueSender.send(lastMessage);
     }
     return composeRecord(group);
   }
@@ -112,16 +110,38 @@ class RecordAggregatorConfigurer {
   }
 
   /**
-   * @return last (T1) and second to last (T2) messages from given group; both messages can be {@code null} if the
+   * @return last (M1) and second to last (M2) messages from given group; both messages can be {@code null} if the
    * group contains less than 2 or 1 elements
    */
-  private Tuple2<Message<?>, Message<?>> findPrevAndLastMessages(MessageGroup group) {
+  private MessageTwain findPrevAndLastMessages(MessageGroup group) {
     Message<?> lastMessage = null, second2LastMessage = null;
     for (Message<?> message : group.getMessages()) {
       second2LastMessage = lastMessage;
       lastMessage = message;
     }
-    return Tuples.of(lastMessage, second2LastMessage);
+    return new MessageTwain(lastMessage, second2LastMessage);
+  }
+
+  private static class MessageTwain {
+    @Nullable
+    private final Message<?> m1;
+    @Nullable
+    private final Message<?> m2;
+
+    private MessageTwain(@Nullable Message<?> m1, @Nullable Message<?> m2) {
+      this.m1 = m1;
+      this.m2 = m2;
+    }
+
+    @Nullable
+    Message<?> getM1() {
+      return m1;
+    }
+
+    @Nullable
+    Message<?> getM2() {
+      return m2;
+    }
   }
 
 }

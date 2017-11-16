@@ -26,8 +26,14 @@ app.constant('notifications', {
     fileAppeared: {
         level: 'success',
         title: 'Есть контакт!',
-        text: "Файл <span class='highlight'>{logPath}</span> появился на узле " +
-                "<span class='highlight'>{nodeName}</span>. Отслеживаю его изменения."
+        text: "Файл <span class='highlight'>{logPath}</span> на узле <span class='highlight'>{nodeName}</span> " +
+                "появился. Отслеживаю его изменения."
+    },
+    fileRotated: {
+        level: 'info',
+        title: 'Ротация лога',
+        text: "Файл <span class='highlight'>{logPath}</span> на узле <span class='highlight'>{nodeName}</span> " +
+                "начал писаться с начала. Предыдущие записи, вероятно, перенесены в другой файл."
     },
     fileDisappeared: {
         level: 'info',
@@ -49,13 +55,13 @@ app.constant('notifications', {
         level: 'danger',
         title: 'Ай-ай!',
         text: "На сервере произошел сбой; отслеживание прекращено.<br/>Для выяснения причин нужно поискать в логе" +
-        " сервера вот такое сообщение:<br/><span class='failure-message'>{message}</span>"
+                " сервера вот такое сообщение:<br/><span class='failure-message'>{message}</span>"
     },
     choicesNotFound: {
         level: 'danger',
         title: 'Вот блин!',
         text: "Не удалось получить варианты логов с сервера из-за ошибки:<br/>" +
-        "<span class='failure-message'>{message}</span>"
+                "<span class='failure-message'>{message}</span>"
     }
     //</editor-fold>
 
