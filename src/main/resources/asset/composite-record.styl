@@ -1,0 +1,74 @@
+/*
+ * Composite records' styles.
+ * Generated with Stylus CSS preprocessor.
+ */
+
+files = {
+  //bankplus: #00328C,
+  bankplus: #005bff,
+  core: darkgreen
+}
+
+compRec = '.composite-record'
+
+{compRec}
+  // display (flex) props
+  display flex
+  flex-direction row
+  flex-wrap nowrap
+  justify-content flex-start
+  align-items stretch
+  margin-top 1px
+  // border props
+  border-width 0 5px 0 0
+  border-style solid
+
+{compRec}>.marker
+  flex-grow 0
+  flex-shrink 1
+  flex-basis auto
+  align-self stretch    // this is why flex container is used here - it allows to stretch even empty divs for free
+  min-width 7px
+  max-width 7px
+  margin-right 5px      // to introduce a distance between marker and designated record
+
+{compRec}>.payload
+  flex-grow 1
+  flex-shrink 1
+  flex-basis auto
+  align-self auto
+
+.text-nowrap {compRec}
+  border-width 0 0 0 0
+  // TODO adjust highlighting width to record width when no right border present
+
+for file, color in files
+  /* Next highlighting entry */
+  {compRec}.file-{file} {
+    border-color color + 20%
+    position relative       // in order for ':before' element to snap its position to non-static parent
+    z-index 1
+  }
+  {compRec}.file-{file}:before {
+    display block
+    position absolute
+    top 0       // to align with margin-top of the marker
+    left 0      // to closely contact with marker
+    width 100%
+    height 100%
+    z-index -1
+    opacity: 0
+    content: ''
+    background linear-gradient(
+            to right,
+            alpha(color, 1) 0%,
+            alpha(color, 0.2) 3%,
+            alpha(color, 0.2) 97%,
+            alpha(color, 1) 100%)
+    transition opacity 0.45s
+  }
+  {compRec}.file-{file}:hover:before {
+    opacity 1
+  }
+  {compRec}.file-{file} .marker
+    background color+20%

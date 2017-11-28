@@ -1,8 +1,32 @@
+/*<editor-fold desc="General rules">*/
+html {
+    overflow: -moz-scrollbars-vertical;
+    overflow-y: scroll;
+}   /* in order to avoid page re-layout on scroll bar appearance */
 body {
     background-color: #282727;
-    padding-top: 70px;
+    padding-top: 70px;          /* an offset for navbar */
 }
+.navbar-last-item {
+    margin-right: 10px;
+}
+#consolePanel {
+    font-family: Courier New, monospace;
+    font-size: 13px;
+}
+#substrate {
+  bottom: 0;
+  height: auto;
+  max-height: 35%;
+  opacity: 0.25;
+  position: fixed;
+  right: 0;
+  width: auto;
+  z-index: -10;
+}
+/*</editor-fold>*/
 
+/*<editor-fold desc="Log levels">*/
 .TRACE {
     color: #696969;
     /*color: #bcbbba;*/
@@ -27,91 +51,23 @@ body {
     color: #808080;
     font-style: italic;
 }
+/*</editor-fold>*/
 
-#consolePanel {
-    font-family: Courier New, monospace;
-    font-size: 13px;
-}
-
-#substrate {
-  bottom: 0;
-  height: auto;
-  max-height: 35%;
-  opacity: 0.25;
-  position: fixed;
-  right: 0;
-  width: auto;
-  z-index: -1;
-}
-
-html {
-    overflow: -moz-scrollbars-vertical;
-    overflow-y: scroll;
-}   /* in order to avoid page changes on scroll bar appearance */
-
-/* The next definition prevents highlighted code sections from overlapping the substrate. */
-.hljs {
-    background: none;
-    border: none;
-}
-
-.navbar-last-item {
-    margin-right: 10px;
-}
-
+/*<editor-fold desc="Scroll down button">*/
 .scroll-down-btn {
     position: fixed;
-    right: 15px;
+    right: 25px;
     bottom: 43%;
     height: 15%;
     opacity: 0.3;
+    z-index: 2;
 }
 .scroll-down-btn:hover {
     opacity: 1;
 }
+/*</editor-fold>*/
 
-/* Notification balloons */
-.alert {
-    position: fixed;
-    z-index: 1000;
-    right: 15px;
-    top: 65px;
-    max-width: 450px;
-}
-.alert p {
-    font-size: 13px;
-}
-.alert.ng-hide {
-    opacity: 0;
-}
-.alert.ng-hide-add,
-.alert.ng-hide-remove {
-    transition: all linear 0.5s;
-}
-.alert-info .highlight {
-    font-weight: bold;
-    color: lightgoldenrodyellow;
-}
-
-.alert-success .highlight {
-    font-weight: bold;
-    color: palegoldenrod;
-}
-
-.alert-danger .highlight {
-    font-weight: bold;
-    color: cornsilk;
-}
-
-.alert-danger .failure-message {
-    font-weight: bold;
-    color: limegreen;
-    font-family: monospace;
-    background-color: black;
-    padding: 1px 3px 1px 3px;
-}
-
-/*<editor-fold desc="blinking cursor">*/
+/*<editor-fold desc="Blinking cursor">*/
 .invisible-cursor {
     visibility: hidden;
 }
@@ -122,10 +78,6 @@ html {
     font-size: large;
 }
 .blinking-cursor {
-    -webkit-animation: 1s blink step-end infinite;
-    -moz-animation: 1s blink step-end infinite;
-    -ms-animation: 1s blink step-end infinite;
-    -o-animation: 1s blink step-end infinite;
     animation: 1s blink step-end infinite;
 }
 @keyframes blink {
@@ -136,81 +88,5 @@ html {
         color: #3a9546;
     }
 }
-@-moz-keyframes blink {
-    from, to {
-        color: transparent;
-    }
-    50% {
-        color: #3a9546;
-    }
-}
-@-webkit-keyframes blink {
-    from, to {
-        color: transparent;
-    }
-    50% {
-        color: #3a9546;
-    }
-}
-@-ms-keyframes blink {
-    from, to {
-        color: transparent;
-    }
-    50% {
-        color: #3a9546;
-    }
-}
-@-o-keyframes blink {
-    from, to {
-        color: transparent;
-    }
-    50% {
-        color: #3a9546;
-    }
-}
 /*</editor-fold>*/
 
-/***************************** Frameworks tunings Tunings **************************************** */
-/********* Bootstrap *************/
-.navbar-form .form-control {
-    width: 430px;
-}
-.navbar-brand {
-    cursor: help;
-}
-.dropdown-header {
-    font-weight: bold;
-    color: #de891b;
-}
-
-/********* Angular UI Select *************/
-.ui-select-bootstrap > .ui-select-choices ,.ui-select-bootstrap > .ui-select-no-choice {
-    max-height: 50vh;
-}
-.ui-select-bootstrap .ui-select-choices-row>span {
-    color: #f3f3f3;
-}
-.ui-select-bootstrap .ui-select-choices-row>span:hover,
-.ui-select-bootstrap .ui-select-choices-row>span:focus {
-    text-decoration: none;
-    color: #262626;
-    background-color: #f5f5f5;
-}
-.ui-select-bootstrap .ui-select-choices-row .log-choice-detail {
-    color: #a0a0a0;
-    text-shadow: none;
-}
-.ui-select-bootstrap .ui-select-choices-row.active .log-choice-detail {
-    color: #dcdcdc;
-}
-.ui-select-bootstrap .ui-select-choices-row>span:hover .log-choice-detail,
-.ui-select-bootstrap .ui-select-choices-row>span:focus .log-choice-detail {
-    text-decoration: none;
-    color: #848484;
-}
-.log-choice-accent {
-    color: white;
-    background-color: #de891b; /*salmon;*/
-    padding-left: 5px;
-    padding-right: 5px;
-}

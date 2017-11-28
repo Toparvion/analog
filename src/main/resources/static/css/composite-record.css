@@ -1,0 +1,82 @@
+/*
+ * Composite records' styles.
+ * Generated with Stylus CSS preprocessor.
+ */
+.composite-record {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  margin-top: 1px;
+  border-width: 0 5px 0 0;
+  border-style: solid;
+}
+.composite-record>.marker {
+  flex-grow: 0;
+  flex-shrink: 1;
+  flex-basis: auto;
+  align-self: stretch;
+  min-width: 7px;
+  max-width: 7px;
+  margin-right: 5px;
+}
+.composite-record>.payload {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: auto;
+  align-self: auto;
+}
+.text-nowrap .composite-record {
+  border-width: 0 0 0 0;
+}
+/* Next highlighting entry */
+.composite-record.file-bankplus {
+  border-color: #337cff;
+  position: relative;
+  z-index: 1;
+}
+.composite-record.file-bankplus:before {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0;
+  content: '';
+  background: linear-gradient(to right, #005bff 0%, rgba(0,91,255,0.2) 3%, rgba(0,91,255,0.2) 97%, #005bff 100%);
+  transition: opacity 0.45s;
+}
+.composite-record.file-bankplus:hover:before {
+  opacity: 1;
+}
+.composite-record.file-bankplus .marker {
+  background: #337cff;
+}
+/* Next highlighting entry */
+.composite-record.file-core {
+  border-color: #00b600;
+  position: relative;
+  z-index: 1;
+}
+.composite-record.file-core:before {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0;
+  content: '';
+  background: linear-gradient(to right, #006400 0%, rgba(0,100,0,0.2) 3%, rgba(0,100,0,0.2) 97%, #006400 100%);
+  transition: opacity 0.45s;
+}
+.composite-record.file-core:hover:before {
+  opacity: 1;
+}
+.composite-record.file-core .marker {
+  background: #00b600;
+}

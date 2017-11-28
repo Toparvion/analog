@@ -9,16 +9,22 @@ import java.util.List;
 @SuppressWarnings("unused")     // getters are used during serialization to JSON
 public class CompositeLinesPart extends LinesPart {
   private final String sourceNode;
+  private final String sourcePath;
   private final long timestamp;
 
-  public CompositeLinesPart(List<StyledLine> lines, String sourceNode, long timestamp) {
+  public CompositeLinesPart(List<StyledLine> lines, String sourceNode, String sourcePath, long timestamp) {
     super(lines);
     this.sourceNode = sourceNode;
+    this.sourcePath = sourcePath;
     this.timestamp = timestamp;
   }
 
   public String getSourceNode() {
     return sourceNode;
+  }
+
+  public String getSourcePath() {
+    return sourcePath;
   }
 
   public long getTimestamp() {

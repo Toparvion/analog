@@ -1,0 +1,54 @@
+/**
+ * 3rd party libraries tuning styles
+ */
+
+
+/********* HLJS *************/
+.hljs {               /* Prevents highlighted code sections from overlapping the substrate */
+    background: none;
+    border: none;
+}
+
+/********* Bootstrap *************/
+.navbar-form .form-control {
+    width: 430px;
+}
+.navbar-brand {
+    cursor: help;
+}
+.dropdown-header {
+    font-weight: bold;
+    color: #de891b;
+}
+
+/********* Angular UI Select *************/
+.ui-select-bootstrap > .ui-select-choices ,.ui-select-bootstrap > .ui-select-no-choice {
+    max-height: 50vh;
+}
+.ui-select-bootstrap .ui-select-choices-row>span {
+    color: #f3f3f3;
+}
+.ui-select-bootstrap .ui-select-choices-row>span:hover,
+.ui-select-bootstrap .ui-select-choices-row>span:focus {
+    text-decoration: none;
+    color: #262626;
+    background-color: #f5f5f5;
+}
+.ui-select-bootstrap .ui-select-choices-row .log-choice-detail {
+    color: #a0a0a0;
+    text-shadow: none;
+}
+.ui-select-bootstrap .ui-select-choices-row.active .log-choice-detail {
+    color: #dcdcdc;
+}
+.ui-select-bootstrap .ui-select-choices-row>span:hover .log-choice-detail,
+.ui-select-bootstrap .ui-select-choices-row>span:focus .log-choice-detail {
+    text-decoration: none;
+    color: #848484;
+}
+.log-choice-accent {
+    color: white;
+    background-color: #de891b; /*salmon;*/
+    padding-left: 5px;
+    padding-right: 5px;
+}

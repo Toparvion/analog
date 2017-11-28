@@ -14,18 +14,30 @@ app.factory('renderingService', ['$log', '$interval', 'config', function($log, $
 
     function render(newPart) {
         if (angular.isDefined(newPart.timestamp)) {
-            renderCompositeMessages(newPart)
+            prepareCompositeMessages(newPart)
         } else {
-            renderPlainMessages(newPart);
+            preparePlainMessages(newPart);
         }
     }
 
-    function renderCompositeMessages(newPart) {
-        $log.log("Preparing COMPOSITE messages: ", newPart);
-        var $newRecord = $("<div></div>")
-            .data("timestamp", newPart.timestamp)
-            .addClass('node-'+newPart.sourceNode)
+    function prepareCompositeMessages(newPart) {
+        $log.log("Preparing COMPOSITE messages: %o", newPart);
+        var fileName = extractFileName(newPart.sourcePath).replace('.log', '');
+        var $newRecord = $('<div></div>')
+            .addClass('composite-record')
+            .addClass('file-'+ fileName)
+            .data('timestamp', newPart.timestamp)
             .hide();
+
+        var $marker = $('<div></div>')
+            .addClass('marker')
+            .attr('data-balloon', ('[' + newPart.sourceNode + '] ' + newPart.sourcePath))
+            .attr('data-balloon-pos', 'right');
+        $newRecord.append($marker);
+
+        var $payload = $('<div></div>')
+            .addClass('payload');
+        $newRecord.append($payload);
 
         angular.forEach(newPart.lines, function (line) {
             var $messageLine;
@@ -40,7 +52,7 @@ app.factory('renderingService', ['$log', '$interval', 'config', function($log, $
                     .addClass(line.style)
                     .html(line.text);
             }
-            $newRecord.append($messageLine);
+            $payload.append($messageLine);
         });
         // determine correct position to insert new record
         var $records = $consolePanel.find("> div"), $precedingRecord;
@@ -60,8 +72,8 @@ app.factory('renderingService', ['$log', '$interval', 'config', function($log, $
         renderingQueue.push($newRecord);
     }
 
-    function renderPlainMessages(newPart) {
-        console.log("Preparing PLAIN messages: ", newPart);
+    function preparePlainMessages(newPart) {
+        console.log("Preparing PLAIN messages: %o", newPart);
         var $partLines = $("<div></div>").hide();
         angular.forEach(newPart.lines, function (line) {
             var $messageLine;
@@ -108,7 +120,7 @@ app.factory('renderingService', ['$log', '$interval', 'config', function($log, $
     }
 
     function scrollDown() {
-        $window.scrollTo("max", 400, {
+        $window.scrollTo("max", 300, {
             easing: 'swing',
             axis: 'y',
             interrupt: true

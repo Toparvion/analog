@@ -12,6 +12,7 @@ import tech.toparvion.analog.model.api.LinesPart;
 import tech.toparvion.analog.model.api.StyledLine;
 import tech.toparvion.analog.service.AnaLogUtils;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -20,7 +21,9 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonMap;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
+import static org.springframework.integration.file.FileHeaders.ORIGINAL_FILE;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
 
 /**
@@ -43,6 +46,7 @@ public class RecordSender {
   void sendRecord(Message<?> recordMessage) {
     String uid = recordMessage.getHeaders().get(LOG_CONFIG_ENTRY_UID__HEADER, String.class);
     String sourceNode = recordMessage.getHeaders().get(SOURCE_NODE__HEADER, String.class);
+    String sourcePath = requireNonNull(recordMessage.getHeaders().get(ORIGINAL_FILE, File.class)).getAbsolutePath();
     RecordLevel level = recordMessage.getHeaders().get(RECORD_LEVEL__HEADER, RecordLevel.class);
     LocalDateTime timestamp = recordMessage.getHeaders().get(LOG_TIMESTAMP_VALUE__HEADER, LocalDateTime.class);
 
@@ -57,7 +61,7 @@ public class RecordSender {
         : prepareCompositeRecords(payloadAsList, level);
 
     if (log.isTraceEnabled()) {
-      log.trace("Рассылаемый фрагмент:\n{}", styledLines.stream()
+      log.trace("Fragment being sent:\n{}", styledLines.stream()
           .map(rec -> String.format("%7s: %s", rec.getStyle(), rec.getText()))
           .collect(joining("\n")));
     }
@@ -67,7 +71,7 @@ public class RecordSender {
       linesPart = new LinesPart(styledLines);
     } else {
       long timestampMillis = timestamp.toInstant(ZoneOffset.UTC).toEpochMilli();
-      linesPart = new CompositeLinesPart(styledLines, sourceNode, timestampMillis);
+      linesPart = new CompositeLinesPart(styledLines, sourceNode, sourcePath, timestampMillis);
     }
     messagingTemplate.convertAndSend(WEBSOCKET_TOPIC_PREFIX + uid,
         linesPart, singletonMap(MESSAGE_TYPE_HEADER, MessageType.RECORD));
