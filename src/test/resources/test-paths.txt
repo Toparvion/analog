@@ -1,0 +1,121 @@
+C:\lang\study-ix\TestArea\Eclispe\.metadata\.mylyn\.tasks.xml.zip
+C:\Users\Vladimir\AppData\Roaming\DRPSu\DRIVERS\Alcor-FORCED-10x64-Storage_1.0.144.20103-drp.zip
+C:\Users\Vladimir\.IntelliJIdea2017.2\config\tasks\analog.contexts.zip
+C:\Users\Vladimir\.gradle\wrapper\dists\gradle-3.2.1-all\8lz77g2tsnl6gxlpeowwkfgj1\gradle-3.2.1\samples\userguide\files\copy\src\main\assets.zip
+C:\lang\_tools\gradle-3.2.1\samples\userguide\files\copy\src\main\assets.zip
+C:\Program Files\Gradle\gradle-2.10\samples\userguide\files\copy\src\main\assets.zip
+C:\Users\Vladimir\.gradle\wrapper\dists\gradle-4.1-all\bzyivzo6n839fup2jbap0tjew\gradle-4.1\samples\userguide\files\copy\src\main\assets.zip
+C:\ProgramData\Oracle\Java\installcache_x64\baseimage_2dd5fe71afe7df677ea0edcae758b597.zip
+C:\lang\_tools\ANTLR\antlrworks2\java\docs\beansbinding-1.2.1-doc.zip
+C:\Program Files (x86)\AIMP\Plugins\aimp_AnalogMeter\Skins\Classic.zip
+C:\Program Files\MATLAB\MATLAB Production Server\R2015a\toolbox\shared\cmlink\adapterSDK\cm_adapter_SDK.zip
+C:\lang\jmint\src\test\java\sampleapp\standalone\painter\composite-droplet.zip
+C:\lang\study-ix\Samples\coreJava6v1_0130471771.zip
+C:\lang\study-ix\Wiki\Хорстман, Корнелл. Java 2, 7-изд\corejava7.zip
+C:\lang\study-ix\Samples\corejava8.zip
+C:\Users\Vladimir\AppData\Roaming\Opera Software\Opera Stable\themes_backup\default_theme.zip
+C:\Program Files (x86)\Opera\49.0.2725.47\resources\standard_themes\default_theme.zip
+C:\Program Files (x86)\Opera\49.0.2725.39\resources\standard_themes\default_theme.zip
+C:\Program Files (x86)\JetBrains\IntelliJ IDEA Ultimate Edition 163.6110.12\lib\ant\docs.zip
+C:\Program Files (x86)\JetBrains\IntelliJ IDEA Ultimate Edition 17.1 EAP\lib\ant\docs.zip
+C:\Users\Vladimir\AppData\Roaming\Opera Software\Opera Stable\dictionaries\en-US.zip
+C:\Program Files\Java\jdk1.6.0_45\jre\lib\deploy\ffjcext.zip
+C:\Program Files\Java\jre1.8.0_71\lib\deploy\ffjcext.zip
+C:\Program Files\MATLAB\MATLAB Production Server\R2015a\sys\java\jre\win64\jre\lib\deploy\ffjcext.zip
+C:\Program Files (x86)\Sony Mobile\Update Engine\jre\lib\deploy\ffjcext.zip
+C:\Program Files\Java\jdk1.8.0_65\jre\lib\deploy\ffjcext.zip
+C:\Program Files (x86)\XMind\jre\lib\deploy\ffjcext.zip
+C:\Program Files\Tor Browser\Browser\TorBrowser\Tor\PluggableTransports\fteproxy.zip
+C:\lang\_tools\Groovy\Groovy-2.4.7\Supplementary\Gaelyk\gaelyk-template-project-2.1.2.zip
+C:\Users\Vladimir\.gradle\wrapper\dists\gradle-2.13-all\1b9wlm73elu4cqnbc0rk7r7qn\gradle-2.13-all.zip
+C:\Users\Vladimir\.IntelliJIdea2017.2\config\tasks\IDEA_177038.contexts.zip
+C:\Users\Vladimir\IdeaProjects\IDEA-177038.zip
+C:\Program Files (x86)\JetBrains\IntelliJ IDEA Ultimate Edition 163.6110.12\plugins\flex\lib\idea-fcsh-fix_src.zip
+C:\Users\Vladimir\AppData\Roaming\DRPSu\DRIVERS\Intel-FORCED-Chipset-NTx64-10.1.1.13-drp.zip
+C:\Program Files\Java\jdk1.8.0_65\javafx-src.zip
+C:\lang\_tools\jce_policy-8.zip
+C:\lang\study-ix\Wiki\jdk-6u10-docs.zip
+C:\Users\Vladimir\.IntelliJIdea2017.3\config\tasks\jmint.contexts.zip
+C:\Users\Vladimir\.IntelliJIdea2017.3\config\tasks\jmint.tasks.zip
+C:\Users\Vladimir\Dropbox\Books\Kondo_M._Magicheskaya_Uborka_Yapon.fb2.zip
+C:\Users\Vladimir\AppData\Roaming\Opera Software\Opera Stable\themes_backup\landscape_photo.zip
+C:\Users\Vladimir\AppData\Roaming\DRPSu\DRIVERS\LG-FORCED-10x64-drp.zip
+C:\Users\Vladimir\.IntelliJIdea2017.1\system\plugins\LiveEdit-172.1909.7.zip
+C:\Users\Vladimir\AppData\Roaming\DRPSu\DRIVERS\Logitech-FORCED-Allx64-SetPoint-drp.zip
+C:\Program Files (x86)\AIMP\Plugins\aimp_AnalogMeter\Skins\Night.zip
+C:\Users\Vladimir\AppData\Roaming\Opera Software\Opera Stable\themes\night-city.zip
+C:\Users\Vladimir\.IntelliJIdea2017.3\system\plugins\NodeJS-173.3942.4.zip
+C:\Users\Vladimir\AppData\Roaming\DRPSu\DRIVERS\nVidia-FORCED-10x64-361.91-Display.Driver-drp.zip
+C:\Program Files\Tor Browser\Browser\TorBrowser\Tor\PluggableTransports\obfsproxy.zip
+C:\Program Files (x86)\TC\Programs\IsoBuster\old-keygen.zip
+C:\temp\onnv-master.zip
+C:\Users\Vladimir\AppData\Roaming\DRPSu\ohm\openhardwaremonitor.zip
+C:\Users\Vladimir\AppData\Roaming\Notepad++\plugins\config\PluginManagerPlugins.zip
+C:\Users\Vladimir\AppData\Local\Microsoft\Windows\INetCache\IE\Y1PVM4X4\plugins[1].zip
+C:\Program Files (x86)\gnivc\print-nd-pdf417\-problem.zip
+C:\Users\Vladimir\.IntelliJIdea2017.2\config\tasks\projects.contexts.zip
+C:\Users\Vladimir\.gradle\wrapper\dists\gradle-2.14-all\t7wfomcrmv8dmyii9c9waem8\gradle-2.14\samples\maven\pomGeneration\lib\providedRuntime-1.0.zip
+C:\lang\_tools\gradle-3.2.1\samples\maven\pomGeneration\lib\providedRuntime-1.0.zip
+C:\Program Files\Gradle\gradle-2.10\samples\maven\pomGeneration\lib\providedRuntime-1.0.zip
+C:\Users\Vladimir\.gradle\wrapper\dists\gradle-3.2.1-all\8lz77g2tsnl6gxlpeowwkfgj1\gradle-3.2.1\samples\maven\pomGeneration\lib\providedRuntime-1.0.zip
+C:\Program Files (x86)\Dropbox\Client\python-packages-27.zip
+C:\Program Files (x86)\QuickTime\QTSystem\QTJava.zip
+C:\Users\Vladimir\AppData\Roaming\DRPSu\DRIVERS\Realtek-FORCED-NTx64-7743-drp.zip
+C:\Users\Vladimir\AppData\Roaming\DRPSu\DRIVERS\Realtek-matchver-FORCED-All8x64-PCIe_8.043.0119.2016-drp.zip
+C:\Program Files (x86)\TC\Programs\UltraISO\App\UltraISO\Reg.zip
+C:\lang\study-ix\TestArea\Eclispe\.metadata\.mylyn\repositories.xml.zip
+C:\Program Files\MATLAB\MATLAB Production Server\R2015a\sys\tex\latex\required.zip
+C:\Users\Vladimir\AppData\Roaming\Opera Software\Opera Stable\dictionaries\ru.zip
+C:\lang\_tools\Groovy\Groovy-2.4.7\Supplementary\Spock\spock-example-0.6.zip
+C:\Users\Vladimir\.IntelliJIdea2017.3\config\tasks\spring_boot.contexts.zip
+C:\Program Files\Java\jdk1.8.0_65\src.zip
+C:\Program Files (x86)\JetBrains\IntelliJ IDEA Ultimate Edition 17.1 EAP\redist\src\src_annotations.zip
+C:\lang\_tools\ANTLR\antlrworks2\platform\docs\swing-layout-1.0.4-doc.zip
+C:\lang\study-ix\TestArea\Eclispe\.metadata\.mylyn\tasks.xml.zip
+C:\Program Files (x86)\gnivc\print-nd-pdf417\-test.zip
+C:\lang\_tools\ANTLR\antlrworks2\platform\docs\testng-6.8.1-javadoc.zip
+C:\Program Files (x86)\Sony Mobile\Update Engine\setup\drivers\USBFlashDriver.zip
+C:\Program Files (x86)\JetBrains\IntelliJ IDEA Ultimate Edition 17.1 EAP\plugins\spy-js\server\node_modules\socket.io-client\lib\vendor\web-socket-js\WebSocketMainInsecure.zip
+C:\Program Files (x86)\JetBrains\IntelliJ IDEA Ultimate Edition 163.6110.12\plugins\spy-js\server\node_modules\socket.io-client\lib\vendor\web-socket-js\WebSocketMainInsecure.zip
+C:\Users\Vladimir\AppData\Local\Apps\Windows 7 USB DVD Download Tool\wudtsource.zip
+C:\Program Files (x86)\AIMP\!Backup\z Before install v4.13.1893 [2017.04.08 00-00-21].zip
+e:\Backup\Study (NOTESTATION)\TestArea\CPP\EcliWork\.metadata\.mylyn\.tasks.xml.zip
+e:\Backup\Study (NOTESTATION)\TestArea\Eclispe\.metadata\.mylyn\.tasks.xml.zip
+e:\Backup\Study (NOTESTATION)\Work_D\Материалы\Датчики ОС\1580_metoda1.zip
+e:\Backup\Study (NOTESTATION)\2201.zip
+e:\Backup\Study (NOTESTATION)\Work_D\Материалы\Помощь\Диск\arhiv\arm_soft.zip
+e:\Backup\UserKit (NOTESTATION)\avrprog2_drivers_v102.zip
+e:\Backup\UserKit (NOTESTATION)\avrprog2_programmer_v211a.zip
+e:\Software\IDEA\apps\IDEA-U\ch-0\173.3942.4\plugins\flex\lib\idea-fcsh-fix_src.zip
+e:\Software\IDEA\ideaIU-2017.2.1\plugins\flex\lib\idea-fcsh-fix_src.zip
+e:\Software\IDEA\apps\IDEA-U\ch-0\173.3727.127\plugins\flex\lib\idea-fdb-3-fix_src.zip
+e:\Software\IDEA\ideaIU-171.3780.52\plugins\flex\lib\idea-fdb-4.5.0.20967-fix_src.zip
+e:\temp\illumos-gate-master.zip
+e:\Backup\Work (NOTESTATION)\Site\NewStep\imago_v07.zip
+e:\Backup\My_ACEF (NOTESTATION)\Wiki\JavaScript\Tree_UI\img.zip
+e:\Backup\Study (NOTESTATION)\TestArea\CPP\eclipse\plugins\de.innot.avreclipse.source_2.3.1.20081204PRD\src\de.innot.avreclipse.core_2.3.1.20081204PRD\src.zip
+e:\Software\IDEA\ideaIU-172.4343.5\redist\src\src_annotations.zip
+e:\Software\IDEA\ideaIU-171.3780.52\redist\src\src_annotations_java8.zip
+e:\Software\IDEA\ideaIU-171.4249.4\lib\src\src_css-api.zip
+e:\Software\IDEA\apps\IDEA-U\ch-0\173.3727.127\lib\src\src_css-api.zip
+e:\Software\IDEA\ideaIU-2017.2.1\lib\src\src_css-api.zip
+e:\Software\IDEA\apps\IDEA-U\ch-0\173.3727.127\lib\src\src_database-openapi.zip
+e:\Software\IDEA\ideaIU-2017.2.1\lib\src\src_database-openapi.zip
+e:\Software\IDEA\apps\IDEA-U\ch-0\173.3942.4\redist\src\src_forms_rt.zip
+e:\Software\IDEA\ideaIU-172.3317.6\lib\src\src_persistence-openapi.zip
+e:\Software\IDEA\apps\IDEA-U\ch-0\173.3727.127\lib\src\src_persistence-openapi.zip
+e:\Software\IDEA\apps\IDEA-U\ch-0\173.3942.4\lib\src\src_persistence-openapi.zip
+e:\Software\IDEA\ideaIU-2017.2.1\lib\src\src_persistence-openapi.zip
+e:\Software\IDEA\ideaIU-172.4343.5\lib\src\src_persistence-openapi.zip
+e:\Software\IDEA\ideaIU-171.3780.52\lib\src\src_persistence-openapi.zip
+e:\Backup\Work (NOTESTATION)\Wiki\uControllers\AVR\AVR\программирование\учебный курс от Николаева\программатор\uniprof20jan6.zip
+e:\Backup\Work (NOTESTATION)\Wiki\uControllers\AVR\AVR\usbhidio_vc6.zip
+e:\Backup\Work (NOTESTATION)\Wiki\uControllers\AVR\AVR\usbhidio2.zip
+e:\Backup\Work (NOTESTATION)\Wiki\uControllers\Софт\vmlab312.zip
+e:\Software\IDEA\apps\IDEA-U\ch-0\173.3727.127\plugins\spy-js\server\node_modules\socket.io-client\lib\vendor\web-socket-js\WebSocketMainInsecure.zip
+e:\Software\IDEA\ideaIU-172.4343.5\plugins\spy-js\server\node_modules\socket.io-client\lib\vendor\web-socket-js\WebSocketMainInsecure.zip
+e:\Backup\Study (NOTESTATION)\Work_D\Материалы\Помощь\Диск\arhiv\yun_lab_2.zip
+e:\Backup\Work (NOTESTATION)\Wiki\1 - Zelio Logic и Zelio Analog\3 - Примеры применения\Пример программ.zip
+e:\Backup\Work (NOTESTATION)\Wiki\2 - Twidо контроллер\3 - Twido_Altivar_Magelis_Preventa_RU\Пример_программы_Twido_Altivar_Magelis_and_Preventa.zip
+e:\Backup\Work (NOTESTATION)\Wiki\2 - Twidо контроллер\2 - Twido_Altivar_CANopen_RU\Пример_программы_Twido_and_Altivar_with_CANopen.zip
+e:\Backup\Work (NOTESTATION)\Wiki\2 - Twidо контроллер\1 - Twido CANopen solution 07\Примеры программ.zip

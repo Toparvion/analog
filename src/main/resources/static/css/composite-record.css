@@ -31,12 +31,12 @@
   border-width: 0 0 0 0;
 }
 /* Next highlighting entry */
-.composite-record.file-bankplus {
-  border-color: #337cff;
+.composite-record.highlight-blue {
+  border-color: #556497;
   position: relative;
   z-index: 1;
 }
-.composite-record.file-bankplus:before {
+.composite-record.highlight-blue:before {
   display: block;
   position: absolute;
   top: 0;
@@ -46,22 +46,22 @@
   z-index: -1;
   opacity: 0;
   content: '';
-  background: linear-gradient(to right, #005bff 0%, rgba(0,91,255,0.2) 3%, rgba(0,91,255,0.2) 97%, #005bff 100%);
+  background: linear-gradient(to right, #3c476b 0%, rgba(60,71,107,0.2) 3%, rgba(60,71,107,0.2) 97%, #3c476b 100%);
   transition: opacity 0.45s;
 }
-.composite-record.file-bankplus:hover:before {
+.composite-record.highlight-blue:hover:before {
   opacity: 1;
 }
-.composite-record.file-bankplus .marker {
-  background: #337cff;
+.composite-record.highlight-blue .marker {
+  background: #556497;
 }
 /* Next highlighting entry */
-.composite-record.file-core {
-  border-color: #00b600;
+.composite-record.highlight-green {
+  border-color: #627c65;
   position: relative;
   z-index: 1;
 }
-.composite-record.file-core:before {
+.composite-record.highlight-green:before {
   display: block;
   position: absolute;
   top: 0;
@@ -71,12 +71,112 @@
   z-index: -1;
   opacity: 0;
   content: '';
-  background: linear-gradient(to right, #006400 0%, rgba(0,100,0,0.2) 3%, rgba(0,100,0,0.2) 97%, #006400 100%);
+  background: linear-gradient(to right, #425444 0%, rgba(66,84,68,0.2) 3%, rgba(66,84,68,0.2) 97%, #425444 100%);
   transition: opacity 0.45s;
 }
-.composite-record.file-core:hover:before {
+.composite-record.highlight-green:hover:before {
   opacity: 1;
 }
-.composite-record.file-core .marker {
-  background: #00b600;
+.composite-record.highlight-green .marker {
+  background: #627c65;
+}
+/* Next highlighting entry */
+.composite-record.highlight-orange {
+  border-color: #af6544;
+  position: relative;
+  z-index: 1;
+}
+.composite-record.highlight-orange:before {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0;
+  content: '';
+  background: linear-gradient(to right, #7f4931 0%, rgba(127,73,49,0.2) 3%, rgba(127,73,49,0.2) 97%, #7f4931 100%);
+  transition: opacity 0.45s;
+}
+.composite-record.highlight-orange:hover:before {
+  opacity: 1;
+}
+.composite-record.highlight-orange .marker {
+  background: #af6544;
+}
+/* Next highlighting entry */
+.composite-record.highlight-rose {
+  border-color: #985a6c;
+  position: relative;
+  z-index: 1;
+}
+.composite-record.highlight-rose:before {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0;
+  content: '';
+  background: linear-gradient(to right, #6e414e 0%, rgba(110,65,78,0.2) 3%, rgba(110,65,78,0.2) 97%, #6e414e 100%);
+  transition: opacity 0.45s;
+}
+.composite-record.highlight-rose:hover:before {
+  opacity: 1;
+}
+.composite-record.highlight-rose .marker {
+  background: #985a6c;
+}
+/* Next highlighting entry */
+.composite-record.highlight-violet {
+  border-color: #766080;
+  position: relative;
+  z-index: 1;
+}
+.composite-record.highlight-violet:before {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0;
+  content: '';
+  background: linear-gradient(to right, #504157 0%, rgba(80,65,87,0.2) 3%, rgba(80,65,87,0.2) 97%, #504157 100%);
+  transition: opacity 0.45s;
+}
+.composite-record.highlight-violet:hover:before {
+  opacity: 1;
+}
+.composite-record.highlight-violet .marker {
+  background: #766080;
+}
+/* Next highlighting entry */
+.composite-record.highlight-brown {
+  border-color: #7b7057;
+  position: relative;
+  z-index: 1;
+}
+.composite-record.highlight-brown:before {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0;
+  content: '';
+  background: linear-gradient(to right, #4f4838 0%, rgba(79,72,56,0.2) 3%, rgba(79,72,56,0.2) 97%, #4f4838 100%);
+  transition: opacity 0.45s;
+}
+.composite-record.highlight-brown:hover:before {
+  opacity: 1;
+}
+.composite-record.highlight-brown .marker {
+  background: #7b7057;
 }

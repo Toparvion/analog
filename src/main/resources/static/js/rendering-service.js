@@ -22,10 +22,9 @@ app.factory('renderingService', ['$log', '$interval', 'config', function($log, $
 
     function prepareCompositeMessages(newPart) {
         $log.log("Preparing COMPOSITE messages: %o", newPart);
-        var fileName = extractFileName(newPart.sourcePath).replace('.log', '');
         var $newRecord = $('<div></div>')
             .addClass('composite-record')
-            .addClass('file-'+ fileName)
+            .addClass('highlight-'+ newPart.highlightColor)
             .data('timestamp', newPart.timestamp)
             .hide();
 

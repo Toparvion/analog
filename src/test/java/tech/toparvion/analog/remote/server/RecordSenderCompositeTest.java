@@ -30,7 +30,7 @@ class RecordSenderCompositeTest {
 
   @BeforeEach
   void setUp() {
-    sut = new RecordSender(mock(SimpMessagingTemplate.class));
+    sut = new RecordSender(mock(SimpMessagingTemplate.class), mock(ColorPicker.class));
   }
 
   @Test

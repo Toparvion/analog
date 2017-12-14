@@ -37,10 +37,12 @@ public class RecordSender {
   private static final Logger log = LoggerFactory.getLogger(RecordSender.class);
 
   private final SimpMessagingTemplate messagingTemplate;
+  private final ColorPicker colorPicker;
 
   @Autowired
-  public RecordSender(SimpMessagingTemplate messagingTemplate) {
+  public RecordSender(SimpMessagingTemplate messagingTemplate, ColorPicker colorPicker) {
     this.messagingTemplate = messagingTemplate;
+    this.colorPicker = colorPicker;
   }
 
   void sendRecord(Message<?> recordMessage) {
@@ -71,7 +73,8 @@ public class RecordSender {
       linesPart = new LinesPart(styledLines);
     } else {
       long timestampMillis = timestamp.toInstant(ZoneOffset.UTC).toEpochMilli();
-      linesPart = new CompositeLinesPart(styledLines, sourceNode, sourcePath, timestampMillis);
+      String highlightColor = colorPicker.pickColor(sourcePath, sourceNode, uid);
+      linesPart = new CompositeLinesPart(styledLines, sourceNode, sourcePath, timestampMillis, highlightColor);
     }
     messagingTemplate.convertAndSend(WEBSOCKET_TOPIC_PREFIX + uid,
         linesPart, singletonMap(MESSAGE_TYPE_HEADER, MessageType.RECORD));

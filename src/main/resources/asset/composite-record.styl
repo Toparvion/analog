@@ -3,10 +3,15 @@
  * Generated with Stylus CSS preprocessor.
  */
 
-files = {
-  //bankplus: #00328C,
-  bankplus: #005bff,
-  core: darkgreen
+// The following colors are the same as declared in 'tech.toparvion.analog.remote.server.ColorPicker.Color'
+// (order doesn't matter).
+colors = {
+  blue: #3C476B
+  green: #425444
+  orange: #7F4931
+  rose: #6E414E
+  violet: #504157
+  brown: #4F4838
 }
 
 compRec = '.composite-record'
@@ -40,16 +45,16 @@ compRec = '.composite-record'
 
 .text-nowrap {compRec}
   border-width 0 0 0 0
-  // TODO adjust highlighting width to record width when no right border present
+  // TODO adjust highlighting width to record's width when no right border present
 
-for file, color in files
+for colorName, colorValue in colors
   /* Next highlighting entry */
-  {compRec}.file-{file} {
-    border-color color + 20%
+  {compRec}.highlight-{colorName} {
+    border-color colorValue + 20%
     position relative       // in order for ':before' element to snap its position to non-static parent
     z-index 1
   }
-  {compRec}.file-{file}:before {
+  {compRec}.highlight-{colorName}:before {
     display block
     position absolute
     top 0       // to align with margin-top of the marker
@@ -61,14 +66,14 @@ for file, color in files
     content: ''
     background linear-gradient(
             to right,
-            alpha(color, 1) 0%,
-            alpha(color, 0.2) 3%,
-            alpha(color, 0.2) 97%,
-            alpha(color, 1) 100%)
+            alpha(colorValue, 1) 0%,
+            alpha(colorValue, 0.2) 3%,
+            alpha(colorValue, 0.2) 97%,
+            alpha(colorValue, 1) 100%)
     transition opacity 0.45s
   }
-  {compRec}.file-{file}:hover:before {
+  {compRec}.highlight-{colorName}:hover:before {
     opacity 1
   }
-  {compRec}.file-{file} .marker
-    background color+20%
+  {compRec}.highlight-{colorName} .marker
+    background colorValue + 20%

@@ -8,7 +8,7 @@ server:
   session:
     persistent: true
     cookie:
-      max-age: 86400
+      max-age: "86400s"
   display-name: AnaLog
 
 logging:

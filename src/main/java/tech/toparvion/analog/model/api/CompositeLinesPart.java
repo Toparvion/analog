@@ -11,12 +11,18 @@ public class CompositeLinesPart extends LinesPart {
   private final String sourceNode;
   private final String sourcePath;
   private final long timestamp;
+  private final String highlightColor;
 
-  public CompositeLinesPart(List<StyledLine> lines, String sourceNode, String sourcePath, long timestamp) {
+  public CompositeLinesPart(List<StyledLine> lines,
+                            String sourceNode,
+                            String sourcePath,
+                            long timestamp,
+                            String highlightColor) {
     super(lines);
     this.sourceNode = sourceNode;
     this.sourcePath = sourcePath;
     this.timestamp = timestamp;
+    this.highlightColor = highlightColor;
   }
 
   public String getSourceNode() {
@@ -29,5 +35,9 @@ public class CompositeLinesPart extends LinesPart {
 
   public long getTimestamp() {
     return timestamp;
+  }
+
+  public String getHighlightColor() {
+    return highlightColor;
   }
 }

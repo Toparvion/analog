@@ -1,0 +1,15 @@
+EuclideanDistance;0,684018;0,015794
+NeedlemanWunch;0,541190;0,017842
+LongestCommonSubstring;0,051860;0,019710
+GeneralizedJaccard;0,009157;0,020252
+SmithWatermanGotoh;0,070260;0,024512
+SmithWaterman;0,069417;0,024836
+DamerauLevenshtein;0,187091;0,036963
+Levenshtein;0,186307;0,037491
+BlockDistance;0,017384;0,038415
+SimonWhite;0,017384;0,038415
+CosineSimilarity;0,017646;0,039040
+Jaro;0,567425;0,039576
+GeneralizedOverlapCoefficient;0,020522;0,046048
+LongestCommonSubsequence;0,292467;0,048408
+JaroWinkler;0,585903;0,071377

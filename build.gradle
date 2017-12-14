@@ -1,7 +1,8 @@
 buildscript {
     ext {
-        springBootVersion = '2.0.0.M6'
-        springIntegrationVersion = '5.0.0.RC1'
+        springBootVersion = '2.0.0.M7'
+        springIntegrationVersion = '5.0.0.RELEASE'
+        junitVersion = '5.0.2'
     }
     repositories {
         mavenCentral()
@@ -44,7 +45,6 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-websocket:${springBootVersion}")
-//	compile('org.springframework.boot:spring-boot-starter-integration')
     compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
 
     compile group: 'org.springframework.integration', name: 'spring-integration-core', version: "${springIntegrationVersion}"
@@ -54,6 +54,7 @@ dependencies {
     compile group: 'net.sf.jtidy', name: 'jtidy', version: 'r938'
     compile group: 'net.bull.javamelody', name: 'javamelody-core', version: '1.61.0'
     compile group: 'com.github.albfernandez', name: 'juniversalchardet', version: '2.0.0'
+    compile group: 'com.github.mpkorstanje', name: 'simmetrics-core', version: '4.1.1'
 
     // FrontEnd deps
     compile group: 'org.webjars', name: 'angularjs', version: '1.5.8'
@@ -70,7 +71,9 @@ dependencies {
 
     // Test deps
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
-    testCompile("org.junit.jupiter:junit-jupiter-api:5.0.0-M5")
+    testCompile("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
+    testCompile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+
 }
 
 junitPlatform {
