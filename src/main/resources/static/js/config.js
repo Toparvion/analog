@@ -9,7 +9,17 @@ app.constant('config', {
 
     rendering: {
         /** Period between successive renderings of records accumulated in the queue */
-        periodMs: 1000
+        periodMs: 1000,
+        eviction: {
+            composite: {
+                threshold: 1100,
+                depth: 100
+            },
+            plain: {
+                threshold: 2200,
+                depth: 200
+            }
+        }
     },
 
     websocket: {

@@ -20,7 +20,6 @@ choices:
     plainLogs:
       - core.log as "$f - $g"
       - pppinfo.log as "$f - $g"
-#      - cluster\composite.log as "$f (growing)" (selected)
     compositeLogs:
       - path: generated\bankplus.log
         node: angara

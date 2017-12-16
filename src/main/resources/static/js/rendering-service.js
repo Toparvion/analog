@@ -21,7 +21,7 @@ app.factory('renderingService', ['$log', '$interval', 'config', function($log, $
     }
 
     function prepareCompositeMessages(newPart) {
-        $log.log("Preparing COMPOSITE messages: %o", newPart);
+        $log.log("Preparing COMPOSITE record: %o", newPart);
         var $newRecord = $('<div></div>')
             .addClass('composite-record')
             .addClass('highlight-'+ newPart.highlightColor)
@@ -54,7 +54,8 @@ app.factory('renderingService', ['$log', '$interval', 'config', function($log, $
             $payload.append($messageLine);
         });
         // determine correct position to insert new record
-        var $records = $consolePanel.find("> div"), $precedingRecord;
+        var $records = $consolePanel.find("> .composite-record");
+        var $precedingRecord;
         for (var i = $records.length; i-- > 0;) {
             if (jQuery.data($records[i], 'timestamp') <= newPart.timestamp) {
                 $precedingRecord = $($records[i]);
@@ -72,34 +73,52 @@ app.factory('renderingService', ['$log', '$interval', 'config', function($log, $
     }
 
     function preparePlainMessages(newPart) {
-        console.log("Preparing PLAIN messages: %o", newPart);
-        var $partLines = $("<div></div>").hide();
+        console.log("Preparing PLAIN records: %o", newPart);
         angular.forEach(newPart.lines, function (line) {
             var $messageLine;
             if (line.style !== 'XML') {
                 $messageLine = $("<div></div>")
                     .addClass(line.style)
-                    .html(line.text);
+                    .html(line.text)
+                    .hide();
             } else {
                 var $code = $("<code></code>")
                     .addClass("xml")
                     .html(line.text);
-                $messageLine = $("<pre></pre>").append($code);
+                $messageLine = $("<pre></pre>")
+                    .append($code)
+                    .hide();
                 hljs.highlightBlock($messageLine[0]);
             }
-            $partLines.append($messageLine);
+            $consolePanel.append($messageLine);
+            renderingQueue.push($messageLine);
         });
-        $consolePanel.append($partLines);
-        renderingQueue.push($partLines);
     }
 
     /**
      * Animated output logic
      */
     function animate() {
+        // first let's check if it's time to remove the oldest records to avoid client's memory exhaustion
+        var $allRecords = $consolePanel.find("> div");
+        var isComposite = $allRecords.hasClass('composite-record');
+        var threshold = isComposite
+            ? config.rendering.eviction.composite.threshold
+            : config.rendering.eviction.plain.threshold;
+        var partSize = isComposite
+            ? config.rendering.eviction.composite.depth
+            : config.rendering.eviction.plain.depth;
+        var recordsCount = $allRecords.length;
+        if (recordsCount > threshold) {
+            var $recordsToRemove = $allRecords.slice(0, partSize);
+            $recordsToRemove.remove();
+            $log.log('Removed first %d %s records as their total count %d exceeds threshold value %d.',
+                partSize, (isComposite?"composite":"plain"), recordsCount, threshold);
+        }
+
+        // now it's time to show the new records
         var isConsoleUnScrollable = ($body.height() < $window.height());
         var isScrolledToBottom = ($window.scrollTop() === ($document.height() - $window.height()));
-
         while (renderingQueue.length > 0) {
             var $newRecord = renderingQueue.shift();
             if (isConsoleUnScrollable) {       // should we use slide animation to output new record?
@@ -112,7 +131,8 @@ app.factory('renderingService', ['$log', '$interval', 'config', function($log, $
                 // when user manually scrolled up, we just "collect" new records at the bottom
                 $newRecord.show(0, function () {
                     // and scroll to bottom if necessary
-                    if (renderingQueue.length === 0 && isScrolledToBottom) scrollDown();
+                    if (renderingQueue.length === 0 && isScrolledToBottom)
+                        scrollDown();
                 });
             }
         }
@@ -126,7 +146,7 @@ app.factory('renderingService', ['$log', '$interval', 'config', function($log, $
         });
     }
 
-    function clearQueue() {
+    function clearConsole() {
         $consolePanel.empty();
     }
 
@@ -135,7 +155,7 @@ app.factory('renderingService', ['$log', '$interval', 'config', function($log, $
     }
 
     return {
-        clearQueue: clearQueue,
+        clearConsole: clearConsole,
         scrollDown: scrollDown,
         stopTimer: stopTimer,
         render: render

@@ -32,10 +32,10 @@ app.controller('mainController', function ($scope, $rootScope, $window,
         $rootScope.watchingLog = vm.selectedLog.title + " - " + config.general.appTitle;
         $location.path(vm.selectedLog.path);
         vm.onAir = false;
-        renderingService.clearQueue();
+        renderingService.clearConsole();
     };
     vm.clear = function () {
-        renderingService.clearQueue();
+        renderingService.clearConsole();
     };
     vm.scrollDown = renderingService.scrollDown;
     // the following watch allows us to react to URL path change instantly (without opening a new browser tab)
