@@ -4,21 +4,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.Message;
 import org.w3c.tidy.Tidy;
-import tech.toparvion.analog.model.ReadingMetaData;
 import tech.toparvion.analog.model.RecordLevel;
 
 import javax.annotation.Nonnull;
-import javax.servlet.http.HttpSession;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.List;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import static java.lang.String.format;
 import static tech.toparvion.analog.model.RecordLevel.PLAIN;
 
 /**
@@ -33,9 +29,6 @@ public class AnaLogUtils {
   private static final Pattern MESSAGE_LEVEL_EXTRACTOR = Pattern.compile("^[\\S ]*(TRACE|DEBUG|INFO|WARN|ERROR|FATAL)");
   private static final Pattern XML_OPEN_EXTRACTOR = Pattern.compile("<((?:\\w[\\w-]*:)?\\w[\\w-]*).*>");
   private static final Pattern WHOLE_XML_EXTRACTOR = Pattern.compile("^<((?:\\w[\\w-]*:)?\\w[\\w-]*).*>.*</\\1>$", Pattern.DOTALL);
-  // общие настройки
-  private static final long SHOWN_LOG_MAX_SIZE = 32768L;
-  private static final int LINE_SEPARATOR_LENGTH = System.getProperty("line.separator").length();
 
   private static final Pattern WIN_DISC_PATTERN = Pattern.compile("^\\w:");
 
@@ -47,6 +40,7 @@ public class AnaLogUtils {
     return result;
   }
 
+  // TODO move the method to RecordSender or its harness
   public static String distinguishXml(List<String> rawLines, int startingLineIndex) {
     String startingLine = rawLines.get(startingLineIndex);
     Matcher xmlOpenMatcher = XML_OPEN_EXTRACTOR.matcher(startingLine);
@@ -131,6 +125,8 @@ public class AnaLogUtils {
 
     return rawLines.get(startingLineIndex);
   }
+
+  // TODO move the method to RecordSender or its harness
   public static String distinguishXmlComposite(List<String> rawLines, int startingLineIndex) {
     String startingLine = rawLines.get(startingLineIndex);
     if (startingLine.startsWith("__XML__")) {   // if the line marker as XML before
@@ -268,118 +264,6 @@ public class AnaLogUtils {
       return "XML";
     }
     return "PLAIN";
-  }
-
-  static List<String> getRawLines(String inputFileName,
-                                  String encoding,
-                                  ReadingMetaData readingMetaData,
-                                  Long prependingSnippetSizePercent) throws Exception {
-    // проверяем наличие указанного файла
-    File inputFile = new File(inputFileName);
-    if (!inputFile.exists() || !inputFile.isFile()) {
-      throw new FileNotFoundException("Файл '" + inputFileName + "' не найден.");
-    }
-
-    // флаг режима предварения (противоположность дополнению)
-    boolean prependingMode = (prependingSnippetSizePercent != null);
-
-    long fileActualSize = inputFile.length();
-    long fileSavedSize = readingMetaData.getFileSavedSize();
-    // проверяем, изменился ли файл с момента последнего чтения
-    if ((fileActualSize == fileSavedSize) && !prependingMode) {
-      return Collections.emptyList();
-    }
-    readingMetaData.setFileSavedSize(fileActualSize);
-
-    // заготавливаем массив для хранения прочтенных строк
-    List<String> rawLines = new ArrayList<String>();
-
-    if (prependingMode) {                                                       // чтение к началу
-      // определяем позицию, с которой необходимо начать чтение
-      long prependingCounter;
-      if (!readingMetaData.isPrependingCounterSet()) {
-        prependingCounter = (fileActualSize - SHOWN_LOG_MAX_SIZE) > 0L
-                ? (fileActualSize - SHOWN_LOG_MAX_SIZE)
-                : 0L;
-        log.warn("Prepending counter was not initialized; has been computed as " + prependingCounter);
-      } else {
-        prependingCounter = readingMetaData.getPrependingCounter();
-      }
-
-      long prependingSnippetSizeChars = Math.round((prependingSnippetSizePercent / 100d) * fileActualSize);
-      long readStartPosition = prependingCounter - prependingSnippetSizeChars;
-      if (readStartPosition < 0) {
-        readStartPosition = 0;
-        rawLines.add("(достигнуто начало документа)");
-      }
-
-      // приступаем к чтению
-      BufferedReader bufferedReader =
-              new BufferedReader(
-                      new InputStreamReader(
-                              new FileInputStream(inputFile),
-                              encoding));
-      bufferedReader.skip(readStartPosition);
-
-      String line;
-      long readCurrentPosition = readStartPosition;
-
-      while ((line = bufferedReader.readLine()) != null) {
-        readCurrentPosition += (line.length() + LINE_SEPARATOR_LENGTH);
-        rawLines.add(line);
-        if (readCurrentPosition > prependingCounter) {
-          if (prependingCounter < (line.length() + LINE_SEPARATOR_LENGTH)) {
-            rawLines.remove(0);
-//            rawLines.add(0, "(достигнуто начало документа)");
-          }
-          break;
-        }
-      }
-      bufferedReader.close();
-      readingMetaData.setPrependingCounter(readStartPosition);
-
-    } else {                                                                    // чтение к концу
-      long readCharsCounter = readingMetaData.getAppendingCounter();
-      if ((fileActualSize - readCharsCounter) > SHOWN_LOG_MAX_SIZE) {
-        // ограничиваем чтение лога значением SHOWN_LOG_MAX_SIZE байт с конца
-        readCharsCounter = fileActualSize - SHOWN_LOG_MAX_SIZE;
-//        rawLines.add("...");
-      } else if (readCharsCounter > fileActualSize) {
-        readCharsCounter = 0L;
-      }
-
-      // запоминаем позицию начала чтения, если не делали этого раньше
-      if (!readingMetaData.isPrependingCounterSet()) {
-        readingMetaData.setPrependingCounter(readCharsCounter);
-      }
-
-      FileInputStream fis = new FileInputStream(inputFile);
-      long skip = fis.skip(readCharsCounter);
-      if ((readCharsCounter-skip) != 0) {
-        log.trace(format("Required skip value: %d, actual skip value: %d, difference: %d", readCharsCounter, skip, (readCharsCounter-skip)));
-      }
-      Scanner scanner = new Scanner(fis, encoding);
-      while (scanner.hasNextLine()) {
-        String nextLine = scanner.nextLine();
-        rawLines.add(nextLine);
-        readCharsCounter += (nextLine.length() + LINE_SEPARATOR_LENGTH);
-      }
-      scanner.close();
-      readCharsCounter -= LINE_SEPARATOR_LENGTH;
-      readingMetaData.setAppendingCounter(readCharsCounter);
-    }
-
-    return rawLines;
-  }
-
-  static ReadingMetaData retrieveMetaData(HttpSession session, String inputFileName) {
-    // восстанавливаем данные о предыдущем чтении
-    ReadingMetaData readingMetaData = (ReadingMetaData) session.getAttribute(inputFileName);
-    if (readingMetaData == null) {
-      readingMetaData = new ReadingMetaData();
-      session.setAttribute(inputFileName, readingMetaData);
-    }
-    return readingMetaData;
   }
 
   @Nonnull

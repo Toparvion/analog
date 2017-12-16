@@ -18,9 +18,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import static java.lang.String.format;
 
 /**
+ * @deprecated as of v0.7 this component is no longer needed because tail program takes care of log files encoding.
+ * Nevertheless the component is here as a fallback in case of some unexpected surprises during test period.
+ * TODO Remove it along with all dependencies right after finishing beta testing.
  * @author Toparvion
  */
 @Service
+@Deprecated
 public class EncodingDetector {
   private static final Logger log = LoggerFactory.getLogger(EncodingDetector.class);
   private static final String DEFAULT_ENCODING = "UTF-8";
