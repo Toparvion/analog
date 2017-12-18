@@ -15,7 +15,7 @@ public class LogChoice {
   @Nullable   // null in case of plain (not composite) log
   private final String uid;
   @Nullable   // null in case of not explicitly specified node
-  private final String node;
+  private final Integer filesCount;
 
   public LogChoice(String group, String path, String encoding, String title, boolean selectedByDefault,
                  String uid) {
@@ -23,9 +23,9 @@ public class LogChoice {
   }
 
   public LogChoice(String group, String path, String encoding, String title, boolean selectedByDefault,
-                   @Nullable String uid, @Nullable String node) {
+                   @Nullable String uid, @Nullable Integer filesCount) {
     this.group = group;
-    this.node = node;
+    this.filesCount = filesCount;
     String forwardSlashedPath = path.replaceAll("\\\\", "/");
     this.path = forwardSlashedPath.startsWith("/")
             ? forwardSlashedPath
@@ -62,8 +62,8 @@ public class LogChoice {
   }
 
   @Nullable
-  public String getNode() {
-    return node;
+  public Integer getFilesCount() {
+    return filesCount;
   }
 
   @Override

@@ -101,16 +101,13 @@ public class LogChoicesProvider {
           : rawPath.toAbsolutePath();
       String fullPath = absPath.toString();
       String encoding = encodingDetector.getEncodingFor(fullPath);
-      String node = (logConfigEntry.getNode() == null)
-          ? clusterProperties.getMyselfNode().getName()
-          : logConfigEntry.getNode();
       choices.add(new LogChoice(groupName,
           fullPath,
           encoding,
           title,
           logConfigEntry.isSelected(),
           logConfigEntry.getUid(),
-          node));
+          countFiles(logConfigEntry)));
     }
     return choices;
   }
@@ -176,6 +173,10 @@ public class LogChoicesProvider {
     }
 
     return new ChoiceTokens(purePath, pureTitle, selectedByDefault);
+  }
+
+  private int countFiles(LogConfigEntry compositeEntry) {
+    return 1/*self*/ + compositeEntry.getIncludes().size();
   }
 
   /**

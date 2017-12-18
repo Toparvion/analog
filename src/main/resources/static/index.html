@@ -54,7 +54,7 @@
         <!-- Choices field-->
         <div class="navbar-form navbar-left form-group">
             <ui-select ng-model="ctrl.selectedLog" on-select="ctrl.onLogChange()">
-                <ui-select-match allow-clear="false" placeholder="Имя лога, путь, нода, группа, ...">
+                <ui-select-match allow-clear="false" placeholder="Имя файла, путь, группа, ...">
                     <span ng-bind-html="$select.selected.title"></span>
                 </ui-select-match>
                 <ui-select-choices group-by="'group'"
@@ -65,7 +65,7 @@
                     </small>
                     <div ng-show="item.uid != null">
                         <small class="log-choice-accent">
-                            композитный: <span ng-bind-html="item.node | highlight: $select.search"></span>
+                            композитный: <span ng-bind-html="item.filesCount"></span>
                         </small>
                     </div>
                 </ui-select-choices>
