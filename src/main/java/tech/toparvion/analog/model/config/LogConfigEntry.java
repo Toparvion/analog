@@ -16,7 +16,6 @@ public class LogConfigEntry {
   private String node;
   private String title;
   private boolean selected = false;
-  private String encoding = "UTF-8";
   @Nullable
   private String timestamp;
   private List<LogConfigEntry> includes = new ArrayList<>();
@@ -56,14 +55,6 @@ public class LogConfigEntry {
     this.selected = selected;
   }
 
-  public String getEncoding() {
-    return encoding;
-  }
-
-  public void setEncoding(String encoding) {
-    this.encoding = encoding;
-  }
-
   @Nullable
   public String getTimestamp() {
     return timestamp;
@@ -101,14 +92,13 @@ public class LogConfigEntry {
         Objects.equals(path, that.path) &&
         Objects.equals(node, that.node) &&
         Objects.equals(title, that.title) &&
-        Objects.equals(encoding, that.encoding) &&
         Objects.equals(timestamp, that.timestamp) &&
         Objects.equals(includes, that.includes);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(path, node, title, selected, encoding, timestamp, includes);
+    return Objects.hash(path, node, title, selected, timestamp, includes);
   }
 
   @Override
@@ -118,7 +108,6 @@ public class LogConfigEntry {
         ", node='" + node + '\'' +
         ", title='" + title + '\'' +
         ", selected=" + selected +
-        ", encoding='" + encoding + '\'' +
         ", timestamp='" + timestamp + '\'' +
         ", includesSize=" + includes.size() +
         '}';

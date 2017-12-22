@@ -10,7 +10,6 @@ import java.util.List;
 public class ChoiceGroup {
 
   private String group                          = "(non-grouped)";
-  private String encoding                       = null;
   private String pathBase                       = "";
   private String scanDir                        = null;
   private List<LogConfigEntry> compositeLogs    = new ArrayList<>();
@@ -24,14 +23,6 @@ public class ChoiceGroup {
 
   public void setGroup(String group) {
     this.group = group;
-  }
-
-  public String getEncoding() {
-    return encoding;
-  }
-
-  public void setEncoding(String encoding) {
-    this.encoding = encoding;
   }
 
   public String getPathBase() {

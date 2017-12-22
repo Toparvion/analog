@@ -109,13 +109,13 @@ public class ServerConfig {
   }
 
   /**
-   * Launches 'tail' program with '--version' option and reads the first line that 'tail' prints in reply. This
-   * option is supported by GNU coreutils tail implementation only but this is not an issue as other implementations
-   * can also be recognized by analyzing the first output line. <p>
-   * Since such a behavior is highly dependent on various implementations this method is potential subject to change in
+   * Launches {@code tail} program with {@code --version} option and reads the first line that {@code tail} prints in reply.
+   * This option is supported by GNU coreutils tail implementation only but this is not an issue as other implementations
+   * can also be recognized by analyzing the first output line (which can be found either in standard or error input).<p>
+   * Since such a behavior is highly dependent on various implementations, this method is potential subject to change in
    * future releases.
-   * @return the first line which 'tail' program returns in reply to invocation with '--version' option
-   * @throws Exception when 'tail' program is absent or cannot be accessed by AnaLog
+   * @return the first line which {@code tail} program returns in reply to invocation with {@code --version} option
+   * @throws Exception when {@code tail} program is absent or cannot be accessed by AnaLog
    */
   private String obtainTailIdfString() throws Exception {
     // first check whether tail is present and try to run it
@@ -135,7 +135,15 @@ public class ServerConfig {
     String firstLine;
     try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
       firstLine = bufferedReader.readLine();
-      log.debug("Obtained idf line of tail: '{}'", firstLine);
+    }
+    if (firstLine != null && !"".equals(firstLine)) {
+      log.debug("Obtained idf line of tail from standard input: '{}'", firstLine);
+    } else {
+      // tail might reply in error stream, e.g. on Solaris OS, so let's check if error input contains any data
+      try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+        firstLine = bufferedReader.readLine();
+        log.debug("Obtained idf line of tail from error input: '{}'", firstLine);
+      }
     }
     log.debug("Waiting for tail to finish...");
     process.waitFor();

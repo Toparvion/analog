@@ -41,8 +41,8 @@ public class TailingFlowProvider {
   @Autowired
   public TailingFlowProvider(TimestampExtractor timestampExtractor,
                              TailSpecificsProvider tailSpecificsProvider,
-                             @Value("${tracking.groupSizeThreshold:50}") int groupSizeThreshold,
-                             @Value("${tracking.groupTimeoutMs:1000}") int groupTimeoutMs) {
+                             @Value("${tracking.group.sizeThreshold:500}") int groupSizeThreshold,
+                             @Value("${tracking.group.timeoutMs:500}") int groupTimeoutMs) {
     this.timestampExtractor = timestampExtractor;
     this.tailSpecificsProvider = tailSpecificsProvider;
     this.groupSizeThreshold = groupSizeThreshold;

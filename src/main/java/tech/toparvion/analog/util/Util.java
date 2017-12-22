@@ -12,13 +12,6 @@ public final class Util {
     return path.substring(lastSlashPosition + 1);
   }
 
-  /**
-   * @return the given encoding name formatted for comparison on frontend
-   */
-  public static String formatEncodingName(String originalEncodingName) {
-    return originalEncodingName.toUpperCase();
-  }
-
   public static String nvls(String s, String def) {
     return (s == null || "".equals(s))
             ? def

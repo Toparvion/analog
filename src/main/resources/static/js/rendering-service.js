@@ -66,7 +66,11 @@ app.factory('renderingService', ['$log', '$interval', 'config', function($log, $
         if ($precedingRecord) {
             $precedingRecord.after($newRecord);
         } else {
-            $consolePanel.append($newRecord);       // for the very first insertion only
+            if ($records.length > 0) {
+                $consolePanel.prepend($newRecord);          // for the earliest record
+            } else {
+                $consolePanel.append($newRecord);           // for the very first insertion only
+            }
         }
 
         renderingQueue.push($newRecord);
@@ -74,25 +78,27 @@ app.factory('renderingService', ['$log', '$interval', 'config', function($log, $
 
     function preparePlainMessages(newPart) {
         console.log("Preparing PLAIN records: %o", newPart);
+        var $recordsBunch = $("<div></div>")
+                         // .addClass('plain-record')            // no need for the time being
+                            .hide();
         angular.forEach(newPart.lines, function (line) {
             var $messageLine;
             if (line.style !== 'XML') {
                 $messageLine = $("<div></div>")
                     .addClass(line.style)
-                    .html(line.text)
-                    .hide();
+                    .html(line.text);
             } else {
                 var $code = $("<code></code>")
                     .addClass("xml")
                     .html(line.text);
                 $messageLine = $("<pre></pre>")
-                    .append($code)
-                    .hide();
+                    .append($code);
                 hljs.highlightBlock($messageLine[0]);
             }
-            $consolePanel.append($messageLine);
-            renderingQueue.push($messageLine);
+            $recordsBunch.append($messageLine);
         });
+        $consolePanel.append($recordsBunch);
+        renderingQueue.push($recordsBunch);
     }
 
     /**

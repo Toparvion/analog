@@ -5,29 +5,25 @@ spring:
       enabled: true
 
 server:
-  session:
-    persistent: true
-    cookie:
-      max-age: "86400s"
   display-name: AnaLog
 
 logging:
   level:
     root: INFO
     tech.toparvion.analog: TRACE
-    tech.toparvion.analog.service.EncodingDetector: INFO
     tech.toparvion.analog.remote.agent.misc.AddressAwareRmiOutboundGateway: INFO
     tech.toparvion.analog.remote.agent.RecordAggregatorConfigurer: INFO
     tech.toparvion.analog.util.dev.LogFileGenerator: DEBUG
     tech.toparvion.analog.remote.server.RecordSender: DEBUG
     org.springframework.integration: INFO
     org.springframework.web.socket: DEBUG
-    org.springframework.messaging.simp.stomp: TRACE
+    org.springframework.messaging.simp.stomp: DEBUG
     org.springframework.messaging.simp.broker: DEBUG
     org.springframework.integration.file.tail.OSDelegatingFileTailingMessageProducer: TRACE
-  pattern:
-    console: "%clr(%d{HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+#  pattern:
+#    console: "%clr(%d{HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
 
 tracking:
-  groupSizeThreshold: 50
-  groupTimeoutMs: 500
+  group:
+    sizeThreshold: 500
+    timeoutMs: 500

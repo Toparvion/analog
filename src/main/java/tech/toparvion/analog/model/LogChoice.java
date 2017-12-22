@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 public class LogChoice {
   private final String group;
   private final String path;
-  private final String encoding;
   private final String title;
   private final boolean selectedByDefault;
   @Nullable   // null in case of plain (not composite) log
@@ -17,12 +16,7 @@ public class LogChoice {
   @Nullable   // null in case of not explicitly specified node
   private final Integer filesCount;
 
-  public LogChoice(String group, String path, String encoding, String title, boolean selectedByDefault,
-                 String uid) {
-    this(group, path, encoding, title, selectedByDefault, uid, null);
-  }
-
-  public LogChoice(String group, String path, String encoding, String title, boolean selectedByDefault,
+  public LogChoice(String group, String path, String title, boolean selectedByDefault,
                    @Nullable String uid, @Nullable Integer filesCount) {
     this.group = group;
     this.filesCount = filesCount;
@@ -30,7 +24,6 @@ public class LogChoice {
     this.path = forwardSlashedPath.startsWith("/")
             ? forwardSlashedPath
             : ("/" + forwardSlashedPath);
-    this.encoding = encoding;
     this.title = title;
     this.selectedByDefault = selectedByDefault;
     this.uid = uid;
@@ -42,10 +35,6 @@ public class LogChoice {
 
   public String getPath() {
     return path;
-  }
-
-  public String getEncoding() {
-    return encoding;
   }
 
   public String getTitle() {

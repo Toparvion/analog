@@ -16,8 +16,8 @@ app.constant('config', {
                 depth: 100
             },
             plain: {
-                threshold: 2200,
-                depth: 200
+                threshold: 500,
+                depth: 50
             }
         }
     },

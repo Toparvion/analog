@@ -53,7 +53,7 @@ dependencies {
 
     compile group: 'net.sf.jtidy', name: 'jtidy', version: 'r938'
     compile group: 'net.bull.javamelody', name: 'javamelody-core', version: '1.61.0'
-    compile group: 'com.github.albfernandez', name: 'juniversalchardet', version: '2.0.0'
+//    compile group: 'com.github.albfernandez', name: 'juniversalchardet', version: '2.0.0'
     compile group: 'com.github.mpkorstanje', name: 'simmetrics-core', version: '4.1.1'
 
     // FrontEnd deps

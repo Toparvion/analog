@@ -9,7 +9,7 @@ import tech.toparvion.analog.service.AnaLogUtils;
 
 import javax.annotation.Nullable;
 import java.io.File;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -95,7 +95,17 @@ public class TimestampExtractor {
     }
 
     String tsString = timestampMatcher.group();
-    return paf.getFormatter().parse(tsString, LocalDateTime::from);
+    DateTimeFormatter formatter = paf.getFormatter();
+    LocalDateTime parsedTimestamp;
+    try {
+      parsedTimestamp = formatter.parse(tsString, LocalDateTime::from);
+    } catch (DateTimeException e) {
+      // in case no date specified in timestamp format AnaLog supposes the date to be equal today
+      LocalTime parsedTime = formatter.parse(tsString, LocalTime::from);
+      parsedTimestamp = LocalDateTime.of(LocalDate.now(Clock.systemDefaultZone()), parsedTime);
+    }
+
+    return parsedTimestamp;
   }
 
   private static class PatternAndFormatter {

@@ -1,20 +1,23 @@
 #!/bin/bash
 
+componentName="analog"
+debugPort=8084
+
 # Since default JDK on the server is JDK_1.6 we forcibly make JAVA_HOME to point to JDK_1.8
-JAVA_HOME=/usr/jdk/jdk1.8.0_92
+#JAVA_HOME=/usr/jdk/jdk1.8.0_92
+JAVA_HOME=/pub/site/opt/jdk/jdk1.8.0_92
 
 #Set APP_HOME to point on the application folder.
 DIR=`dirname $0`
 cd $DIR
 APP_HOME=`pwd`
 
-PID_FILE=$APP_HOME/analog.pid
-componentName="analog-0.6"
+PID_FILE=$APP_HOME/$componentName.pid
 
 JAVA_OPTS=`echo "
 -D_$componentName
 "`
-JAVA_OPTS="$JAVA_OPTS -Xmx1024m -XX:MaxMetaspaceSize=512m"
+JAVA_OPTS="$JAVA_OPTS -Xmx256m -XX:MaxMetaspaceSize=256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=$debugPort -XX:+HeapDumpOnOutOfMemoryError"
 
 if [ -x "$JAVA_HOME/bin/java" ]; then
     JAVA="$JAVA_HOME/bin/java"
@@ -31,9 +34,9 @@ start_service()
 {
 	echo "Starting $componentName ..."
 	PROG_OPTS="" #"--spring.profiles.active=$PROFILE"
-	exec nohup "$JAVA" $JAVA_OPTS -jar analog.jar $PROG_OPTS &> stdout.log &
+	exec nohup "$JAVA" $JAVA_OPTS -jar ${componentName}.jar $PROG_OPTS &> console.out &
 	echo $! > $PID_FILE
-  echo "$componentName has been started"
+	echo "$componentName has been started"
 
 	return 0
 }

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import tech.toparvion.analog.model.LogChoice;
 import tech.toparvion.analog.model.config.ChoiceGroup;
 import tech.toparvion.analog.model.config.ChoiceProperties;
-import tech.toparvion.analog.model.config.ClusterProperties;
 import tech.toparvion.analog.model.config.LogConfigEntry;
 import tech.toparvion.analog.util.Util;
 
@@ -35,16 +34,10 @@ public class LogChoicesProvider {
   private static final String DEFAULT_TITLE_FORMAT = "$f ($g)";
 
   private final List<ChoiceGroup> choices;
-  private final EncodingDetector encodingDetector;
-  private final ClusterProperties clusterProperties;
 
   @Autowired
-  public LogChoicesProvider(ChoiceProperties choiceProperties,
-                            EncodingDetector encodingDetector,
-                            ClusterProperties clusterProperties) {
+  public LogChoicesProvider(ChoiceProperties choiceProperties) {
     this.choices = choiceProperties.getChoices();
-    this.encodingDetector = encodingDetector;
-    this.clusterProperties = clusterProperties;
   }
 
   List<LogChoice> provideLogChoices() {
@@ -76,10 +69,8 @@ public class LogChoicesProvider {
           ? rawPath
           : rawPath.toAbsolutePath();
       String fullPath = absPath.toString();
-      String encoding = encodingDetector.getEncodingFor(fullPath);
       choices.add(new LogChoice(groupName,
           fullPath,
-          encoding,
           title,
           coms.isSelectedByDefault(),
           null, null /* to explicitly denote that this choice is plain one */));
@@ -100,10 +91,8 @@ public class LogChoicesProvider {
           ? rawPath
           : rawPath.toAbsolutePath();
       String fullPath = absPath.toString();
-      String encoding = encodingDetector.getEncodingFor(fullPath);
       choices.add(new LogChoice(groupName,
           fullPath,
-          encoding,
           title,
           logConfigEntry.isSelected(),
           logConfigEntry.getUid(),
@@ -119,9 +108,6 @@ public class LogChoicesProvider {
     }
     Set<LogChoice> choices = new LinkedHashSet<>();
     String groupName = group.getGroup();
-    String groupEncoding = (group.getEncoding() != null)
-        ? Util.formatEncodingName(group.getEncoding())
-        : null;   // this value will provoke encoding detection
     Path scanDirPath = Paths.get(group.getScanDir());
     try (Stream<Path> scannedPaths = Files.list(scanDirPath)) {
       choices.addAll(scannedPaths   // such sets merging allows to exclude duplicates while preserving explicit paths
@@ -129,9 +115,6 @@ public class LogChoicesProvider {
           .map(logPath -> new LogChoice(
               groupName,
               logPath.toAbsolutePath().toString(),
-              (groupEncoding != null)
-                  ? groupEncoding
-                  : encodingDetector.getEncodingFor(logPath.toAbsolutePath().toString()),
               expandTitle(logPath.toString(), DEFAULT_TITLE_FORMAT, groupName),
               false,
               null, null /* to explicitly denote that this choice is plain one */))
