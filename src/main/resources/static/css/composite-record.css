@@ -17,8 +17,8 @@
   flex-shrink: 1;
   flex-basis: auto;
   align-self: stretch;
-  min-width: 7px;
-  max-width: 7px;
+  min-width: 12px;
+  max-width: 12px;
   margin-right: 5px;
 }
 .composite-record>.payload {

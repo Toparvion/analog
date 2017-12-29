@@ -79,7 +79,7 @@ public class TailingFlowProvider {
     return IntegrationFlows
         .from(tailAdapter(new File(logPath))
             .id("tailSource:"+logPath)
-            .nativeOptions(tailSpecificsProvider.getTailNativeOptions())
+            .nativeOptions(tailSpecificsProvider.getCompositeTailNativeOptions())
             .fileDelay(tailSpecificsProvider.getAttemptsDelay())
             .enableStatusReader(true))   // to receive events of log rotation, etc.
         .enrichHeaders(e -> e.headerFunction(LOG_TIMESTAMP_VALUE__HEADER, timestampExtractor::extractTimestamp))
@@ -96,7 +96,7 @@ public class TailingFlowProvider {
     return IntegrationFlows
         .from(tailAdapter(new File(logPath))
             .id("tailSource:"+logPath)
-            .nativeOptions(tailSpecificsProvider.getTailNativeOptions())
+            .nativeOptions(tailSpecificsProvider.getPlainTailNativeOptions())
             .fileDelay(tailSpecificsProvider.getAttemptsDelay())
             .enableStatusReader(true))   // to receive events log rotation, etc.
         .aggregate(aggregatorSpec -> aggregatorSpec

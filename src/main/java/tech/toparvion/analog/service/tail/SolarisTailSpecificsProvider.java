@@ -18,8 +18,13 @@ public class SolarisTailSpecificsProvider implements TailSpecificsProvider {
   }
 
   @Override
-  public String getTailNativeOptions() {
-    return "-0f";     // -F option is not supported on SunOS
+  public String getCompositeTailNativeOptions() {
+    return "-20f";     // -F option is not supported on SunOS
+  }
+
+  @Override
+  public String getPlainTailNativeOptions() {
+    return "-45f";     // -F option is not supported on SunOS
   }
 
   @Override

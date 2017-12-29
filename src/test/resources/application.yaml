@@ -1,0 +1,4 @@
+clusterNodes:
+  - name: localhost
+    address: localhost:23456
+    myself: true

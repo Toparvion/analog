@@ -21,8 +21,13 @@ public class GnuCoreUtilsTailSpecificsProvider implements TailSpecificsProvider 
   }
 
   @Override
-  public String getTailNativeOptions() {
-    return "-F -n 0";     // follow file name with retries, starting with the very end of the file
+  public String getCompositeTailNativeOptions() {
+    return "-F -n 20";     // follow file name with retries, starting with the very end of the file
+  }
+
+  @Override
+  public String getPlainTailNativeOptions() {
+    return "-F -n 45";     // follow file name with retries, starting from some offset before the EOF
   }
 
   @Override

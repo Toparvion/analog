@@ -127,7 +127,7 @@ app.factory('renderingService', ['$log', '$interval', 'config', function($log, $
         var isScrolledToBottom = ($window.scrollTop() === ($document.height() - $window.height()));
         while (renderingQueue.length > 0) {
             var $newRecord = renderingQueue.shift();
-            if (isConsoleUnScrollable) {       // should we use slide animation to output new record?
+            if (isConsoleUnScrollable && renderingQueue.length === 1) {// should slide animation to output new record?
                 $newRecord.slideDown(400, scrollDown);
                 /* In most cases scrolling down before the viewport is totally filled has no effect. But if the new
                  * record comes out of viewport, its end won't be visible. This is the only case that makes AnaLog use

@@ -15,20 +15,18 @@ body {
     font-size: 13px;
 }
 #substrate {
-  bottom: 0;
-  height: auto;
-  max-height: 35%;
-  opacity: 0.25;
-  position: fixed;
-  right: 0;
-  width: auto;
-  z-index: -10;
+    bottom: 0;
+    max-height: 60%;
+    opacity: 0.30;
+    position: fixed;
+    right: 0;
+    z-index: -10;
 }
 /*</editor-fold>*/
 
 /*<editor-fold desc="Log levels">*/
 .TRACE {
-    color: #696969;
+    color: #848484;
     /*color: #bcbbba;*/
 }
 .DEBUG {

@@ -1,6 +1,7 @@
 package tech.toparvion.analog.model;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * @author Toparvion
@@ -59,14 +60,13 @@ public class LogChoice {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     LogChoice logChoice = (LogChoice) o;
-
-    return path.equals(logChoice.path);
+    return Objects.equals(path, logChoice.path) &&
+            Objects.equals(uid, logChoice.uid);
   }
 
   @Override
   public int hashCode() {
-    return path.hashCode();
+    return Objects.hash(path, uid);
   }
 }

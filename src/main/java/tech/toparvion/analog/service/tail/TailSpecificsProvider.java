@@ -13,10 +13,18 @@ import tech.toparvion.analog.model.TailEventType;
 public interface TailSpecificsProvider {
 
   /**
-   * @return string that must be used as an options set for proper tail invocation on current platform
+   * @return string that must be used as an options set for proper tail invocation on current platform. Gets applied
+   * on composite watching only.
    * @see OSDelegatingFileTailingMessageProducer#setOptions(java.lang.String)
    */
-  String getTailNativeOptions();
+  String getCompositeTailNativeOptions();
+
+  /**
+   * @return string that must be used as an options set for proper tail invocation on current platform. Gets applied
+   * on plain watching only.
+   * @see OSDelegatingFileTailingMessageProducer#setOptions(java.lang.String)
+   */
+  String getPlainTailNativeOptions();
 
   /**
    * @return delay in milliseconds between attempts to read non-accessible or non-existent file
