@@ -25,7 +25,7 @@ app.factory('watchingService', ['$log', '$rootScope', 'renderingService', 'confi
             });
     }
 
-    function startWatching(selectedLog) {
+    function startWatching(selectedLog, isTailNeeded) {
         var logId, isPlain;
         if (selectedLog.uid) {
             logId = selectedLog.uid;
@@ -34,7 +34,12 @@ app.factory('watchingService', ['$log', '$rootScope', 'renderingService', 'confi
             logId = selectedLog.path;
             isPlain = true;
         }
-        subscription = stompClient.subscribe(config.websocket.topicPrefix + logId, onServerMessage, {isPlain: isPlain});
+        var headers = {
+            isPlain: isPlain,
+            isTailNeeded: isTailNeeded
+        };
+        subscription = stompClient.subscribe(config.websocket.topicPrefix + logId, onServerMessage, headers);
+        $log.log("New subscription has been created with headers: %o", headers)
     }
 
     function onServerMessage(message) {
@@ -60,7 +65,7 @@ app.factory('watchingService', ['$log', '$rootScope', 'renderingService', 'confi
 
     function stopWatching() {
         if (angular.isDefined(subscription)) {
-            subscription.unsubscribe();
+            subscription.unsubscribe();  // this causes an exception in case of triggering during server disconnection
             subscription = undefined;
             $log.log("Subscription has been removed.")
         }

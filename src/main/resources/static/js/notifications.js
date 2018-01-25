@@ -12,7 +12,7 @@ app.constant('notifications', {
     serverDisconnected: {
         level: 'warning',
         title: 'Ой-ой...',
-        text: 'Нет связи с сервером. Как восстановится, сообщу.'
+        text: 'Нет связи с сервером. Как восстановится, сообщу и продолжу отслеживание (если надо).'
     },
     //</editor-fold>
 

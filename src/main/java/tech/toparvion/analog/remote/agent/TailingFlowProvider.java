@@ -53,9 +53,10 @@ public class TailingFlowProvider {
    * The core method for building AnaLog dynamic behavior. Creates and returns an integration flow for watching given
    * log. No duplicate flow checking is done inside.
    * @param logPath full path to log file to tail
+   * @param isTailNeeded should 'tail' include last several lines of the log?
    * @return a new tailing flow
    */
-  IntegrationFlow provideAggregatingFlow(String logPath) {
+  IntegrationFlow provideAggregatingFlow(String logPath, boolean isTailNeeded) {
     // each tailing flow must have its own instance of correlationProvider as it is stateful and not thread-safe
     CorrelationIdHeaderEnricher correlationProvider = new CorrelationIdHeaderEnricher();
     // each tailing flow must have its own instance of sequenceProvider as it is stateful and not thread-safe
@@ -79,7 +80,7 @@ public class TailingFlowProvider {
     return IntegrationFlows
         .from(tailAdapter(new File(logPath))
             .id("tailSource:"+logPath)
-            .nativeOptions(tailSpecificsProvider.getCompositeTailNativeOptions())
+            .nativeOptions(tailSpecificsProvider.getCompositeTailNativeOptions(isTailNeeded))
             .fileDelay(tailSpecificsProvider.getAttemptsDelay())
             .enableStatusReader(true))   // to receive events of log rotation, etc.
         .enrichHeaders(e -> e.headerFunction(LOG_TIMESTAMP_VALUE__HEADER, timestampExtractor::extractTimestamp))
@@ -92,11 +93,11 @@ public class TailingFlowProvider {
         .get();
   }
 
-  IntegrationFlow providePlainFlow(String logPath) {
+  IntegrationFlow providePlainFlow(String logPath, boolean isTailNeeded) {
     return IntegrationFlows
         .from(tailAdapter(new File(logPath))
             .id("tailSource:"+logPath)
-            .nativeOptions(tailSpecificsProvider.getPlainTailNativeOptions())
+            .nativeOptions(tailSpecificsProvider.getPlainTailNativeOptions(isTailNeeded))
             .fileDelay(tailSpecificsProvider.getAttemptsDelay())
             .enableStatusReader(true))   // to receive events log rotation, etc.
         .aggregate(aggregatorSpec -> aggregatorSpec

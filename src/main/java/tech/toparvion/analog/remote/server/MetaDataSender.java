@@ -35,7 +35,7 @@ public class MetaDataSender {
     this.tailSpecificsProvider = tailSpecificsProvider;
   }
 
-  public void sendMetaData(Message<?> metaMessage) {
+  void sendMetaData(Message<?> metaMessage) {
     // extract header values in order to include them into metadata being sent
     String uid = metaMessage.getHeaders().get(LOG_CONFIG_ENTRY_UID__HEADER, String.class);
     String sourceNode = metaMessage.getHeaders().get(SOURCE_NODE__HEADER, String.class);

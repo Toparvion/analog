@@ -50,8 +50,8 @@ public class LogChoicesProvider {
 
   private Stream<LogChoice> flattenGroup(ChoiceGroup group) {
     Set<LogChoice> choices = new LinkedHashSet<>();
-    choices.addAll(processPlainLogs(group));
     choices.addAll(processCompositeLogs(group));
+    choices.addAll(processPlainLogs(group));
     choices.addAll(processScanDir(group));
     return choices.stream();
   }

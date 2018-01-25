@@ -2,6 +2,8 @@ package tech.toparvion.analog.service.tail;
 
 import tech.toparvion.analog.model.TailEventType;
 
+import static java.lang.String.format;
+
 /**
  * tail's specifics for Solaris OS family. Actually there are different tail implementations for various Solaris
  * distributions (SunOS, IllumOs, etc) but AnaLog doesn't need to distinguish them so far.
@@ -18,13 +20,13 @@ public class SolarisTailSpecificsProvider implements TailSpecificsProvider {
   }
 
   @Override
-  public String getCompositeTailNativeOptions() {
-    return "-20f";     // -F option is not supported on SunOS
+  public String getCompositeTailNativeOptions(boolean includePreviousLines) {
+    return format("-%sf", includePreviousLines?"20":"0");     // -F option is not supported on SunOS
   }
 
   @Override
-  public String getPlainTailNativeOptions() {
-    return "-45f";     // -F option is not supported on SunOS
+  public String getPlainTailNativeOptions(boolean includePreviousLines) {
+    return format("-%sf", includePreviousLines?"45":"0");     // -F option is not supported on SunOS
   }
 
   @Override

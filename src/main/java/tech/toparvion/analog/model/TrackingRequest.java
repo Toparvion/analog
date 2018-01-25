@@ -16,12 +16,14 @@ public class TrackingRequest implements Serializable {
   private final String timestampFormat;
   private final String nodeName;
   private final String uid;
+  private final boolean isTailNeeded;
 
-  public TrackingRequest(String logFullPath, @Nullable String timestampFormat, String nodeName, String uid) {
+  public TrackingRequest(String logFullPath, @Nullable String timestampFormat, String nodeName, String uid, boolean isTailNeeded) {
     this.logFullPath = logFullPath;
     this.timestampFormat = timestampFormat;
     this.nodeName = nodeName;
     this.uid = uid;
+    this.isTailNeeded = isTailNeeded;
   }
 
   public String getLogFullPath() {
@@ -42,6 +44,10 @@ public class TrackingRequest implements Serializable {
     return uid;
   }
 
+  public boolean isTailNeeded() {
+    return isTailNeeded;
+  }
+
   /**
    * A request with no timestamp format is considered 'plain' as it cannot be involved into complex aggregating
    * tracking logic and thus is suitable for plain old tracking only.
@@ -58,6 +64,7 @@ public class TrackingRequest implements Serializable {
         ", timestampFormat='" + timestampFormat + '\'' +
         ", nodeName='" + nodeName + '\'' +
         ", uid='" + uid + '\'' +
+        ", isTailNeeded=" + isTailNeeded +
         '}';
   }
 

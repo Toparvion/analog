@@ -74,8 +74,8 @@ public class TrackingService {
   /**
    * Initiates tracking process for the log specified in {@code request}: <ol>
    *   <li>Checks if this is a duplicate registration (the request for the same log came from the same watcher);</li>
-   *   <li>Finds or {@link TailingFlowProvider#provideAggregatingFlow(java.lang.String) creates} tailing flow (alongside
-   *   with the {@link TimestampExtractor#registerNewTimestampFormat(java.lang.String, java.lang.String) registration}
+   *   <li>Finds or {@link TailingFlowProvider#provideAggregatingFlow(String, boolean) creates} tailing flow (alongside
+   *   with the {@link TimestampExtractor#registerNewTimestampFormat(String, String) registration}
    *   of the specified timestamp format);</li>
    *   <li>Creates new {@code RmiOutboundGateway} capable of sending messages to the {@code watcherAddress} and makes
    *   it a subscriber for the tailing flow output channel;</li>
@@ -110,7 +110,7 @@ public class TrackingService {
 
     } else if (!request.isPlain()) {
       IntegrationFlowRegistration trackingRegistration = flowContext
-          .registration(trackingFlowProvider.provideAggregatingFlow(logPath))
+          .registration(trackingFlowProvider.provideAggregatingFlow(logPath, request.isTailNeeded()))
           .autoStartup(true)
           .register();
       trackingRegistry.put(logPath, trackingRegistration.getId());
@@ -121,7 +121,7 @@ public class TrackingService {
 
     } else {
       IntegrationFlowRegistration trackingRegistration = flowContext
-          .registration(trackingFlowProvider.providePlainFlow(logPath))
+          .registration(trackingFlowProvider.providePlainFlow(logPath, request.isTailNeeded()))
           .autoStartup(true)
           .register();
       trackingRegistry.put(logPath, trackingRegistration.getId());

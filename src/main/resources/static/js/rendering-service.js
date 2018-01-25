@@ -6,18 +6,20 @@ app.factory('renderingService', ['$log', '$interval', 'config', function($log, $
 
     var renderingQueue = [];
     var intervalPromise;
+    var consoleIsEmpty = true;    // a flag indicating that the console is clean (i.e. contains no records)
     init();
 
     function init() {
         intervalPromise = $interval(animate, config.rendering.periodMs, /*count:*/0, /*invokeApply:*/false);
     }
 
-    function render(newPart) {
+    function preRender(newPart) {
         if (angular.isDefined(newPart.timestamp)) {
             prepareCompositeMessages(newPart)
         } else {
             preparePlainMessages(newPart);
         }
+        consoleIsEmpty = false;
     }
 
     function prepareCompositeMessages(newPart) {
@@ -77,7 +79,7 @@ app.factory('renderingService', ['$log', '$interval', 'config', function($log, $
     }
 
     function preparePlainMessages(newPart) {
-        console.log("Preparing PLAIN records: %o", newPart);
+        $log.log("Preparing PLAIN records: %o", newPart);
         var $recordsBunch = $("<div></div>")
                          // .addClass('plain-record')            // no need for the time being
                             .hide();
@@ -154,6 +156,7 @@ app.factory('renderingService', ['$log', '$interval', 'config', function($log, $
 
     function clearConsole() {
         $consolePanel.empty();
+        consoleIsEmpty = true;
     }
 
     function stopTimer() {
@@ -164,6 +167,7 @@ app.factory('renderingService', ['$log', '$interval', 'config', function($log, $
         clearConsole: clearConsole,
         scrollDown: scrollDown,
         stopTimer: stopTimer,
-        render: render
+        render: preRender,
+        isConsoleEmpty: function () {return consoleIsEmpty;}
     }
 }]);

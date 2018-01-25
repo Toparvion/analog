@@ -18,8 +18,9 @@ choices:
   - group: MT
     pathBase: C:\lang\analog\log-samples\
     plainLogs:
-      - core.log as "$f - $g"
+      - core.log as "static $f - $g"
       - pppinfo.log as "$f - $g"
+      - generated\core.log as "generated $f - $g"
     compositeLogs:
       - path: generated\bankplus.log
         node: angara
@@ -44,10 +45,7 @@ choices:
     compositeLogs:
       - path: bankplus.log
         title: $f - $g
-        selected: false
-        encoding: CP-1251
         timestamp: dd.MM.yy HH:mm:ss,SSS
       - path: logSample.log
         title: $f - $g
-        selected: false
         timestamp: dd.MM.yy HH:mm:ss,SSS

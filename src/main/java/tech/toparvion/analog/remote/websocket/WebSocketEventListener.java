@@ -72,10 +72,8 @@ public class WebSocketEventListener {
   public void onSubscribe(SessionSubscribeEvent event) {
     // First let's extract all the necessary info about new watching from the subscribe request
     StompHeaderAccessor headers = StompHeaderAccessor.wrap(event.getMessage());
-    List<String> rawHeaderValue = headers.getNativeHeader("isPlain");
-    assert (rawHeaderValue != null) && (rawHeaderValue.size() == 1)
-        : "'isPlain' header of SUBSCRIBE command is absent or malformed";
-    Boolean isPlain = Boolean.valueOf(rawHeaderValue.get(0));
+    boolean isPlain = getBooleanNativeHeader(headers, "isPlain");
+    boolean isTailNeeded = getBooleanNativeHeader(headers, "isTailNeeded");
     String sessionId = headers.getSessionId();
     String destination = headers.getDestination();
     assert (destination != null) && destination.startsWith(WEBSOCKET_TOPIC_PREFIX)
@@ -98,7 +96,7 @@ public class WebSocketEventListener {
         // 1. Ensure that all RMI registration channels are created
         ensureRegistrationChannelsCreated(logConfig);
         // 2. Register the tracking on specified nodes
-        switchTracking(logConfig, true);
+        startTrackingOnServer(logConfig, isTailNeeded);
         // 3. Remember the tracking in the registry
         registry.addEntry(logConfig, sessionId);
         log.info("New tracking for log '{}' has started within session id={}.", logConfig.getUid(), sessionId);
@@ -108,6 +106,9 @@ public class WebSocketEventListener {
         ServerFailure failure = new ServerFailure(e.getMessage(), now());
         messagingTemplate.convertAndSend(WEBSOCKET_TOPIC_PREFIX + logConfig.getUid(),
             failure, singletonMap(MESSAGE_TYPE_HEADER, MessageType.FAILURE));
+        // TODO Научиться по аналогии с этим отправлять сообщение об успешной настройке подписки, для чего превратить
+        // serverFailure в более общий тип сообщения. При получении этого типа убирать на клиенте прелоадер,
+        // выставленный перед отправкой запроса на подписку.
       }
 
     } else {    // i.e. if there are watching sessions already in registry
@@ -141,11 +142,11 @@ public class WebSocketEventListener {
     // check if there is no such session(s)
     if (fellows == null) {
       if (isUnsubscribing) {      // in case of unsubscribing it is incorrect situation
-        throw new IllegalStateException("No registered session(s) found for sessionId=" + sessionId);
+        log.warn("No registered session(s) found for sessionId={}", sessionId);
       } else {                    // but in case of disconnecting it is quite right
         log.info("No registered session found for sessionId={}.", sessionId);
-        return;
       }
+      return;
     }
     // check if there any other session(s) left (may require synchronization on registry object)
     if (fellows.size() > 1) {
@@ -157,13 +158,30 @@ public class WebSocketEventListener {
     // in case it was the latest session watching that log we should stop the tracking
     LogConfigEntry watchingLog = registry.findLogConfigEntryBy(sessionId);
     log.debug("No sessions left watching log '{}'. Will deactivate the tracking...", watchingLog.getUid());
-    switchTracking(watchingLog, false);
+    stopTrackingOnServer(watchingLog);
     // now that the log is not tracked anymore we need to remove it from the registry
     registry.removeEntry(watchingLog);
     log.info("Current node has unregistered itself from tracking log '{}' as there is no watching sessions anymore.",
         watchingLog.getUid());
   }
 
+  private boolean getBooleanNativeHeader(StompHeaderAccessor headers, String name) {
+    List<String> rawHeaderValue = headers.getNativeHeader(name);
+    assert (rawHeaderValue != null) && (rawHeaderValue.size() == 1)
+        : format("'%s' header of SUBSCRIBE command is absent or malformed", name);
+    return Boolean.valueOf(rawHeaderValue.get(0));
+  }
+
+  /**
+   * When watching request comes for a plain log AnaLog does not tries to find corresponding log config entry.
+   * Instead it just creates new ('artificial') entry and then works with it only. This approach allows AnaLog to
+   * watch arbitrary plain logs independently of its configuration. Particularly, it means that a user can set any
+   * path into AnaLog's address line and start to watch it the same way as if it was pre-configured as a choice
+   * variant in AnaLog configuration.
+   *
+   * @param path full path of log file to watch for
+   * @return newly created log config entry for the specified path
+   */
   @NotNull
   private LogConfigEntry createPlainLogConfigEntry(String path) {
     LogConfigEntry artificialEntry = new LogConfigEntry();
@@ -206,13 +224,22 @@ public class WebSocketEventListener {
         });
   }
 
-  private void switchTracking(LogConfigEntry logConfigEntry, boolean isOn) {
+  private void stopTrackingOnServer(LogConfigEntry logConfigEntry) {
+    switchTrackingOnServer(logConfigEntry, false, false);
+  }
+
+  private void startTrackingOnServer(LogConfigEntry logConfigEntry, boolean isTailNeeded) {
+    switchTrackingOnServer(logConfigEntry, true, isTailNeeded);
+  }
+
+  private void switchTrackingOnServer(LogConfigEntry logConfigEntry, boolean isOn, boolean isTailNeeded) {
+    assert !(isTailNeeded && !isOn) : "isTailNeeded flag should not be raised when switching the tracking off";
     ClusterNode myselfNode = clusterProperties.getMyselfNode();
     String fullPath = buildFullPath(logConfigEntry);
     String nodeName = nvls(logConfigEntry.getNode(), myselfNode.getName());
 
     // send registration request for the main entry
-    TrackingRequest primaryRequest = new TrackingRequest(fullPath, logConfigEntry.getTimestamp(), nodeName, logConfigEntry.getUid());
+    TrackingRequest primaryRequest = new TrackingRequest(fullPath, logConfigEntry.getTimestamp(), nodeName, logConfigEntry.getUid(), isTailNeeded);
     log.debug("Switching {} the registration by PRIMARY request: {}", isOn ? "ON":"OFF", primaryRequest);
     remoteGateway.switchRegistration(primaryRequest, isOn);
 
@@ -224,7 +251,8 @@ public class WebSocketEventListener {
             normalizePath(included.getPath()),
             included.getTimestamp(),
             nvls(included.getNode(), myselfNode.getName()),
-            logConfigEntry.getUid());
+            logConfigEntry.getUid(),
+            isTailNeeded);
         log.debug("Switching {} the registration by INCLUDED request: {}", isOn ? "ON":"OFF", includedRequest);
         remoteGateway.switchRegistration(includedRequest, isOn);
 

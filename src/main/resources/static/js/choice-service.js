@@ -2,7 +2,7 @@
  * A service responsible for providing the application with log choice options (aka choices).
  */
 function ChoicesService($http, $location, $log, $rootScope) {
-    return function (callbackWhenReady) {
+    return function () {
 
         var onSuccess = function success(response) {
             var choices = response.data;
@@ -46,7 +46,7 @@ function ChoicesService($http, $location, $log, $rootScope) {
             }
 
             // сохраняем все результаты предшествующих выборов в модели
-            callbackWhenReady(choices, selectedChoice);
+            $rootScope.$broadcast('choicesReady', {choices: choices, selectedChoice: selectedChoice});
         };
 
         var onFail = function fail(response) {

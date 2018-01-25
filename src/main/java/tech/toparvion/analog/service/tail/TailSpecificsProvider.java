@@ -16,15 +16,17 @@ public interface TailSpecificsProvider {
    * @return string that must be used as an options set for proper tail invocation on current platform. Gets applied
    * on composite watching only.
    * @see OSDelegatingFileTailingMessageProducer#setOptions(java.lang.String)
+   * @param includePreviousLines flag indicating that last several lines should also be included into the first reading
    */
-  String getCompositeTailNativeOptions();
+  String getCompositeTailNativeOptions(boolean includePreviousLines);
 
   /**
    * @return string that must be used as an options set for proper tail invocation on current platform. Gets applied
    * on plain watching only.
    * @see OSDelegatingFileTailingMessageProducer#setOptions(java.lang.String)
+   * @param includePreviousLines flag indicating that last several lines should also be included into the first reading
    */
-  String getPlainTailNativeOptions();
+  String getPlainTailNativeOptions(boolean includePreviousLines);
 
   /**
    * @return delay in milliseconds between attempts to read non-accessible or non-existent file
