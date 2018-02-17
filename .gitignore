@@ -10,4 +10,5 @@
 
 memo.txt
 log-samples/
+/dist/deploy/
 application.log
