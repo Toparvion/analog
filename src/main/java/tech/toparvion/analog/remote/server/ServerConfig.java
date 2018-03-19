@@ -14,6 +14,7 @@ import org.springframework.integration.file.tail.FileTailingMessageProducerSuppo
 import org.springframework.integration.rmi.RmiInboundGateway;
 import tech.toparvion.analog.model.config.ClusterProperties;
 import tech.toparvion.analog.service.tail.GnuCoreUtilsTailSpecificsProvider;
+import tech.toparvion.analog.service.tail.MacOsTailSpecificsProvider;
 import tech.toparvion.analog.service.tail.SolarisTailSpecificsProvider;
 import tech.toparvion.analog.service.tail.TailSpecificsProvider;
 
@@ -97,6 +98,9 @@ public class ServerConfig {
 
     } else if (SolarisTailSpecificsProvider.matches(idfString)) {
       specificsProvider = new SolarisTailSpecificsProvider();
+
+    } else if (MacOsTailSpecificsProvider.matches(idfString)) {
+      specificsProvider = new MacOsTailSpecificsProvider();
 
     } else {
       throw new IllegalStateException("No suitable specifics provider found for tail's idf string: " + idfString +
