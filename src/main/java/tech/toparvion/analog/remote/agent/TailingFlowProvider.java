@@ -10,13 +10,14 @@ import org.springframework.stereotype.Component;
 import tech.toparvion.analog.model.RecordLevel;
 import tech.toparvion.analog.remote.agent.misc.CorrelationIdHeaderEnricher;
 import tech.toparvion.analog.remote.agent.misc.SequenceNumberHeaderEnricher;
-import tech.toparvion.analog.service.AnaLogUtils;
+import tech.toparvion.analog.service.RecordLevelDetector;
 import tech.toparvion.analog.service.tail.TailSpecificsProvider;
 import tech.toparvion.analog.util.timestamp.TimestampExtractor;
 
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import static org.springframework.integration.IntegrationMessageHeaderAccessor.CORRELATION_ID;
@@ -34,6 +35,7 @@ public class TailingFlowProvider {
 
   private final TimestampExtractor timestampExtractor;
   private final TailSpecificsProvider tailSpecificsProvider;
+  private final RecordLevelDetector recordLevelDetector;
   private final int groupSizeThreshold;
   private final int groupTimeoutMs;
 
@@ -41,10 +43,12 @@ public class TailingFlowProvider {
   @Autowired
   public TailingFlowProvider(TimestampExtractor timestampExtractor,
                              TailSpecificsProvider tailSpecificsProvider,
+                             RecordLevelDetector recordLevelDetector,
                              @Value("${tracking.group.sizeThreshold:500}") int groupSizeThreshold,
                              @Value("${tracking.group.timeoutMs:500}") int groupTimeoutMs) {
     this.timestampExtractor = timestampExtractor;
     this.tailSpecificsProvider = tailSpecificsProvider;
+    this.recordLevelDetector = recordLevelDetector;
     this.groupSizeThreshold = groupSizeThreshold;
     this.groupTimeoutMs = groupTimeoutMs;
   }
@@ -115,7 +119,9 @@ public class TailingFlowProvider {
     if (!recordMessage.getHeaders().containsKey(LOG_TIMESTAMP_VALUE__HEADER)) {
       return null;
     }
-    return AnaLogUtils.detectRecordLevel(recordMessage);
+    Optional<String> levelOpt = recordLevelDetector.detectLevel(recordMessage.getPayload());
+    return levelOpt.map(RecordLevel::valueOf)
+                   .orElse(RecordLevel.PLAIN);
   }
 
 }

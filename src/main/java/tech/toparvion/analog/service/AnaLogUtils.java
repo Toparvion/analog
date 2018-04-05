@@ -2,20 +2,14 @@ package tech.toparvion.analog.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.messaging.Message;
 import org.w3c.tidy.Tidy;
-import tech.toparvion.analog.model.RecordLevel;
 
-import javax.annotation.Nonnull;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
-
-import static tech.toparvion.analog.model.RecordLevel.PLAIN;
 
 /**
  * Created with IntelliJ IDEA.
@@ -264,16 +258,6 @@ public class AnaLogUtils {
       return "XML";
     }
     return "PLAIN";
-  }
-
-  @Nonnull
-  public static RecordLevel detectRecordLevel(Message<String> recordMessage) {
-    String recordLine = recordMessage.getPayload();
-    return Stream.of(RecordLevel.values())
-        .filter(level -> !PLAIN.equals(level))
-        .filter(level -> recordLine.contains(level.name()))    // this is potential subject to change in future
-        .findAny()
-        .orElse(PLAIN);
   }
 
   public static String normalizePath(String pathToNormalize) {
