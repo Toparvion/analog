@@ -233,8 +233,12 @@ public class TrackingService {
     log.debug("Received file tailing event: {}", tailingEvent.toString());
     String logPath = normalizePath(tailingEvent.getFile().getAbsolutePath());
     Set<String> watchersFlowIds = sendingRegistry.get(logPath);
-    assert (watchersFlowIds != null)
-        : String.format("No watching flow ID found in registry by logPath='%s'.", logPath);
+    if (watchersFlowIds == null) {
+      // sometimes tailing event may arrive earlier than the whole watching flow is built, e.g. when the file to
+      // watch is absent and tail utility detects it immediately (see "Stream closed" message in logs)
+      log.warn("No watching flow ID found in registry by logPath='{}'.", logPath);
+      return;
+    }
     for (String flowId : watchersFlowIds) {
       IntegrationFlowRegistration registration = flowContext.getRegistrationById(flowId);
       assert (registration != null);
