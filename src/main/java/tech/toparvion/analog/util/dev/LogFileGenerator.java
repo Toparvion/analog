@@ -12,6 +12,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.scheduling.TaskScheduler;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,7 +24,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.StandardOpenOption.*;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -55,7 +55,7 @@ public class LogFileGenerator implements Runnable, InitializingBean {
                           int bunchSize,
                           TaskScheduler taskScheduler) throws IOException {
     this.sourceFilePath = Paths.get(sourceFilePath);
-    this.sourceLines = Files.readAllLines(this.sourceFilePath);
+    this.sourceLines = Files.readAllLines(this.sourceFilePath, Charset.defaultCharset());
     this.destinationFilePath = Paths.get(destinationFilePath);
     this.sourceTimestampPattern = Pattern.compile(sourceTimestampPattern);
     this.destinationTimestampFormatter = DateTimeFormatter.ofPattern(destinationTimestampFormat);
@@ -74,7 +74,7 @@ public class LogFileGenerator implements Runnable, InitializingBean {
         trigger.getTimeUnit().name().toLowerCase());
     String record = getSingleRandomRecord();
     try {
-      Files.write(destinationFilePath, record.getBytes(UTF_8), CREATE, APPEND, SYNC);
+      Files.write(destinationFilePath, record.getBytes(Charset.defaultCharset()), CREATE, APPEND, SYNC);
 
     } catch (IOException e) {
       log.error("Couldn't write new records to log file.", e);
