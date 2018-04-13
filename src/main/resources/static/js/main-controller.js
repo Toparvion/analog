@@ -1,7 +1,7 @@
 app = angular.module("AnaLog", ['ngSanitize', 'ngAnimate', 'ui.select']);
 
 app.run(function ($rootScope, watchingService) {
-    $rootScope.watchingLog = "АнаЛ&oacute;г v0.8 (загрузка...)";
+    $rootScope.watchingLog = "АнаЛ&oacute;г v0.9 (загрузка...)";
     watchingService.connect();
 });
 
@@ -29,6 +29,36 @@ app.controller('mainController', function ($scope, $rootScope, $window,
     // a couple of bindings between this controller's functions and injected services
     vm.clear = renderingService.clearConsole;
     vm.scrollDown = renderingService.scrollDown;
+
+    vm.getNodesList = function (nodes) {
+        var label;
+        // if there are more than 1 nodes that are included in selected log
+        if (nodes.length > 1) {
+            var counts = {};
+            // first let's count how many times each node is encountered in the list
+            nodes.forEach(function (i) {
+                counts[i] = (counts[i] || 0) + 1;
+            });
+            // then extract only distinct node names from the list
+            var uniqueNodes = nodes.filter(function (value, index, self) {
+                return self.indexOf(value) === index;
+            });
+            var nodeList = '';
+            // finally compose a string list of distinct node names with quantity of their occurences (if > 1)
+            uniqueNodes.forEach(function (name) {
+                if (nodeList)
+                    nodeList += ', ';
+                nodeList += name;
+                if (counts[name] > 1)
+                    nodeList += '(' + counts[name] + ')';
+            });
+            label = 'композитный: ' + nodeList;
+
+        } else {  // if there is only one node for this log
+            label = 'одинарный: ' + nodes[0];
+        }
+        return label;
+    };
 
     // the following watch allows us to react to URL path change instantly (without opening a new browser tab)
     $scope.$watch(function () {
