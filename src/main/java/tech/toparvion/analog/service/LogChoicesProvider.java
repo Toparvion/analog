@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import tech.toparvion.analog.model.LogChoice;
 import tech.toparvion.analog.model.config.ChoiceGroup;
 import tech.toparvion.analog.model.config.ChoiceProperties;
+import tech.toparvion.analog.model.config.ClusterProperties;
 import tech.toparvion.analog.model.config.LogConfigEntry;
 import tech.toparvion.analog.util.Util;
 
@@ -14,12 +15,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -34,10 +37,13 @@ public class LogChoicesProvider {
   private static final String DEFAULT_TITLE_FORMAT = "$f ($g)";
 
   private final List<ChoiceGroup> choices;
+  private final ClusterProperties clusterProperties;
 
   @Autowired
-  public LogChoicesProvider(ChoiceProperties choiceProperties) {
+  public LogChoicesProvider(ChoiceProperties choiceProperties,
+                            ClusterProperties clusterProperties) {
     this.choices = choiceProperties.getChoices();
+    this.clusterProperties = clusterProperties;
   }
 
   List<LogChoice> provideLogChoices() {
@@ -73,7 +79,7 @@ public class LogChoicesProvider {
           fullPath,
           title,
           coms.isSelectedByDefault(),
-          null, null /* to explicitly denote that this choice is plain one */));
+          null, emptyList() /* to explicitly denote that this choice is plain one */));
     }
     return choices;
   }
@@ -96,9 +102,27 @@ public class LogChoicesProvider {
           title,
           logConfigEntry.isSelected(),
           logConfigEntry.getUid(),
-          countFiles(logConfigEntry)));
+          getNodes(logConfigEntry)));
     }
     return choices;
+  }
+
+  private List<String> getNodes(LogConfigEntry logConfigEntry) {
+    String myselfNodeName = clusterProperties.getMyselfNode().getName();
+//    if (logConfigEntry.getIncludes().isEmpty()
+//            && (logConfigEntry.getNode() == null || logConfigEntry.getNode().equals(myselfNodeName))) {
+//      return emptyList();
+//    }
+    List<String> nodes = new ArrayList<>();
+    String mainNode = logConfigEntry.getNode() != null
+            ? logConfigEntry.getNode()
+            : myselfNodeName;
+    nodes.add(mainNode);
+    logConfigEntry.getIncludes()
+            .stream()
+            .map(LogConfigEntry::getNode)
+            .forEach(nodes::add);
+    return nodes;
   }
 
   private Set<LogChoice> processScanDir(ChoiceGroup group) {
@@ -117,7 +141,7 @@ public class LogChoicesProvider {
               logPath.toAbsolutePath().toString(),
               expandTitle(logPath.toString(), DEFAULT_TITLE_FORMAT, groupName),
               false,
-              null, null /* to explicitly denote that this choice is plain one */))
+              null, emptyList() /* to explicitly denote that this choice is plain one */))
           .collect(toSet()));
 
     } catch (IOException e) {
@@ -156,10 +180,6 @@ public class LogChoicesProvider {
     }
 
     return new ChoiceTokens(purePath, pureTitle, selectedByDefault);
-  }
-
-  private int countFiles(LogConfigEntry compositeEntry) {
-    return 1/*self*/ + compositeEntry.getIncludes().size();
   }
 
   /**

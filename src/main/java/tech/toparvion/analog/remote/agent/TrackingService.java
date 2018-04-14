@@ -246,7 +246,7 @@ public class TrackingService {
 
   @ManagedAttribute
   public String[] getSendingRegistryKeys() {
-    return sendingRegistry.keySet().toArray(new String[sendingRegistry.size()]);
+    return sendingRegistry.keySet().toArray(new String[0]);
   }
 
 }

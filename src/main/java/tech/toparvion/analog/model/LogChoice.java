@@ -1,6 +1,8 @@
 package tech.toparvion.analog.model;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -14,13 +16,12 @@ public class LogChoice {
   private final boolean selectedByDefault;
   @Nullable   // null in case of plain (not composite) log
   private final String uid;
-  @Nullable   // null in case of not explicitly specified node
-  private final Integer filesCount;
+  private final List<String> nodes = new ArrayList<>();
 
   public LogChoice(String group, String path, String title, boolean selectedByDefault,
-                   @Nullable String uid, @Nullable Integer filesCount) {
+                   @Nullable String uid, List<String> nodes) {
     this.group = group;
-    this.filesCount = filesCount;
+    this.nodes.addAll(nodes);
     String forwardSlashedPath = path.replaceAll("\\\\", "/");
     this.path = forwardSlashedPath.startsWith("/")
             ? forwardSlashedPath
@@ -51,9 +52,8 @@ public class LogChoice {
     return uid;
   }
 
-  @Nullable
-  public Integer getFilesCount() {
-    return filesCount;
+  public List<String> getNodes() {
+    return nodes;
   }
 
   @Override
