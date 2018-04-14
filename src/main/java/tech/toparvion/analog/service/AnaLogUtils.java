@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static tech.toparvion.analog.remote.RemotingConstants.PLAIN_RECORD_LEVEL_NAME;
+
 /**
  * Created with IntelliJ IDEA.
  * Date: 02.10.14
@@ -257,7 +259,7 @@ public class AnaLogUtils {
     if (xmlMatcher.find()) {
       return "XML";
     }
-    return "PLAIN";
+    return PLAIN_RECORD_LEVEL_NAME;
   }
 
   public static String normalizePath(String pathToNormalize) {

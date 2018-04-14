@@ -7,7 +7,6 @@ import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.stereotype.Component;
-import tech.toparvion.analog.model.RecordLevel;
 import tech.toparvion.analog.remote.agent.misc.CorrelationIdHeaderEnricher;
 import tech.toparvion.analog.remote.agent.misc.SequenceNumberHeaderEnricher;
 import tech.toparvion.analog.service.RecordLevelDetector;
@@ -17,7 +16,6 @@ import tech.toparvion.analog.util.timestamp.TimestampExtractor;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.Comparator;
-import java.util.Optional;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import static org.springframework.integration.IntegrationMessageHeaderAccessor.CORRELATION_ID;
@@ -115,13 +113,12 @@ public class TailingFlowProvider {
         .get();
   }
 
-  private RecordLevel detectRecordLevel(Message<String> recordMessage) {
+  private String detectRecordLevel(Message<String> recordMessage) {
     if (!recordMessage.getHeaders().containsKey(LOG_TIMESTAMP_VALUE__HEADER)) {
       return null;
     }
-    Optional<String> levelOpt = recordLevelDetector.detectLevel(recordMessage.getPayload());
-    return levelOpt.map(RecordLevel::valueOf)
-                   .orElse(RecordLevel.PLAIN);
+    return recordLevelDetector.detectLevel(recordMessage.getPayload())
+                              .orElse(PLAIN_RECORD_LEVEL_NAME);
   }
 
 }

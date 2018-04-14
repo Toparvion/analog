@@ -34,6 +34,7 @@ public final class RemotingConstants {
   public static final String WEBSOCKET_APP_PREFIX = "/app";
   public static final String WEBSOCKET_ENDPOINT = "/watch-endpoint";
   public static final String MESSAGE_TYPE_HEADER = "type";
+  public static final String PLAIN_RECORD_LEVEL_NAME = "PLAIN";
   public enum MessageType { RECORD, METADATA, FAILURE }
   //</editor-fold>
 }
