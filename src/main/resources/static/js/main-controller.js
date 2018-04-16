@@ -32,7 +32,7 @@ app.controller('mainController', function ($scope, $rootScope, $window,
 
     vm.getNodesList = function (nodes) {
         var label;
-        // if there are more than 1 nodes that are included in selected log
+        // if there are more than 1 node included in selected log
         if (nodes.length > 1) {
             var counts = {};
             // first let's count how many times each node is encountered in the list

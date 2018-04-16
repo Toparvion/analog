@@ -12,12 +12,12 @@ app.constant('config', {
         periodMs: 1000,
         eviction: {
             composite: {
-                threshold: 1100,
-                depth: 100
+                threshold: 2200,
+                depth: 200
             },
             plain: {
-                threshold: 500,
-                depth: 50
+                threshold: 1000,
+                depth: 100
             }
         }
     },
