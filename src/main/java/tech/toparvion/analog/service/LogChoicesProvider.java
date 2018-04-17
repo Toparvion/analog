@@ -46,7 +46,7 @@ public class LogChoicesProvider {
     this.clusterProperties = clusterProperties;
   }
 
-  List<LogChoice> provideLogChoices() {
+  public List<LogChoice> provideLogChoices() {
     return choices.stream()
         .flatMap(this::flattenGroup)
         .collect(toList());

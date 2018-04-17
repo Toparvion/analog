@@ -5,14 +5,18 @@ jmx:
     host: localhost
     port: 1099
 
-clusterNodes:
+nodes:
   - name: angara
-    address: angara.ftc.ru:7801
+    host: angara.ftc.ru
+    agentPort: 7801
+    serverPort: 8080
     # myself: true
   - name: volga
-    address: volga.ftc.ru:7802
+    host: volga.ftc.ru
+    agentPort: 7802
   - name: tobol
-    address: tobol.ftc.ru:7803
+    host: tobol.ftc.ru
+    agentPort: 7803
 
 recordLevels:
   - TRACE

@@ -58,7 +58,7 @@ public class ServerConfig {
                                               RecordSender recordSender,
                                               MetaDataSender metaDataSender) {
     DirectChannel payloadRmiInChannel = direct(SERVER_RMI_PAYLOAD_IN__CHANNEL).get();
-    int myPort = clusterProperties.getMyselfNode().getPort();
+    int myPort = clusterProperties.getMyselfNode().getAgentPort();
 
     RmiInboundGateway inboundRmiGateway = new RmiInboundGateway();
     inboundRmiGateway.setRequestChannel(payloadRmiInChannel);

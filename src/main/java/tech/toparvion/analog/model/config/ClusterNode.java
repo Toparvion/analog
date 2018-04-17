@@ -3,6 +3,7 @@ package tech.toparvion.analog.model.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -19,12 +20,11 @@ public class ClusterNode {
   private static final Logger log = LoggerFactory.getLogger(ClusterNode.class);
 
   private String name;
-  private String address;
-  private Boolean myself;
-
-  // synthetic (computed) fields
   private String host;
-  private int port;
+  private int agentPort;
+  private int serverPort;
+  @Nullable
+  private Boolean myself;
 
   public ClusterNode() { }
 
@@ -36,20 +36,32 @@ public class ClusterNode {
     this.name = name;
   }
 
-  public String getAddress() {
-    return address;
+  public void setHost(String host) {
+    this.host = host;
   }
 
-  public void setAddress(String address) {
-    this.address = address;
-    // additionally parse the address string to extract host and port values
-    Objects.requireNonNull(address);
-    String[] tokens = address.split(":");
-    assert tokens.length > 0;
-    host = tokens[0];
-    port = (tokens.length > 1)
-        ? Integer.valueOf(tokens[1])
-        : 80;
+  public void setAgentPort(int agentPort) {
+    this.agentPort = agentPort;
+  }
+
+  public void setServerPort(int serverPort) {
+    this.serverPort = serverPort;
+  }
+
+  public void setMyself(@Nullable Boolean myself) {
+    this.myself = myself;
+  }
+
+  public String getHost() {
+    return host;
+  }
+
+  public int getAgentPort() {
+    return agentPort;
+  }
+
+  public int getServerPort() {
+    return serverPort;
   }
 
   boolean getMyself() {
@@ -60,20 +72,8 @@ public class ClusterNode {
     return myself;
   }
 
-  public void setMyself(Boolean myself) {
-    this.myself = myself;
-  }
-
-  public String getHost() {
-    return host;
-  }
-
-  public int getPort() {
-    return port;
-  }
-
-  public InetSocketAddress getInetSocketAddress() {
-    return new InetSocketAddress(host, port);
+  public InetSocketAddress getAgentInetSocketAddress() {
+    return new InetSocketAddress(host, agentPort);
   }
 
   private void defineMyself() {
@@ -89,5 +89,18 @@ public class ClusterNode {
       log.error(format("Unable to resolve address for host '%s'. 'Myself' is being set to false.", host), e);
       myself = false;
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ClusterNode that = (ClusterNode) o;
+    return Objects.equals(name, that.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name);
   }
 }
