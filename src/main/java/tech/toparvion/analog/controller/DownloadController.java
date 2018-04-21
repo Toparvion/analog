@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -51,6 +52,11 @@ import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 public class DownloadController {
   private static final Logger log = LoggerFactory.getLogger(DownloadController.class);
   private static final String DOWNLOAD_URI_PATH = "/download";
+  /**
+   * Charset to use for composing 'Content-Type' header. This is subject to improve as files with different encodings
+   * may look corrupted after downloading with UTF-8.
+   */
+  private static final Charset DEFAULT_CHARSET = UTF_8;
 
   private final ClusterProperties clusterProperties;
   private final DownloadRestTemplate downloadRestTemplate;
@@ -85,7 +91,7 @@ public class DownloadController {
         log.debug("Read start position is 0 so returning the file at whole...");
         Resource pathResource = new PathResource(path);
         response.setHeader(CONTENT_DISPOSITION, format("attachment; filename=\"%s\"", path.getFileName().toString()));
-        response.setHeader(CONTENT_TYPE, new MediaType(TEXT_PLAIN, UTF_8).toString());
+        response.setHeader(CONTENT_TYPE, new MediaType(TEXT_PLAIN, DEFAULT_CHARSET).toString());
         return new ResponseEntity<>(pathResource, OK);
 
       } else {
@@ -98,7 +104,7 @@ public class DownloadController {
         InputStreamResource isr = new InputStreamResource(fileInputStream, format("resource based on '%s'", path));
         response.setHeader(CONTENT_DISPOSITION, format("attachment; filename=\"%s\"", path.getFileName().toString()));
         response.setHeader(CONTENT_LENGTH, String.valueOf(entireFileSize-skipped));
-        response.setHeader(CONTENT_TYPE, new MediaType(TEXT_PLAIN, UTF_8).toString());
+        response.setHeader(CONTENT_TYPE, new MediaType(TEXT_PLAIN, DEFAULT_CHARSET).toString());
         return new ResponseEntity<>(isr, OK);
       }
     }
