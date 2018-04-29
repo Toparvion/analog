@@ -17,25 +17,28 @@
     <script type="text/javascript" src="webjars/angularjs/1.5.8/angular-sanitize.js"></script>
     <script type="text/javascript" src="webjars/angularjs/1.5.8/angular-animate.js"></script>
     <script type="text/javascript" src="webjars/angular-ui-select/0.19.6/select.js"></script>
+    <script type="text/javascript" src="general/js/bootstrap3-dropdown.js"></script>
 
-    <script type="text/javascript" src="js/main-controller.js"></script>
-    <script type="text/javascript" src="js/notification-controller.js"></script>
-    <script type="text/javascript" src="js/notifications.js"></script>
-    <script type="text/javascript" src="js/choice-service.js"></script>
-    <script type="text/javascript" src="js/rendering-service.js"></script>
-    <script type="text/javascript" src="js/watching-service.js"></script>
-    <script type="text/javascript" src="js/directives.js"></script>
-    <script type="text/javascript" src="js/util.js"></script>
-    <script type="text/javascript" src="js/config.js"></script>
+    <script type="text/javascript" src="general/js/main-controller.js"></script>
+    <script type="text/javascript" src="notification/notification.controller.js"></script>
+    <script type="text/javascript" src="notification/notification.constant.js"></script>
+    <script type="text/javascript" src="general/js/choice-service.js"></script>
+    <script type="text/javascript" src="rendering/rendering.service.js"></script>
+    <script type="text/javascript" src="general/js/watching-service.js"></script>
+    <script type="text/javascript" src="download/download.component.js"></script>
+    <script type="text/javascript" src="general/js/directives.js"></script>
+    <script type="text/javascript" src="general/js/util.js"></script>
+    <script type="text/javascript" src="general/js/config.js"></script>
 
     <link rel="stylesheet" href="webjars/balloon-css/0.5.0/balloon.css">
     <link rel="stylesheet" href="webjars/highlightjs/9.8.0/styles/darkula.css">
     <link rel="stylesheet" href="webjars/angular-ui-select/0.19.6/select.css">
-    <link rel="stylesheet" href="css/bootstrap-with-slate-theme.min.css">
-    <link rel="stylesheet" href="css/lib-tuning.css" type="text/css"/> <!-- This should go after all the libs -->
-    <link rel="stylesheet" href="css/main.css" type="text/css"/>
-    <link rel="stylesheet" href="css/composite-record.css" type="text/css"/>
-    <link rel="stylesheet" href="css/notification.css" type="text/css"/>
+    <link rel="stylesheet" href="general/css/bootstrap-with-slate-theme.min.css">
+    <link rel="stylesheet" href="general/css/lib-tuning.css" type="text/css"/> <!-- This should go after all the libs -->
+    <link rel="stylesheet" href="general/css/main.css" type="text/css"/>
+    <link rel="stylesheet" href="rendering/composite-record.css" type="text/css"/>
+    <link rel="stylesheet" href="notification/notification.css" type="text/css"/>
+    <link rel="stylesheet" href="download/download.style.css" type="text/css"/>
 </head>
 
 <body ng-controller="mainController as ctrl">
@@ -44,7 +47,7 @@
         <!-- Brand -->
         <div class="navbar-header">
             <div class="navbar-brand">
-                <img alt="АнаЛ&oacute;г v0.9" title="АнаЛ&oacute;г v0.9" src="img/logo-20-20.png">
+                <img alt="АнаЛ&oacute;г v0.9" title="АнаЛ&oacute;г v0.9" src="general/img/logo-20-20.png">
             </div>
         </div>
         <!-- Watching toggle control -->
@@ -74,6 +77,8 @@
                 </ui-select-choices>
             </ui-select>
         </div>
+        <!-- Download link and control check dialog -->
+        <download-dialog class="navbar-left" selected-log="ctrl.selectedLog"></download-dialog>
         <!-- Right part of the navbar -->
         <div class="nav navbar-nav navbar-right">
             <!-- Text wrapping control -->
@@ -81,10 +86,6 @@
                 <input type="checkbox" ng-model="ctrl.textWrap">Перенос строк
             </label>
             <!--<p class="navbar-text">Выбран лог: "{{ctrl.selectedLog.title}}"</p>-->
-            <a ng-href="{{'/download?path='+ctrl.selectedLog.path}}" ng-hide="ctrl.selectedLog.uid!=null" download><button
-                    class="btn btn-default navbar-btn navbar-last-item" title="Скачать выбранный лог">
-                    <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
-                </button></a>
             <!-- Clear button -->
             <button class="btn btn-default navbar-btn navbar-last-item" ng-click="ctrl.clear()">Очистить</button>
         </div>
@@ -121,6 +122,6 @@
 </div>
 
 <!-- Substrate -->
-<img id="substrate" src="img/magnifier.png"/>
+<img id="substrate" src="general/img/magnifier.png"/>
 </body>
 </html>

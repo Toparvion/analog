@@ -67,65 +67,11 @@ public class DownloadController {
     this.downloadRestTemplate = new DownloadRestTemplate();
   }
 
-  @RequestMapping(value = DOWNLOAD_URI_PATH, method = GET)
-  public ResponseEntity<? extends Resource> downloadCurrentLog(
-      @RequestParam("path") String pathParam,
-      @RequestParam(value = "node", required = false) String nodeName,
-      @RequestParam(value = "last-mbytes", required = false, defaultValue = "0") int lastMBytes,
-      HttpServletResponse response) throws IOException
-  {
-    ClusterNode node = getNodeByName(nodeName);
-    boolean isRemote = !node.equals(clusterProperties.getMyselfNode());
-    if (!isRemote) {
-      Path path = Paths.get(denormalize(pathParam));
-      log.debug("Local file requested. Retrieving it from path: {}", path);
-      if (!isReadable(path)) {
-        throw new IllegalArgumentException(format("Local file '%s' not found or is inaccessible for reading.", path));
-      }
-      long entireFileSize = size(path);               // it's just a snapshot of file size which can change immediately
-      int lastBytes = lastMBytes << 20;               // 1 MByte = 2^20 bytes so it's enough to shift it left by 20
-      long readStartPosition = (lastBytes > 0)
-          ? max(0, (entireFileSize - lastBytes))      // 'max' to prevent exceeding of actual file size
-          : 0;
-      if (readStartPosition == 0) {
-        log.debug("Read start position is 0 so returning the file at whole...");
-        Resource pathResource = new PathResource(path);
-        response.setHeader(CONTENT_DISPOSITION, format("attachment; filename=\"%s\"", path.getFileName().toString()));
-        response.setHeader(CONTENT_TYPE, new MediaType(TEXT_PLAIN, DEFAULT_CHARSET).toString());
-        return new ResponseEntity<>(pathResource, OK);
-
-      } else {
-        log.debug("Read start position is {} so returning files's tail only...", readStartPosition);
-        InputStream fileInputStream = Files.newInputStream(path);
-        long skipped = fileInputStream.skip(readStartPosition);
-        if (skipped != readStartPosition) {
-          log.warn("Actual skipped {} bytes while requested {} bytes.", skipped, readStartPosition);
-        }
-        InputStreamResource isr = new InputStreamResource(fileInputStream, format("resource based on '%s'", path));
-        response.setHeader(CONTENT_DISPOSITION, format("attachment; filename=\"%s\"", path.getFileName().toString()));
-        response.setHeader(CONTENT_LENGTH, String.valueOf(entireFileSize-skipped));
-        response.setHeader(CONTENT_TYPE, new MediaType(TEXT_PLAIN, DEFAULT_CHARSET).toString());
-        return new ResponseEntity<>(isr, OK);
-      }
-    }
-
-    URI uri = UriComponentsBuilder.newInstance()
-        .scheme("http")
-        .host(node.getHost())
-        .port(clusterProperties.resolveServerPortFor(node))
-        .path(DOWNLOAD_URI_PATH)
-        .queryParam("path", pathParam)
-        .queryParam("last-mbytes", lastMBytes)
-        .build()
-        .toUri();
-    log.debug("Remote file requested. Retrieving it from URI: GET {}", uri);
-
-    return downloadRestTemplate.getForEntity(uri, InputStreamResource.class);
-  }
-
   @RequestMapping(value = DOWNLOAD_URI_PATH, method = HEAD)
-  public HttpHeaders getLogCurrentSize(@RequestParam("path") String pathParam,
-                                       @RequestParam(value = "node", required = false) String nodeName) throws IOException {
+  public HttpHeaders getLogInfo(@RequestParam("path") String pathParam,
+                                @RequestParam(value = "node", required = false) String nodeName)
+      throws IOException, InterruptedException {
+    Thread.sleep(1500);   // TODO remove after debugging
     ClusterNode node = getNodeByName(nodeName);
     boolean isRemote = !node.equals(clusterProperties.getMyselfNode());
     long size, lastModified;
@@ -150,20 +96,76 @@ public class DownloadController {
           .build()
           .toUri();
       log.debug("Remote file size requested. Will query from URI: HEAD {}", uri);
-      HttpHeaders headers = new RestTemplate().headForHeaders(uri);
-      if (!headers.containsKey(CONTENT_LENGTH)) {
+      HttpHeaders remoteHeaders = new RestTemplate().headForHeaders(uri);
+      if (!remoteHeaders.containsKey(CONTENT_LENGTH)) {
         throw new IllegalStateException(format("No Content-Length received from uri=%s", uri));
       }
-      size = headers.getContentLength();
-      lastModified = headers.getLastModified();
+      size = remoteHeaders.getContentLength();
+      lastModified = remoteHeaders.getLastModified();
       extendedPath = uri.toString();
 
     }
     log.debug("File '{}' has size {} bytes, last modified {}.", extendedPath, size, Instant.ofEpochMilli(lastModified));
-    HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.setContentLength(size);
-    httpHeaders.setLastModified(lastModified);
-    return httpHeaders;
+    HttpHeaders answerHeaders = new HttpHeaders();
+    answerHeaders.setContentLength(size);
+    answerHeaders.setLastModified(lastModified);
+    return answerHeaders;
+  }
+
+  @RequestMapping(value = DOWNLOAD_URI_PATH, method = GET)
+  public ResponseEntity<? extends Resource> downloadLog(
+      @RequestParam("path") String pathParam,
+      @RequestParam(value = "node", required = false) String nodeName,
+      @RequestParam(value = "last-kbytes", required = false, defaultValue = "0") int lastKBytes,
+      HttpServletResponse response) throws IOException
+  {
+    ClusterNode node = getNodeByName(nodeName);
+    boolean isRemote = !node.equals(clusterProperties.getMyselfNode());
+    if (!isRemote) {
+      Path path = Paths.get(denormalize(pathParam));
+      log.debug("Local file requested. Retrieving it from path: {}", path);
+      if (!isReadable(path)) {
+        throw new IllegalArgumentException(format("Local file '%s' not found or is inaccessible for reading.", path));
+      }
+      long entireFileSize = size(path);               // it's just a snapshot of file size which can change immediately
+      int lastBytes = lastKBytes << 10;               // 1 KByte = 2^10 bytes so it's enough to shift it left by 10
+      long readStartPosition = (lastBytes > 0)
+          ? max(0, (entireFileSize - lastBytes))      // 'max()' to prevent exceeding of actual file size
+          : 0;
+      if (readStartPosition == 0) {
+        log.debug("Read start position is 0 so returning the file at whole...");
+        Resource pathResource = new PathResource(path);
+        response.setHeader(CONTENT_DISPOSITION, format("attachment; filename=\"%s\"", path.getFileName().toString()));
+        response.setHeader(CONTENT_TYPE, new MediaType(TEXT_PLAIN, DEFAULT_CHARSET).toString());
+        return new ResponseEntity<>(pathResource, OK);
+
+      } else {
+        log.debug("Read start position is {} so returning files's tail only...", readStartPosition);
+        InputStream fileInputStream = Files.newInputStream(path);
+        long skipped = fileInputStream.skip(readStartPosition);
+        if (skipped != readStartPosition) {
+          log.warn("Actual skipped {} bytes while requested {} bytes.", skipped, readStartPosition);
+        }
+        InputStreamResource isr = new InputStreamResource(fileInputStream, format("resource based on '%s'", path));
+        response.setHeader(CONTENT_DISPOSITION, format("attachment; filename=\"%s\"", path.getFileName().toString()));
+        response.setHeader(CONTENT_LENGTH, String.valueOf(entireFileSize-skipped));
+        response.setHeader(CONTENT_TYPE, new MediaType(TEXT_PLAIN, DEFAULT_CHARSET).toString());
+        return new ResponseEntity<>(isr, OK);
+      }
+    }
+
+    // if requested file is not local, delegate the request to corresponding node
+    URI uri = UriComponentsBuilder.newInstance()
+        .scheme("http")
+        .host(node.getHost())
+        .port(clusterProperties.resolveServerPortFor(node))
+        .path(DOWNLOAD_URI_PATH)
+        .queryParam("path", pathParam)
+        .queryParam("last-kbytes", lastKBytes)
+        .build()
+        .toUri();
+    log.debug("Remote file requested. Retrieving it from URI: GET {}", uri);
+    return downloadRestTemplate.getForEntity(uri, InputStreamResource.class);
   }
 
   @ExceptionHandler(IOException.class)

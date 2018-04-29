@@ -56,8 +56,10 @@ choices:
       - cluster\composite.log as "$f (plain)"
     compositeLogs:
       - path: bankplus.log
+        node: volga
         title: $f - $g
         timestamp: dd.MM.yy HH:mm:ss,SSS
       - path: logSample.log
+        node: tobol
         title: $f - $g
         timestamp: dd.MM.yy HH:mm:ss,SSS
