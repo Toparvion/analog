@@ -70,9 +70,9 @@
                         <!-- The following logic relies on the presence of second node name. This is because in case
                         of single node AnaLog should use a label that is different from the label for multiple
                         nodes. In other words, the presence of second name means that there are multiple nodes. -->
-                        <small ng-class="{'log-choice-remote-single': !item.nodes[1], 'log-choice-composite': item.nodes[1]}">
-                            <span ng-bind-html="ctrl.getNodesList(item.nodes) | highlight: $select.search"></span>
-                        </small>
+                        <span class="label"
+                              ng-class="{'label-info': !item.nodes[1], 'label-warning': item.nodes[1]}"
+                              ng-bind-html="item.nodes | nodeLister | highlight: $select.search"></span>
                     </div>
                 </ui-select-choices>
             </ui-select>

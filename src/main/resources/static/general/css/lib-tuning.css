@@ -46,14 +46,3 @@
     text-decoration: none;
     color: #848484;
 }
-.log-choice-remote-single {
-    color: white;
-    background-color: #90c090; /*salmon;*/
-    padding-left: 5px;
-    padding-right: 5px;
-}.log-choice-composite {
-    color: white;
-    background-color: #de891b; /*salmon;*/
-    padding-left: 5px;
-    padding-right: 5px;
-}
