@@ -3,10 +3,10 @@
             ng-click="$ctrl.toggleDialog()">
         <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
     </button>
-    <div class="card" ng-show="$ctrl.isShowingDialog">
-        <div class="card-body">
+    <div class="panel panel-default" ng-show="$ctrl.isShowingDialog">
+        <div class="panel-body">
             <div class="dialog-header">
-                <h4 class="card-title">Контрольная сводка</h4>
+                <h4>Контрольная сводка</h4>
                 <div ng-switch="$ctrl.isLoading">
                     <div ng-switch-when="true">
                         <div class="loader"></div>
@@ -17,7 +17,6 @@
                     </div>
                 </div>
             </div>
-
             <table class="table-condensed">
                 <tbody>
                     <tr>
@@ -43,20 +42,20 @@
                    class="btn btn-primary dropdown-toggle"
                    data-toggle="dropdown"><span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                    <li ng-show="$ctrl.currentSize>1024*50">
+                    <li ng-show="$ctrl.currentSize>1024*50" ng-click="$ctrl.closeDialog()">
                         <a ng-href="{{$ctrl.downloadLink+'&last-kbytes=50'}}">Последние 50 КБ</a></li>
-                    <li ng-show="$ctrl.currentSize>1024*500">
+                    <li ng-show="$ctrl.currentSize>1024*500" ng-click="$ctrl.closeDialog()">
                         <a ng-href="{{$ctrl.downloadLink+'&last-kbytes=500'}}">Последние 500 КБ</a></li>
-                    <li ng-show="$ctrl.currentSize>1024*5120">
+                    <li ng-show="$ctrl.currentSize>1024*5120" ng-click="$ctrl.closeDialog()">
                         <a ng-href="{{$ctrl.downloadLink+'&last-kbytes=5120'}}">Последние 5 МБ</a></li>
-                    <li ng-show="$ctrl.currentSize>1024*51200">
+                    <li ng-show="$ctrl.currentSize>1024*51200" ng-click="$ctrl.closeDialog()">
                         <a ng-href="{{$ctrl.downloadLink+'&last-kbytes=51200'}}">Последние 50 МБ</a></li>
-                    <li ng-show="$ctrl.currentSize>1024*204800">
+                    <li ng-show="$ctrl.currentSize>1024*204800" ng-click="$ctrl.closeDialog()">
                         <a ng-href="{{$ctrl.downloadLink+'&last-kbytes=204800'}}">Последние 200 МБ</a></li>
                     <!--<li class="divider"></li>-->
                 </ul>
             </div>
-            <a ng-click="$ctrl.isShowingDialog=false" href class="card-link cancel">Отмена</a>
+            <a ng-click="$ctrl.closeDialog()" href class="card-link cancel">Отмена</a>
         </div>
     </div>
 </div>

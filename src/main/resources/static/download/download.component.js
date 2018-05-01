@@ -56,9 +56,13 @@ function DownloadController($scope, $element, $attrs, $log, $http) {
             return false;       // to prevent any actions of the link in case of error or in-progress loading
 
         } else {
-            ctrl.isShowingDialog = false;
+            ctrl.closeDialog();
         }
         // don't return anything in order to let the caller proceed normally
+    };
+
+    ctrl.closeDialog = function () {
+        ctrl.isShowingDialog = false;
     };
 
     // the following watch allows to react instantly on selected log changes when download dialog is open
