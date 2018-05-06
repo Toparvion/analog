@@ -71,7 +71,6 @@ public class DownloadController {
   public HttpHeaders getLogInfo(@RequestParam("path") String pathParam,
                                 @RequestParam(value = "node", required = false) String nodeName)
       throws IOException, InterruptedException {
-    Thread.sleep(1500);   // TODO remove after debugging
     ClusterNode node = getNodeByName(nodeName);
     boolean isRemote = !node.equals(clusterProperties.getMyselfNode());
     long size, lastModified;
