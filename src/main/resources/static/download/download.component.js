@@ -5,27 +5,51 @@ function DownloadController($scope, $element, $attrs, $log, $http) {
     ctrl.isShowingDialog = false;
     ctrl.lastError = undefined;
     ctrl.isLoading = false;
+    ctrl.file2Download = undefined;
 
     // visual state of controller
     ctrl.currentSize = undefined;
     ctrl.lastModified = undefined;
     ctrl.node = undefined;
     ctrl.downloadLink = undefined;
+    ctrl.allMembers = [];
 
     ctrl.toggleDialog = function () {
         ctrl.isShowingDialog = !ctrl.isShowingDialog;
         if (!ctrl.isShowingDialog)
             return;
-
         // $log.log("Going to request data for: %o", ctrl.selectedLog);
-        ctrl.loadData();
+        ctrl.initDialogData();
     };
 
-    ctrl.loadData = function () {
-        var uriPath = '/download?path=' + ctrl.selectedLog.path;
-        if (ctrl.selectedLog.nodes.length) {
-            uriPath += ("&node=" + ctrl.selectedLog.nodes[0]);
+    ctrl.initDialogData = function() {
+        if (!ctrl.selectedLog)
+            return [];
+        var firstMember = {
+            node: ctrl.selectedLog.node,
+            path: ctrl.selectedLog.path,
+            file: extractFileName(ctrl.selectedLog.path)
+        };
+        // By default currently chosen file aimed for downloading is the first member (which is not among includes).
+        // NOTE: This will trigger fetchDataFromServer() via corresponding $watch!
+        ctrl.file2Download = firstMember;
+        ctrl.allMembers = new Array(firstMember);
+        if (ctrl.selectedLog.includes) {
+            var otherMembers = ctrl.selectedLog.includes.map(function (member) {
+                return {
+                    node: member.node,
+                    path: member.path,
+                    file: extractFileName(member.path)
+                }
+            });
+            ctrl.allMembers = ctrl.allMembers.concat(otherMembers);
         }
+    };
+
+    ctrl.fetchDataFromServer = function () {
+        var uriPath = '/download?path=' + ctrl.file2Download.path;
+        // it doesn't matter whether specified node is remote or local; server will handle it itself
+        uriPath += ("&node=" + ctrl.file2Download.node);
         ctrl.isLoading = true;
         $http.head(uriPath)
             .then(
@@ -70,7 +94,15 @@ function DownloadController($scope, $element, $attrs, $log, $http) {
         return ctrl.selectedLog;
     }, function () {
         if (ctrl.isShowingDialog)
-            ctrl.loadData();
+            ctrl.initDialogData();
+    });
+
+    // the following watch allows to react instantly on changes of selected file among composite log's file list
+    $scope.$watch(function () {
+        return ctrl.file2Download;
+    }, function () {
+        if (ctrl.isShowingDialog)
+            ctrl.fetchDataFromServer();
     });
 }
 

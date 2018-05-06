@@ -22,3 +22,8 @@ if (!String.prototype.format) {
         });
     };
 }
+function removeDuplicates(data, param){
+    return data.filter(function(item, pos, array){
+        return array.map(function(mapItem){ return mapItem[param]; }).indexOf(item[param]) === pos;
+    })
+}

@@ -66,13 +66,10 @@
                     <small class="log-choice-detail">
                         <span ng-bind-html="item.path | highlight: $select.search"></span>
                     </small>
-                    <div ng-show="item.uid != null">
-                        <!-- The following logic relies on the presence of second node name. This is because in case
-                        of single node AnaLog should use a label that is different from the label for multiple
-                        nodes. In other words, the presence of second name means that there are multiple nodes. -->
+                    <div>
                         <span class="label"
-                              ng-class="{'label-info': !item.nodes[1], 'label-warning': item.nodes[1]}"
-                              ng-bind-html="item.nodes | nodeLister | highlight: $select.search"></span>
+                              ng-class="item.includes ? 'label-warning' : (item.remote ? 'label-info' : 'label-primary')"
+                              ng-bind-html="item | nodeLister | highlight: $select.search"></span>
                     </div>
                 </ui-select-choices>
             </ui-select>

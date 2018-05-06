@@ -61,7 +61,7 @@ app.controller('mainController', function ($scope, $rootScope, $window,
     });
     // the following subscription is responsible for proper control of watching mode - it must be reactivated on changes
     $scope.$on('choicesReady', function (event, result) {
-        $log.log("ChoicesReady: %o", result);
+        $log.log("ChoicesReady event has been received: %o", result);
         $scope.choices = result.choices;
         vm.selectedLog = result.selectedChoice;
         $rootScope.watchingLog = result.selectedChoice.title + " - " + config.general.appTitle;
@@ -94,32 +94,38 @@ app.controller('mainController', function ($scope, $rootScope, $window,
 });
 
 app.filter('nodeLister', function () {
-    return function (nodes) {
+    return function (logChoice) {
         var label;
-        // if there are more than 1 node included in selected log
-        if (nodes.length > 1) {
+        var allNodes = new Array({node: logChoice.node, path: logChoice.path});
+        if (logChoice.includes) {
+            allNodes = allNodes.concat(logChoice.includes);
+        }
+        // console.log("All nodes: %o", allNodes);
+        if (allNodes.length > 1) {
             var counts = {};
             // first let's count how many times each node is encountered in the list
-            nodes.forEach(function (i) {
-                counts[i] = (counts[i] || 0) + 1;
+            allNodes.forEach(function (inclusion) {
+                counts[inclusion.node] = (counts[inclusion.node] || 0) + 1;
             });
+            // console.log("Counts: %o", counts);
             // then extract only distinct node names from the list
-            var uniqueNodes = nodes.filter(function (value, index, self) {
-                return self.indexOf(value) === index;
-            });
+            var uniqueNodes = removeDuplicates(allNodes, 'node');
+            // console.log("Unique nodes: %o", uniqueNodes);
             var nodeList = '';
-            // finally compose a string list of distinct node names with quantity of their occurences (if > 1)
-            uniqueNodes.forEach(function (name) {
+            // finally compose a string list of distinct node names with quantity of their occurrences (if > 1)
+            uniqueNodes.forEach(function (inclusion) {
                 if (nodeList)
                     nodeList += ', ';
-                nodeList += name;
-                if (counts[name] > 1)
-                    nodeList += '(' + counts[name] + ')';
+                nodeList += inclusion.node;
+                if (counts[inclusion.node] > 1)
+                    nodeList += '(' + counts[inclusion.node] + ')';
             });
+            // console.log("Node list: %o", nodeList);
             label = 'композитный: ' + nodeList;
 
         } else {  // if there is only one node for this log
-            label = 'одинарный: ' + nodes[0];
+            label = logChoice.remote ? 'удаленный: ' : 'локальный: ';
+            label += logChoice.node;
         }
         return label;
     }

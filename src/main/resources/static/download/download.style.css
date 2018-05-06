@@ -34,8 +34,26 @@
     line-height: 0.8;
 }
 
-.panel, .cancel {
+.panel .cancel {
     margin-left: 15px;
+}
+
+.node-list {
+    display: block;
+    /* width: 100%; */
+    /* height: 38px; */
+    padding: 1px 5px;
+    font-size: 14px;
+    line-height: 1.428571;
+    color: #272b30;
+    background: #ffffff none;
+    border: 1px solid #000000;
+    /*border-radius: 4px;*/
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+    -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
 }
 
 

@@ -37,7 +37,7 @@ function ChoicesService($http, $location, $log, $rootScope) {
                 $log.log("No proposed log path was given in URL; basing on choices from server only.");
                 for (var j in choices) {
                     var choice = choices[j];
-                    if (choice.selectedByDefault) {
+                    if (choice.selected) {
                         selectedChoice = choice;
                         $location.path(choice.path);
                         break;

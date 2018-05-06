@@ -82,7 +82,7 @@ public class TimestampExtractor {
     File logFile = lineMessage.getHeaders().get(ORIGINAL_FILE, File.class);
     assert (logFile != null) : "lineMessage doesn't contain 'file_originalFile' header; check tailAdapter.";
 
-    String logPath = AnaLogUtils.normalizePath(logFile.getAbsolutePath());
+    String logPath = AnaLogUtils.convertPathToUnix(logFile.getAbsolutePath());
     PatternAndFormatter paf = registry.get(logPath);
     assert (paf != null) : format("Log path '%s' is not registered but its line message was received.", logPath);
 

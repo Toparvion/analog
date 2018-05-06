@@ -42,3 +42,8 @@ tracking:
   group:
     sizeThreshold: 500
     timeoutMs: 500
+
+# prevents Jackson mapper from serializing null values, empty arrays and false booleans
+spring:
+  jackson:
+    default-property-inclusion: non_default

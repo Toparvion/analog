@@ -3,7 +3,7 @@ package tech.toparvion.analog.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import tech.toparvion.analog.model.LogChoice;
+import tech.toparvion.analog.model.api.LogChoice;
 import tech.toparvion.analog.service.LogChoicesProvider;
 
 import java.util.List;

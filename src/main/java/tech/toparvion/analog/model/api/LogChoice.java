@@ -1,4 +1,4 @@
-package tech.toparvion.analog.model;
+package tech.toparvion.analog.model.api;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -12,23 +12,30 @@ import java.util.Objects;
 public class LogChoice {
   private final String group;
   private final String path;
+  private final String node;
+  private final boolean remote;
   private final String title;
-  private final boolean selectedByDefault;
+  private final boolean selected;
   @Nullable   // null in case of plain (not composite) log
   private final String uid;
-  private final List<String> nodes = new ArrayList<>();
+  private final List<CompositeInclusion> includes = new ArrayList<>();
 
-  public LogChoice(String group, String path, String title, boolean selectedByDefault,
-                   @Nullable String uid, List<String> nodes) {
+  LogChoice(String group,
+            String path,
+            String node,
+            boolean remote,
+            String title,
+            boolean selected,
+            @Nullable String uid,
+            List<CompositeInclusion> includes) {
     this.group = group;
-    this.nodes.addAll(nodes);
-    String forwardSlashedPath = path.replaceAll("\\\\", "/");
-    this.path = forwardSlashedPath.startsWith("/")
-            ? forwardSlashedPath
-            : ("/" + forwardSlashedPath);
+    this.path = path;
+    this.node = node;
+    this.remote = remote;
     this.title = title;
-    this.selectedByDefault = selectedByDefault;
+    this.selected = selected;
     this.uid = uid;
+    this.includes.addAll(includes);
   }
 
   public String getGroup() {
@@ -39,12 +46,20 @@ public class LogChoice {
     return path;
   }
 
+  public boolean getRemote() {
+    return remote;
+  }
+
   public String getTitle() {
     return title;
   }
 
-  public boolean getSelectedByDefault() {
-    return selectedByDefault;
+  public String getNode() {
+    return node;
+  }
+
+  public boolean getSelected() {
+    return selected;
   }
 
   @Nullable
@@ -52,8 +67,8 @@ public class LogChoice {
     return uid;
   }
 
-  public List<String> getNodes() {
-    return nodes;
+  public List<CompositeInclusion> getIncludes() {
+    return includes;
   }
 
   @Override
@@ -62,11 +77,12 @@ public class LogChoice {
     if (o == null || getClass() != o.getClass()) return false;
     LogChoice logChoice = (LogChoice) o;
     return Objects.equals(path, logChoice.path) &&
-            Objects.equals(uid, logChoice.uid);
+        Objects.equals(node, logChoice.node) &&
+        Objects.equals(uid, logChoice.uid);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(path, uid);
+    return Objects.hash(path, node, uid);
   }
 }

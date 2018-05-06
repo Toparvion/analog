@@ -7,6 +7,7 @@ import org.w3c.tidy.Tidy;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,8 +26,6 @@ public class AnaLogUtils {
   private static final Pattern MESSAGE_LEVEL_EXTRACTOR = Pattern.compile("^[\\S ]*(TRACE|DEBUG|INFO|WARN|ERROR|FATAL)");
   private static final Pattern XML_OPEN_EXTRACTOR = Pattern.compile("<((?:\\w[\\w-]*:)?\\w[\\w-]*).*>");
   private static final Pattern WHOLE_XML_EXTRACTOR = Pattern.compile("^<((?:\\w[\\w-]*:)?\\w[\\w-]*).*>.*</\\1>$", Pattern.DOTALL);
-
-  private static final Pattern WIN_DISC_PATTERN = Pattern.compile("^\\w:");
 
   public static String escapeSpecialCharacters(String inputString) {
     String result = inputString.replaceAll("\"", "&quot;");
@@ -232,7 +231,7 @@ public class AnaLogUtils {
     tidy.setWrapAttVals(true);
     tidy.setErrout(new PrintWriter(new StringWriter() /* <- just a stub, isn't used actually */) {
       @Override
-      public void write(String s) {
+      public void write(@SuppressWarnings("NullableProblems") String s) {
         tidyLog.info(s);      // we consider Tidy as auxiliary component so that its warnings are info for us
       }
     });
@@ -262,12 +261,30 @@ public class AnaLogUtils {
     return PLAIN_RECORD_LEVEL_NAME;
   }
 
-  public static String normalizePath(String pathToNormalize) {
+  public static String convertPathToUnix(String path) {
     // in case of working on Windows the path needs to be formatted to Linux style
-    String result = pathToNormalize.replaceAll("\\\\", "/");
-    if (WIN_DISC_PATTERN.matcher(result).find()) {
+    String result = path.replaceAll("\\\\", "/");
+    if (result.charAt(1) == ':') {
       result = "/" + result;
     }
     return result;
+  }
+
+  private static String convertPathFromUnix(String path) {      // can be done public if needed
+    return (path.charAt(2) == ':')
+        ? path.substring(1)     // to omit 'artificial' leading slash
+        : path;
+  }
+
+  public static String extractFileName(String path) {
+    return Paths.get(convertPathFromUnix(path))
+                .getFileName()
+                .toString();
+  }
+
+  public static String nvls(String s, String def) {
+    return (s == null || "".equals(s))
+            ? def
+            : s;
   }
 }

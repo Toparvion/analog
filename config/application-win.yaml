@@ -44,9 +44,12 @@ choices:
           - path: C:\lang\analog\log-samples\generated\core.log
             node: angara
             timestamp: yyyy-MM-dd HH:mm:ss,SSS # 2017-11-09 22:31:03,084
-#          - node: tobol
-#            path: C:\lang\analog\log-samples\cluster\composite.log
-#            timestamp: dd.MM.yy HH:mm:ss,SSS
+          - node: volga
+            path: C:\lang\analog\log-samples\cluster\composite.log
+            timestamp: dd.MM.yy HH:mm:ss,SSS
+          - node: volga
+            path: C:\lang\analog\log-samples\cluster\composite-2.log
+            timestamp: dd.MM.yy HH:mm:ss,SSS
 
   - group: Микросервисы
     pathBase: C:\lang\analog\log-samples\

@@ -31,7 +31,7 @@ import java.util.Set;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
-import static tech.toparvion.analog.service.AnaLogUtils.normalizePath;
+import static tech.toparvion.analog.service.AnaLogUtils.convertPathToUnix;
 
 /**
  * Applied logical service providing routines for remote log tracking.
@@ -231,7 +231,7 @@ public class TrackingService {
   @EventListener
   public void processFileTailingEvent(FileTailingEvent tailingEvent) {
     log.debug("Received file tailing event: {}", tailingEvent.toString());
-    String logPath = normalizePath(tailingEvent.getFile().getAbsolutePath());
+    String logPath = convertPathToUnix(tailingEvent.getFile().getAbsolutePath());
     Set<String> watchersFlowIds = sendingRegistry.get(logPath);
     assert (watchersFlowIds != null)
         : String.format("No watching flow ID found in registry by logPath='%s'.", logPath);
