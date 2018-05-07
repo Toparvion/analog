@@ -60,7 +60,7 @@
                         <a ng-href="{{$ctrl.downloadLink+'&last-kbytes=5120'}}" download>Последние 5 МБ</a></li>
                     <li ng-show="$ctrl.currentSize>1024*51200" ng-click="$ctrl.closeDialog()">
                         <a ng-href="{{$ctrl.downloadLink+'&last-kbytes=51200'}}" download>Последние 50 МБ</a></li>
-                    <li class="divider"></li>
+                    <li class="divider" ng-show="$ctrl.currentSize>1024*204800"></li>
                     <li ng-show="$ctrl.currentSize>1024*204800" ng-click="$ctrl.closeDialog()">
                         <a ng-href="{{$ctrl.downloadLink+'&last-kbytes=204800'}}" download>Последние 200 МБ</a></li>
                 </ul>

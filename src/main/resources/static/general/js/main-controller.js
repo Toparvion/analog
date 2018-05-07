@@ -1,7 +1,7 @@
 app = angular.module("AnaLog", ['ngSanitize', 'ngAnimate', 'ui.select']);
 
 app.run(function ($rootScope, watchingService) {
-    $rootScope.watchingLog = "АнаЛ&oacute;г v0.9 (загрузка...)";
+    $rootScope.watchingLog = "АнаЛ&oacute;г v0.10 (загрузка...)";
     watchingService.connect();
 });
 
@@ -125,7 +125,7 @@ app.filter('nodeLister', function () {
 
         } else {  // if there is only one node for this log
             label = logChoice.remote ? 'удаленный: ' : 'локальный: ';
-            label += logChoice.node;
+            label += logChoice.node || 'на текущем узле';
         }
         return label;
     }

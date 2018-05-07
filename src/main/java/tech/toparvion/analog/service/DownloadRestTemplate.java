@@ -28,7 +28,7 @@ import static java.util.List.of;
  *
  *
  * @author Toparvion
- * @since v0.9
+ * @since v0.10
  */
 public class DownloadRestTemplate extends RestTemplate {
 

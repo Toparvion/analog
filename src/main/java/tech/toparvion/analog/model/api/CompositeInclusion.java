@@ -4,7 +4,7 @@ package tech.toparvion.analog.model.api;
  * A part of composite log, i.e. a file (defined by node and path) that included into composite log among others files
  *
  * @author Toparvion
- * @since v0.9
+ * @since v0.10
  */
 public class CompositeInclusion {
   private final String node;
