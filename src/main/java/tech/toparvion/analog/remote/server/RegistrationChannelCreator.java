@@ -60,11 +60,7 @@ public class RegistrationChannelCreator implements BeanFactoryAware, Initializin
       beanFactory.getBean(SERVER_REGISTRATION_RMI_OUT__CHANNEL_PREFIX + nodeName);
 
     } catch (NoSuchBeanDefinitionException e) {
-      ClusterNode targetNode = clusterProperties.getClusterNodes().stream()
-          .filter(node -> nodeName.equals(node.getName()))
-          .findAny()
-          .orElseThrow(() -> new IllegalArgumentException(format("Unable to create registration channel. " +
-              "No node with name '%s' found among 'clusterNodes' in configuration.", nodeName)));
+      ClusterNode targetNode = clusterProperties.findNodeByName(nodeName);
       createChannelTo(targetNode);
     }
   }
@@ -72,14 +68,14 @@ public class RegistrationChannelCreator implements BeanFactoryAware, Initializin
   private void createChannelTo(ClusterNode node) {
     String rmiUrl = format("rmi://%s:%d/%s%s",
         node.getHost(),
-        node.getPort(),
+        node.getAgentPort(),
         SERVICE_NAME_PREFIX,
         AGENT_REGISTRATION_RMI_IN__CHANNEL);
 
     StandardIntegrationFlow serverRmiRegisteringFlow =
         IntegrationFlows
             .from(direct(SERVER_REGISTRATION_RMI_OUT__CHANNEL_PREFIX + node.getName()))
-            .enrichHeaders(e -> e.header(REPLY_ADDRESS__HEADER, clusterProperties.getMyselfNode().getInetSocketAddress()))
+            .enrichHeaders(e -> e.header(REPLY_ADDRESS__HEADER, clusterProperties.getMyselfNode().getAgentInetSocketAddress()))
             .handle(new RmiOutboundGateway(rmiUrl))
             .get();
 

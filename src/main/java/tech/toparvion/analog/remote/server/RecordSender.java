@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import tech.toparvion.analog.model.RecordLevel;
 import tech.toparvion.analog.model.api.CompositeLinesPart;
 import tech.toparvion.analog.model.api.LinesPart;
 import tech.toparvion.analog.model.api.StyledLine;
@@ -49,7 +48,7 @@ public class RecordSender {
     String uid = recordMessage.getHeaders().get(LOG_CONFIG_ENTRY_UID__HEADER, String.class);
     String sourceNode = recordMessage.getHeaders().get(SOURCE_NODE__HEADER, String.class);
     String sourcePath = requireNonNull(recordMessage.getHeaders().get(ORIGINAL_FILE, File.class)).getAbsolutePath();
-    RecordLevel level = recordMessage.getHeaders().get(RECORD_LEVEL__HEADER, RecordLevel.class);
+    String level = recordMessage.getHeaders().get(RECORD_LEVEL__HEADER, String.class);
     LocalDateTime timestamp = recordMessage.getHeaders().get(LOG_TIMESTAMP_VALUE__HEADER, LocalDateTime.class);
 
     Object payload = recordMessage.getPayload();
@@ -80,7 +79,7 @@ public class RecordSender {
         linesPart, singletonMap(MESSAGE_TYPE_HEADER, MessageType.RECORD));
   }
 
-  /*private*/ List<StyledLine> prepareCompositeRecords(List<String> payloadAsList, RecordLevel firstLineLevel) {
+  /*private*/ List<StyledLine> prepareCompositeRecords(List<String> payloadAsList, String firstLineLevel) {
     List<StyledLine> parsedLines = new ArrayList<>();
     if (payloadAsList.isEmpty()) {
       return parsedLines;
@@ -91,7 +90,7 @@ public class RecordSender {
       throw new IllegalStateException(format("The very first line of the record is distinguished as XML but it " +
           "must contain timestamp only: '%s'", firstLine));
     }
-    parsedLines.add(new StyledLine(AnaLogUtils.escapeSpecialCharacters(firstLine), firstLineLevel.name()));
+    parsedLines.add(new StyledLine(AnaLogUtils.escapeSpecialCharacters(firstLine), firstLineLevel));
 
     // остальные проверяем в цикле и проставляем им либо XML, либо PLAIN, так как других уровней быть не должно
     for (int i = 1; i < payloadAsList.size(); i++) {
@@ -105,7 +104,7 @@ public class RecordSender {
         style = "XML";
         text = stripXmlPrefix(text);
       } else {
-        style = "PLAIN";
+        style = PLAIN_RECORD_LEVEL_NAME;
       }
       // завершаем оформление текущей строки
       parsedLines.add(new StyledLine(text, style));

@@ -17,7 +17,6 @@ import tech.toparvion.analog.model.TrackingRequest;
 import tech.toparvion.analog.model.config.*;
 import tech.toparvion.analog.remote.server.RegistrationChannelCreator;
 import tech.toparvion.analog.remote.server.RemoteGateway;
-import tech.toparvion.analog.util.Util;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -26,8 +25,7 @@ import static java.lang.String.format;
 import static java.time.ZonedDateTime.now;
 import static java.util.Collections.singletonMap;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
-import static tech.toparvion.analog.service.AnaLogUtils.normalizePath;
-import static tech.toparvion.analog.util.Util.nvls;
+import static tech.toparvion.analog.service.AnaLogUtils.*;
 
 /**
  * A component responsible for supporting lifecycle of websocket sessions and watching subscriptions.
@@ -158,11 +156,11 @@ public class WebSocketEventListener {
     // in case it was the latest session watching that log we should stop the tracking
     LogConfigEntry watchingLog = registry.findLogConfigEntryBy(sessionId);
     log.debug("No sessions left watching log '{}'. Will deactivate the tracking...", watchingLog.getUid());
-    stopTrackingOnServer(watchingLog);
+    doSafely(log, () -> stopTrackingOnServer(watchingLog));
     // now that the log is not tracked anymore we need to remove it from the registry
     registry.removeEntry(watchingLog);
     log.info("Current node has unregistered itself from tracking log '{}' as there is no watching sessions anymore.",
-        watchingLog.getUid());
+            watchingLog.getUid());
   }
 
   private boolean getBooleanNativeHeader(StompHeaderAccessor headers, String name) {
@@ -190,7 +188,7 @@ public class WebSocketEventListener {
     // Perhaps it's worth here to parse the path and extract node name if it is specified like
     // '~~angara~~/pub/home/analog/out.log'. This would be however applicable to paths specified in URL only
     // because paths configured in file may conflict with each other's node specification.
-    artificialEntry.setTitle(Util.extractFileName(path));
+    artificialEntry.setTitle(extractFileName(path));
     log.debug("New plain log config entry created for path '{}'", path);
     return artificialEntry;
   }
@@ -248,7 +246,7 @@ public class WebSocketEventListener {
       TrackingRequest includedRequest = null;
       try {
         includedRequest = new TrackingRequest(
-            normalizePath(included.getPath()),
+            convertPathToUnix(included.getPath()),
             included.getTimestamp(),
             nvls(included.getNode(), myselfNode.getName()),
             logConfigEntry.getUid(),
@@ -277,7 +275,7 @@ public class WebSocketEventListener {
         .findAny()
         .map(ChoiceGroup::getPathBase)
         .orElse("");
-    return normalizePath((groupPathBase + logConfigEntry.getPath()));
+    return convertPathToUnix((groupPathBase + logConfigEntry.getPath()));
   }
 
 }

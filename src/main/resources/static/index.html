@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title ng-bind-html="watchingLog">АнаЛ&oacute;г v0.8</title>
+    <title ng-bind-html="watchingLog">АнаЛ&oacute;г v0.10</title>
 
     <script type="text/javascript" src="webjars/jquery/1.11.1/jquery.min.js"></script>
     <script type="text/javascript" src="webjars/jquery.scrollto/2.1.2/jquery.scrollTo.min.js"></script>
@@ -17,25 +17,28 @@
     <script type="text/javascript" src="webjars/angularjs/1.5.8/angular-sanitize.js"></script>
     <script type="text/javascript" src="webjars/angularjs/1.5.8/angular-animate.js"></script>
     <script type="text/javascript" src="webjars/angular-ui-select/0.19.6/select.js"></script>
+    <script type="text/javascript" src="general/js/bootstrap3-dropdown.js"></script>
 
-    <script type="text/javascript" src="js/main-controller.js"></script>
-    <script type="text/javascript" src="js/notification-controller.js"></script>
-    <script type="text/javascript" src="js/notifications.js"></script>
-    <script type="text/javascript" src="js/choice-service.js"></script>
-    <script type="text/javascript" src="js/rendering-service.js"></script>
-    <script type="text/javascript" src="js/watching-service.js"></script>
-    <script type="text/javascript" src="js/directives.js"></script>
-    <script type="text/javascript" src="js/util.js"></script>
-    <script type="text/javascript" src="js/config.js"></script>
+    <script type="text/javascript" src="general/js/main-controller.js"></script>
+    <script type="text/javascript" src="notification/notification.controller.js"></script>
+    <script type="text/javascript" src="notification/notification.constant.js"></script>
+    <script type="text/javascript" src="general/js/choice-service.js"></script>
+    <script type="text/javascript" src="rendering/rendering.service.js"></script>
+    <script type="text/javascript" src="general/js/watching-service.js"></script>
+    <script type="text/javascript" src="download/download.component.js"></script>
+    <script type="text/javascript" src="general/js/directives.js"></script>
+    <script type="text/javascript" src="general/js/util.js"></script>
+    <script type="text/javascript" src="general/js/config.js"></script>
 
     <link rel="stylesheet" href="webjars/balloon-css/0.5.0/balloon.css">
     <link rel="stylesheet" href="webjars/highlightjs/9.8.0/styles/darkula.css">
     <link rel="stylesheet" href="webjars/angular-ui-select/0.19.6/select.css">
-    <link rel="stylesheet" href="css/bootstrap-with-slate-theme.min.css">
-    <link rel="stylesheet" href="css/lib-tuning.css" type="text/css"/> <!-- This should go after all the libs -->
-    <link rel="stylesheet" href="css/main.css" type="text/css"/>
-    <link rel="stylesheet" href="css/composite-record.css" type="text/css"/>
-    <link rel="stylesheet" href="css/notification.css" type="text/css"/>
+    <link rel="stylesheet" href="general/css/bootstrap-with-slate-theme.min.css">
+    <link rel="stylesheet" href="general/css/lib-tuning.css" type="text/css"/> <!-- This should go after all the libs -->
+    <link rel="stylesheet" href="general/css/main.css" type="text/css"/>
+    <link rel="stylesheet" href="rendering/composite-record.css" type="text/css"/>
+    <link rel="stylesheet" href="notification/notification.css" type="text/css"/>
+    <link rel="stylesheet" href="download/download.style.css" type="text/css"/>
 </head>
 
 <body ng-controller="mainController as ctrl">
@@ -44,7 +47,7 @@
         <!-- Brand -->
         <div class="navbar-header">
             <div class="navbar-brand">
-                <img alt="АнаЛ&oacute;г v0.8" title="АнаЛ&oacute;г v0.8" src="img/logo-20-20.png">
+                <img alt="АнаЛ&oacute;г v0.10" title="АнаЛ&oacute;г v0.10" src="general/img/logo-20-20.png">
             </div>
         </div>
         <!-- Watching toggle control -->
@@ -63,14 +66,16 @@
                     <small class="log-choice-detail">
                         <span ng-bind-html="item.path | highlight: $select.search"></span>
                     </small>
-                    <div ng-show="item.uid != null">
-                        <small class="log-choice-accent">
-                            композитный: <span ng-bind-html="item.filesCount"></span>
-                        </small>
+                    <div>
+                        <span class="label"
+                              ng-class="item.includes ? 'label-warning' : (item.remote ? 'label-info' : 'label-primary')"
+                              ng-bind-html="item | nodeLister | highlight: $select.search"></span>
                     </div>
                 </ui-select-choices>
             </ui-select>
         </div>
+        <!-- Download link and control check dialog -->
+        <download-dialog class="navbar-left" selected-log="ctrl.selectedLog"></download-dialog>
         <!-- Right part of the navbar -->
         <div class="nav navbar-nav navbar-right">
             <!-- Text wrapping control -->
@@ -114,6 +119,6 @@
 </div>
 
 <!-- Substrate -->
-<img id="substrate" src="img/magnifier.png"/>
+<img id="substrate" src="general/img/magnifier.png"/>
 </body>
 </html>

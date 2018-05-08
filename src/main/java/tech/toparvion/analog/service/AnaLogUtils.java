@@ -2,20 +2,18 @@ package tech.toparvion.analog.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.messaging.Message;
 import org.w3c.tidy.Tidy;
-import tech.toparvion.analog.model.RecordLevel;
 
-import javax.annotation.Nonnull;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
-import static tech.toparvion.analog.model.RecordLevel.PLAIN;
+import static tech.toparvion.analog.remote.RemotingConstants.PLAIN_RECORD_LEVEL_NAME;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,8 +27,6 @@ public class AnaLogUtils {
   private static final Pattern MESSAGE_LEVEL_EXTRACTOR = Pattern.compile("^[\\S ]*(TRACE|DEBUG|INFO|WARN|ERROR|FATAL)");
   private static final Pattern XML_OPEN_EXTRACTOR = Pattern.compile("<((?:\\w[\\w-]*:)?\\w[\\w-]*).*>");
   private static final Pattern WHOLE_XML_EXTRACTOR = Pattern.compile("^<((?:\\w[\\w-]*:)?\\w[\\w-]*).*>.*</\\1>$", Pattern.DOTALL);
-
-  private static final Pattern WIN_DISC_PATTERN = Pattern.compile("^\\w:");
 
   public static String escapeSpecialCharacters(String inputString) {
     String result = inputString.replaceAll("\"", "&quot;");
@@ -236,7 +232,7 @@ public class AnaLogUtils {
     tidy.setWrapAttVals(true);
     tidy.setErrout(new PrintWriter(new StringWriter() /* <- just a stub, isn't used actually */) {
       @Override
-      public void write(String s) {
+      public void write(@SuppressWarnings("NullableProblems") String s) {
         tidyLog.info(s);      // we consider Tidy as auxiliary component so that its warnings are info for us
       }
     });
@@ -263,25 +259,59 @@ public class AnaLogUtils {
     if (xmlMatcher.find()) {
       return "XML";
     }
-    return "PLAIN";
+    return PLAIN_RECORD_LEVEL_NAME;
   }
 
-  @Nonnull
-  public static RecordLevel detectRecordLevel(Message<String> recordMessage) {
-    String recordLine = recordMessage.getPayload();
-    return Stream.of(RecordLevel.values())
-        .filter(level -> !PLAIN.equals(level))
-        .filter(level -> recordLine.contains(level.name()))    // this is potential subject to change in future
-        .findAny()
-        .orElse(PLAIN);
-  }
-
-  public static String normalizePath(String pathToNormalize) {
+  public static String convertPathToUnix(String path) {
     // in case of working on Windows the path needs to be formatted to Linux style
-    String result = pathToNormalize.replaceAll("\\\\", "/");
-    if (WIN_DISC_PATTERN.matcher(result).find()) {
+    String result = path.replaceAll("\\\\", "/");
+    if (result.charAt(1) == ':') {
       result = "/" + result;
     }
     return result;
+  }
+
+  private static String convertPathFromUnix(String path) {      // can be done public if needed
+    return (path.charAt(2) == ':')
+        ? path.substring(1)     // to omit 'artificial' leading slash
+        : path;
+  }
+
+  public static String extractFileName(String path) {
+    return Paths.get(convertPathFromUnix(path))
+                .getFileName()
+                .toString();
+  }
+
+  public static String nvls(String s, String def) {
+    return (s == null || "".equals(s))
+            ? def
+            : s;
+  }
+
+  /**
+   * Prevents {@link Throwable}s from being thrown outside this method. Intented for use when performing some
+   * error-prone action must not interrupt further steps from being taken. It is actually equal to {@code
+   * try/finally} statement but more flexible and compact.
+   * @implNote The class of exception is deliberately escalated to Throwable to account cases when e.g.
+   * {@link AssertionError} are thrown.
+   * @param log logger to use for writting down an exception
+   * @param action faulty action
+   * @return exception happened (if any) for custom processing
+   */
+  public static Optional<Throwable> doSafely(Logger log, SafeAction action) {
+    try {
+      action.act();
+      return Optional.empty();
+
+    } catch (Throwable e) {
+      log.error("Failed to perform action.", e);
+      return Optional.of(e);
+    }
+  }
+
+  @FunctionalInterface
+  public interface SafeAction {
+    void act() throws Throwable;
   }
 }

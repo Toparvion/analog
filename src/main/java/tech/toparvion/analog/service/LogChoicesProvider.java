@@ -4,11 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import tech.toparvion.analog.model.LogChoice;
+import tech.toparvion.analog.model.api.CompositeInclusion;
+import tech.toparvion.analog.model.api.LogChoice;
+import tech.toparvion.analog.model.api.LogChoiceBuilder;
 import tech.toparvion.analog.model.config.ChoiceGroup;
 import tech.toparvion.analog.model.config.ChoiceProperties;
+import tech.toparvion.analog.model.config.ClusterProperties;
 import tech.toparvion.analog.model.config.LogConfigEntry;
-import tech.toparvion.analog.util.Util;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,6 +25,7 @@ import static java.lang.String.format;
 import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static tech.toparvion.analog.service.AnaLogUtils.convertPathToUnix;
 
 /**
  * @author Toparvion
@@ -34,13 +37,16 @@ public class LogChoicesProvider {
   private static final String DEFAULT_TITLE_FORMAT = "$f ($g)";
 
   private final List<ChoiceGroup> choices;
+  private final String myselfNodeName;
 
   @Autowired
-  public LogChoicesProvider(ChoiceProperties choiceProperties) {
+  public LogChoicesProvider(ChoiceProperties choiceProperties,
+                            ClusterProperties clusterProperties) {
     this.choices = choiceProperties.getChoices();
+    this.myselfNodeName = clusterProperties.getMyselfNode().getName();
   }
 
-  List<LogChoice> provideLogChoices() {
+  public List<LogChoice> provideLogChoices() {
     return choices.stream()
         .flatMap(this::flattenGroup)
         .collect(toList());
@@ -69,11 +75,14 @@ public class LogChoicesProvider {
           ? rawPath
           : rawPath.toAbsolutePath();
       String fullPath = absPath.toString();
-      choices.add(new LogChoice(groupName,
-          fullPath,
-          title,
-          coms.isSelectedByDefault(),
-          null, null /* to explicitly denote that this choice is plain one */));
+      LogChoice choice = new LogChoiceBuilder()
+          .setGroup(groupName)
+          .setPath(fullPath)
+          .setNode(myselfNodeName)
+          .setTitle(title)
+          .setSelected(coms.isSelected())
+          .createLogChoice();
+      choices.add(choice);
     }
     return choices;
   }
@@ -84,19 +93,25 @@ public class LogChoicesProvider {
     // traverse and process all of the path entries as they are commonly used in groups
     for (LogConfigEntry logConfigEntry : group.getCompositeLogs()) {
       String path = logConfigEntry.getPath();
-      String titleFormat = Util.nvls(logConfigEntry.getTitle(), DEFAULT_TITLE_FORMAT);
+      String node = AnaLogUtils.nvls(logConfigEntry.getNode(), myselfNodeName);
+      String titleFormat = AnaLogUtils.nvls(logConfigEntry.getTitle(), DEFAULT_TITLE_FORMAT);
       String title = expandTitle(path, titleFormat, groupName);
       Path rawPath = Paths.get(group.getPathBase(), path);
       Path absPath = rawPath.isAbsolute()
           ? rawPath
           : rawPath.toAbsolutePath();
       String fullPath = absPath.toString();
-      choices.add(new LogChoice(groupName,
-          fullPath,
-          title,
-          logConfigEntry.isSelected(),
-          logConfigEntry.getUid(),
-          countFiles(logConfigEntry)));
+      LogChoice choice = new LogChoiceBuilder()
+          .setGroup(groupName)
+          .setPath(fullPath)
+          .setNode(logConfigEntry.getNode())
+          .setRemote(!myselfNodeName.equals(node))
+          .setTitle(title)
+          .setSelected(logConfigEntry.isSelected())
+          .setUid(logConfigEntry.getUid())
+          .setIncludes(getIncludes(logConfigEntry))
+          .createLogChoice();
+      choices.add(choice);
     }
     return choices;
   }
@@ -112,12 +127,12 @@ public class LogChoicesProvider {
     try (Stream<Path> scannedPaths = Files.list(scanDirPath)) {
       choices.addAll(scannedPaths   // such sets merging allows to exclude duplicates while preserving explicit paths
           .filter(Files::isRegularFile)   // the scanning is not recursive so we bypass nested directories
-          .map(logPath -> new LogChoice(
-              groupName,
-              logPath.toAbsolutePath().toString(),
-              expandTitle(logPath.toString(), DEFAULT_TITLE_FORMAT, groupName),
-              false,
-              null, null /* to explicitly denote that this choice is plain one */))
+          .map(logPath -> new LogChoiceBuilder()
+              .setGroup(groupName)
+              .setPath(logPath.toAbsolutePath().toString())
+              .setNode(myselfNodeName)
+              .setTitle(expandTitle(logPath.toString(), DEFAULT_TITLE_FORMAT, groupName))
+              .createLogChoice())
           .collect(toSet()));
 
     } catch (IOException e) {
@@ -127,7 +142,7 @@ public class LogChoicesProvider {
   }
 
   private String expandTitle(String purePath, String pureTitle, String groupName) {
-    String fileName = Util.extractFileName(purePath);
+    String fileName = AnaLogUtils.extractFileName(purePath);
     return pureTitle.replaceAll("(?i)\\$f", fileName)
         .replaceAll("(?i)\\$g", groupName)
         .replaceAll("(^\")|(\"$)", "");
@@ -142,24 +157,27 @@ public class LogChoicesProvider {
     }
 
     String purePath, pureTitle;
-    boolean selectedByDefault;
+    boolean selected;
     if (entryTokens.length > 1) {
       purePath = entryTokens[0].trim();
       String origTitle = entryTokens[1];
       pureTitle = origTitle.replaceAll("(?i)\\x20*\\(selected( by default)?\\)\\x20*$", "");
-      selectedByDefault = !origTitle.equals(pureTitle);
+      selected = !origTitle.equals(pureTitle);
 
     } else {
       purePath = path.replaceAll("(?i)\\x20*\\(selected( by default)?\\)\\x20*$", "");
       pureTitle = DEFAULT_TITLE_FORMAT;
-      selectedByDefault = !path.equals(purePath);
+      selected = !path.equals(purePath);
     }
 
-    return new ChoiceTokens(purePath, pureTitle, selectedByDefault);
+    return new ChoiceTokens(purePath, pureTitle, selected);
   }
 
-  private int countFiles(LogConfigEntry compositeEntry) {
-    return 1/*self*/ + compositeEntry.getIncludes().size();
+  private List<CompositeInclusion> getIncludes(LogConfigEntry logConfigEntry) {
+    return logConfigEntry.getIncludes()
+        .stream()
+        .map(inclusion -> new CompositeInclusion(inclusion.getNode(), convertPathToUnix(inclusion.getPath())))
+        .collect(toList());
   }
 
   /**
@@ -169,12 +187,12 @@ public class LogChoicesProvider {
   static class ChoiceTokens {
     private final String purePath;
     private final String pureTitle;
-    private final boolean selectedByDefault;
+    private final boolean selected;
 
-    ChoiceTokens(String purePath, String pureTitle, boolean selectedByDefault) {
+    ChoiceTokens(String purePath, String pureTitle, boolean selected) {
       this.purePath = purePath;
       this.pureTitle = pureTitle;
-      this.selectedByDefault = selectedByDefault;
+      this.selected = selected;
     }
 
     String getPurePath() {
@@ -185,8 +203,8 @@ public class LogChoicesProvider {
       return pureTitle;
     }
 
-    boolean isSelectedByDefault() {
-      return selectedByDefault;
+    boolean isSelected() {
+      return selected;
     }
   }
 }

@@ -5,14 +5,26 @@ jmx:
     host: localhost
     port: 1099
 
-clusterNodes:
+nodes:
   - name: angara
-    address: angara.ftc.ru:7801
+    host: angara.ftc.ru
+    agentPort: 7801
+    serverPort: 8080
     # myself: true
   - name: volga
-    address: volga.ftc.ru:7802
+    host: volga.ftc.ru
+    agentPort: 7802
   - name: tobol
-    address: tobol.ftc.ru:7803
+    host: tobol.ftc.ru
+    agentPort: 7803
+
+recordLevels:
+  - TRACE
+  - DEBUG
+  - INFO
+  - WARN
+  - ERROR
+  - FATAL
 
 choices:
   - group: MT
@@ -32,9 +44,12 @@ choices:
           - path: C:\lang\analog\log-samples\generated\core.log
             node: angara
             timestamp: yyyy-MM-dd HH:mm:ss,SSS # 2017-11-09 22:31:03,084
-#          - node: tobol
-#            path: C:\lang\analog\log-samples\cluster\composite.log
-#            timestamp: dd.MM.yy HH:mm:ss,SSS
+          - node: volga
+            path: C:\lang\analog\log-samples\cluster\composite.log
+            timestamp: dd.MM.yy HH:mm:ss,SSS
+          - node: volga
+            path: C:\lang\analog\log-samples\cluster\composite-2.log
+            timestamp: dd.MM.yy HH:mm:ss,SSS
 
   - group: Микросервисы
     pathBase: C:\lang\analog\log-samples\
@@ -44,8 +59,10 @@ choices:
       - cluster\composite.log as "$f (plain)"
     compositeLogs:
       - path: bankplus.log
+        node: volga
         title: $f - $g
         timestamp: dd.MM.yy HH:mm:ss,SSS
       - path: logSample.log
+        node: tobol
         title: $f - $g
         timestamp: dd.MM.yy HH:mm:ss,SSS

@@ -1,7 +1,7 @@
 buildscript {
     ext {
-        springBootVersion = '2.0.0.M7'
-        springIntegrationVersion = '5.0.0.RELEASE'
+        springBootVersion = '2.0.1.RELEASE'
+        springIntegrationVersion = '5.0.4.RELEASE'
         junitVersion = '5.0.2'
     }
     repositories {
@@ -9,17 +9,19 @@ buildscript {
         maven { url 'https://repo.spring.io/libs-snapshot' }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath group: 'org.springframework.boot', name: 'spring-boot-gradle-plugin', version: "${springBootVersion}"
         classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.1'
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.junit.platform.gradle.plugin'
+apply plugin: 'application'
 
 jar {
-    version = '0.8.1'
+    version = '0.10'
     archiveName = 'analog.jar'
     manifest {
         attributes(
@@ -29,8 +31,8 @@ jar {
         )
     }
 }
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 1.9
+targetCompatibility = 1.9
 
 repositories {
     // mavenLocal()
@@ -42,21 +44,20 @@ repositories {
 dependencies {
     // Backend compile deps
 //    compile("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
-    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
-    compile("org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}")
-    compile("org.springframework.boot:spring-boot-starter-websocket:${springBootVersion}")
-    compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: "${springBootVersion}"
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: "${springBootVersion}"
+    compile group: 'org.springframework.boot' , name: 'spring-boot-starter-websocket', version: "${springBootVersion}"
+    compile group: 'net.bull.javamelody', name: 'javamelody-spring-boot-starter', version: '1.71.0'
 
     compile group: 'org.springframework.integration', name: 'spring-integration-core', version: "${springIntegrationVersion}"
     compile group: 'org.springframework.integration', name: 'spring-integration-file', version: "${springIntegrationVersion}"
     compile group: 'org.springframework.integration', name: 'spring-integration-rmi', version: "${springIntegrationVersion}"
 
+    compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
     compile group: 'net.sf.jtidy', name: 'jtidy', version: 'r938'
-    compile group: 'net.bull.javamelody', name: 'javamelody-core', version: '1.61.0'
-//    compile group: 'com.github.albfernandez', name: 'juniversalchardet', version: '2.0.0'
     compile group: 'com.github.mpkorstanje', name: 'simmetrics-core', version: '4.1.1'
 
-    // FrontEnd deps
+    // Frontend deps
     compile group: 'org.webjars', name: 'angularjs', version: '1.5.8'
     compile group: 'org.webjars', name: 'highlightjs', version: '9.8.0'
     compile group: 'org.webjars', name: 'jquery', version: '1.11.1'
@@ -68,13 +69,14 @@ dependencies {
     compile group: 'org.webjars.npm', name: 'balloon-css', version: '0.5.0'
 
     runtime group: 'commons-logging', name: 'commons-logging', version: '1.2'
+    runtime("org.springframework.boot:spring-boot-properties-migrator")         // TODO remove after migration
 
     // Test deps
-    testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
-    testCompile("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: "${springBootVersion}"
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: "${junitVersion}"
     testCompile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
     
-    testRuntime("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
+    testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version:  "${junitVersion}"
 }
 
 junitPlatform {

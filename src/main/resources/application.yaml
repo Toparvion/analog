@@ -4,8 +4,22 @@ spring:
     admin:
       enabled: true
 
-server:
-  display-name: AnaLog
+javamelody:
+  # Enable JavaMelody auto-configuration (optional, default: true)
+  enabled: true
+  # Initialization parameters for JavaMelody (optional)
+  # See: https://github.com/javamelody/javamelody/wiki/UserGuide#6-optional-parameters
+  init-parameters:
+    # log http requests
+    log: true
+    # to exclude images, css, fonts and js urls from the monitoring:
+    url-exclude-pattern: (/webjars/.*|/css/.*|/images/.*|/fonts/.*|/js/.*)
+    # to add basic auth:
+    #authorized-users: admin:pwd
+    # to change the default storage directory:
+    #storage-directory: /tmp/javamelody
+    # to change the default "/monitoring" path
+    #monitoring-path: /admin/performance
 
 logging:
   level:
@@ -20,6 +34,8 @@ logging:
     org.springframework.messaging.simp.stomp: DEBUG
     org.springframework.messaging.simp.broker: DEBUG
     org.springframework.integration.file.tail.OSDelegatingFileTailingMessageProducer: TRACE
+    org.springframework.web.client.HttpMessageConverterExtractor: DEBUG
+    tech.toparvion.analog.remote.agent.CompositeRecordAggregatorConfigurer: INFO
 #  pattern:
 #    console: "%clr(%d{HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
 
@@ -27,3 +43,8 @@ tracking:
   group:
     sizeThreshold: 500
     timeoutMs: 500
+
+# prevents Jackson mapper from serializing null values, empty arrays and false booleans
+spring:
+  jackson:
+    default-property-inclusion: non_default

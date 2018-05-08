@@ -31,7 +31,7 @@ public class AgentConfig {
     RmiInboundGateway inboundRmiGateway = new RmiInboundGateway();
     inboundRmiGateway.setRequestChannel(registerRmiInChannel);
     // inboundRmiGateway.setRegistryHost(host);// this causes application failure at startup due to 'connection refused'
-    inboundRmiGateway.setRegistryPort(clusterProperties.getMyselfNode().getPort());
+    inboundRmiGateway.setRegistryPort(clusterProperties.getMyselfNode().getAgentPort());
 
     return IntegrationFlows
         .from(inboundRmiGateway)
