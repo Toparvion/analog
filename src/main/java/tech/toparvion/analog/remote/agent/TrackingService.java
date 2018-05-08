@@ -32,6 +32,7 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
 import static tech.toparvion.analog.service.AnaLogUtils.convertPathToUnix;
+import static tech.toparvion.analog.service.AnaLogUtils.doSafely;
 
 /**
  * Applied logical service providing routines for remote log tracking.
@@ -183,14 +184,15 @@ public class TrackingService {
         .findAny()
         .orElseThrow(IllegalStateException::new);
 
-    // отписываем наблюдателя от канала
-    flowContext.remove(registeredFlowId);
+    // безопасно отписываем наблюдателя от канала
+    doSafely(log, () -> flowContext.remove(registeredFlowId));
     watchersFlowIds.remove(registeredFlowId);
     log.debug("Процесс слежения с регистрацией id='{}' отписан от канала '{}'.", registeredFlowId, outChannel);
 //    log.debug("Watcher '{}' has been unsubscribed from channel '{}'.", registeredWatcher, outChannel);
 
     if (watchersFlowIds.isEmpty()) {
-      flowContext.remove(trackingLogFlowId);
+      // wrap into safe action to guarantee that sending and tracking registries will be updated accordingly
+      doSafely(log, () -> flowContext.remove(trackingLogFlowId));
       trackingRegistry.remove(logPath);
       sendingRegistry.remove(logPath);
       log.debug("Для лога '{}' не осталось наблюдателей. Слежение прекращено.", logPath);

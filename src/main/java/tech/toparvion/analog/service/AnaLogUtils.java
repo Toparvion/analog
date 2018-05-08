@@ -9,6 +9,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -286,5 +287,31 @@ public class AnaLogUtils {
     return (s == null || "".equals(s))
             ? def
             : s;
+  }
+
+  /**
+   * Prevents {@link Throwable}s from being thrown outside this method. Intented for use when performing some
+   * error-prone action must not interrupt further steps from being taken. It is actually equal to {@code
+   * try/finally} statement but more flexible and compact.
+   * @implNote The class of exception is deliberately escalated to Throwable to account cases when e.g.
+   * {@link AssertionError} are thrown.
+   * @param log logger to use for writting down an exception
+   * @param action faulty action
+   * @return exception happened (if any) for custom processing
+   */
+  public static Optional<Throwable> doSafely(Logger log, SafeAction action) {
+    try {
+      action.act();
+      return Optional.empty();
+
+    } catch (Throwable e) {
+      log.error("Failed to perform action.", e);
+      return Optional.of(e);
+    }
+  }
+
+  @FunctionalInterface
+  public interface SafeAction {
+    void act() throws Throwable;
   }
 }

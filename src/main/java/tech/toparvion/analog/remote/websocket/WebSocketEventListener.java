@@ -156,11 +156,11 @@ public class WebSocketEventListener {
     // in case it was the latest session watching that log we should stop the tracking
     LogConfigEntry watchingLog = registry.findLogConfigEntryBy(sessionId);
     log.debug("No sessions left watching log '{}'. Will deactivate the tracking...", watchingLog.getUid());
-    stopTrackingOnServer(watchingLog);
+    doSafely(log, () -> stopTrackingOnServer(watchingLog));
     // now that the log is not tracked anymore we need to remove it from the registry
     registry.removeEntry(watchingLog);
     log.info("Current node has unregistered itself from tracking log '{}' as there is no watching sessions anymore.",
-        watchingLog.getUid());
+            watchingLog.getUid());
   }
 
   private boolean getBooleanNativeHeader(StompHeaderAccessor headers, String name) {
