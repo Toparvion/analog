@@ -3,9 +3,8 @@
 componentName="analog"
 debugPort=8084
 
-# Since default JDK on the server is JDK_1.6 we forcibly make JAVA_HOME to point to JDK_1.8
-#JAVA_HOME=/usr/jdk/jdk1.8.0_92
-JAVA_HOME=/pub/site/opt/jdk/jdk1.8.0_92
+# Since default JDK on the server is JDK_1.6 we forcibly make JAVA_HOME to point to JDK_1.9
+#JAVA_HOME=/usr/jdk/jdk-9.0.4
 
 #Set APP_HOME to point on the application folder.
 DIR=`dirname $0`
@@ -17,7 +16,9 @@ PID_FILE=$APP_HOME/$componentName.pid
 JAVA_OPTS=`echo "
 -D_$componentName
 "`
-JAVA_OPTS="$JAVA_OPTS -Xmx256m -XX:MaxMetaspaceSize=256m -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=$debugPort -XX:+HeapDumpOnOutOfMemoryError"
+JAVA_OPTS="$JAVA_OPTS -Xmx256m -XX:MaxMetaspaceSize=256m -XX:+HeapDumpOnOutOfMemoryError"
+JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:$debugPort"
+JAVA_OPTS="$JAVA_OPTS -Dfile.encoding=UTF-8"
 
 if [ -x "$JAVA_HOME/bin/java" ]; then
     JAVA="$JAVA_HOME/bin/java"

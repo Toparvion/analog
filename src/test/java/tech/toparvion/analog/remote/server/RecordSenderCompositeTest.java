@@ -18,7 +18,6 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
-import static tech.toparvion.analog.model.RecordLevel.DEBUG;
 
 /**
  * @author Toparvion
@@ -58,13 +57,13 @@ class RecordSenderCompositeTest {
     payloadAsList.add("2012-10-24 13:08:00,323 [http-9014-Processor23] DEBUG [LiteEngine] - generateOTP: " +
                       "<payment><amount>100.00</amount></payment>");
 
-    List<StyledLine> records = sut.prepareCompositeRecords(payloadAsList, DEBUG);
+    List<StyledLine> records = sut.prepareCompositeRecords(payloadAsList, "DEBUG");
     log.trace("\n{}", records.stream()
         .map(rec -> String.format("%7s: %s", rec.getStyle(), rec.getText()))
         .collect(joining("\n")));
 
     assertThat(records, hasSize(2));
-    assertEquals(DEBUG.name(), records.get(0).getStyle());
+    assertEquals("DEBUG", records.get(0).getStyle());
     assertEquals("2012-10-24 13:08:00,323 [http-9014-Processor23] DEBUG [LiteEngine] - generateOTP: ",
         records.get(0).getText());
     assertEquals("XML", records.get(1).getStyle());
@@ -81,13 +80,13 @@ class RecordSenderCompositeTest {
         "doc4hash: [<payment><amount>100.00</amount></payment>], " +
         "docHash: com.tfc.web.mdse.model.DocHash@135ecf1");
 
-    List<StyledLine> records = sut.prepareCompositeRecords(payloadAsList, DEBUG);
+    List<StyledLine> records = sut.prepareCompositeRecords(payloadAsList, "DEBUG");
     log.info("\n{}", records.stream()
         .map(rec -> String.format("%7s: %s", rec.getStyle(), rec.getText()))
         .collect(joining("\n")));
 
     assertThat(records, hasSize(3));
-    assertEquals(DEBUG.name(), records.get(0).getStyle());
+    assertEquals("DEBUG", records.get(0).getStyle());
     assertEquals("2012-10-24 13:08:00,323 [http-9014-Processor23] DEBUG [LiteEngine] - generateOTP: doc4hash: [",
         records.get(0).getText());
     assertEquals("XML", records.get(1).getStyle());
@@ -110,13 +109,13 @@ class RecordSenderCompositeTest {
     payloadAsList.add("Tax Free</payment-info>");
     payloadAsList.add("</payment>");
 
-    List<StyledLine> records = sut.prepareCompositeRecords(payloadAsList, DEBUG);
+    List<StyledLine> records = sut.prepareCompositeRecords(payloadAsList, "DEBUG");
     log.info("\n{}", records.stream()
         .map(rec -> String.format("%7s: %s", rec.getStyle(), rec.getText()))
         .collect(joining("\n")));
 
     assertThat(records, hasSize(2));
-    assertEquals(DEBUG.name(), records.get(0).getStyle());
+    assertEquals("DEBUG", records.get(0).getStyle());
     assertEquals("2012-10-24 13:08:00,323 [http-9014-Processor23] DEBUG [LiteEngine] generateOTP",
         records.get(0).getText());
     assertEquals("XML", records.get(1).getStyle());
@@ -140,13 +139,13 @@ class RecordSenderCompositeTest {
     payloadAsList.add("</payment>]");
     payloadAsList.add("docHash: ru.cft.web.mDSE.model.DocHash@135ecf1");
 
-    List<StyledLine> records = sut.prepareCompositeRecords(payloadAsList, DEBUG);
+    List<StyledLine> records = sut.prepareCompositeRecords(payloadAsList, "DEBUG");
     log.info("\n{}", records.stream()
         .map(rec -> String.format("%7s: %s", rec.getStyle(), rec.getText()))
         .collect(joining("\n")));
 
     assertThat(records, hasSize(5));
-    assertEquals(DEBUG.name(), records.get(0).getStyle());
+    assertEquals("DEBUG", records.get(0).getStyle());
     assertEquals("2012-10-24 13:08:00,323 [http-9014-Processor23] DEBUG [LiteEngine] generateOTP",
         records.get(0).getText());
     assertEquals("PLAIN", records.get(1).getStyle());
@@ -177,7 +176,7 @@ class RecordSenderCompositeTest {
     payloadAsList.add("Tax Free</payment-info>");
     payloadAsList.add("doc4sms: [N695: #508#]");
 
-    List<StyledLine> records = sut.prepareCompositeRecords(payloadAsList, DEBUG);
+    List<StyledLine> records = sut.prepareCompositeRecords(payloadAsList, "DEBUG");
     log.info("\n{}", records.stream()
         .map(rec -> String.format("%7s: %s", rec.getStyle(), rec.getText()))
         .collect(joining("\n")));
