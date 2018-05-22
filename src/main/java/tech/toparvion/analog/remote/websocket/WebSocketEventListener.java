@@ -24,6 +24,7 @@ import java.util.List;
 import static java.lang.String.format;
 import static java.time.ZonedDateTime.now;
 import static java.util.Collections.singletonMap;
+import static java.util.stream.Collectors.toList;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
 import static tech.toparvion.analog.service.AnaLogUtils.*;
 
@@ -195,11 +196,18 @@ public class WebSocketEventListener {
 
   @NotNull
   private LogConfigEntry findCompositeLogConfigEntry(String uid) {
-    LogConfigEntry matchingEntry = choiceProperties.getChoices().stream()
-        .flatMap(choiceGroup -> choiceGroup.getCompositeLogs().stream())
-        .filter(entry -> entry.getUid().equals(uid))
-        .findAny()
-        .orElseThrow(() -> new IllegalArgumentException(format("No log configuration entry found for uid=%s", uid)));
+    List<LogConfigEntry> matchingEntries = choiceProperties.getChoices().stream()
+            .flatMap(choiceGroup -> choiceGroup.getCompositeLogs().stream())
+            .filter(entry -> entry.getUid().equals(uid))
+            .collect(toList());
+    if (matchingEntries.isEmpty()) {
+      throw new IllegalArgumentException(format("No log configuration entry found for uid=%s", uid));
+    }
+    LogConfigEntry matchingEntry;
+    if (matchingEntries.size() > 1) {
+      log.warn("Multiple matching entries found for uid={}. Will pick the first one.\n{}", uid, matchingEntries);
+    }
+    matchingEntry = matchingEntries.get(0);
     log.debug("Found matching composite log config entry: {}", matchingEntry);
     return matchingEntry;
   }
@@ -214,7 +222,7 @@ public class WebSocketEventListener {
         .filter(entry -> entry.getNode() != null)
         .forEach(entry -> {
           registrationChannelCreator.createRegistrationChannelIfNeeded(entry.getNode());
-          // additionally warn the user if this entry contains other includes
+          // additionally warn the administrator if this entry contains other includes
           if (!entry.getIncludes().isEmpty()) {
             log.warn("Encountered included log config entry that itself contains other included entries. Nested " +
                 "inclusion levels deeper than 2 are not supported and will be ignored. Invalid entry: {}", entry);

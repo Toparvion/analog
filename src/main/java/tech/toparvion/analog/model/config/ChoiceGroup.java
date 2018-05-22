@@ -1,7 +1,11 @@
 package tech.toparvion.analog.model.config;
 
+import org.springframework.util.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * @author Toparvion
@@ -42,7 +46,13 @@ public class ChoiceGroup {
   }
 
   public List<LogConfigEntry> getCompositeLogs() {
-    return compositeLogs;
+    if (StringUtils.hasText(pathBase)) {
+      return compositeLogs.stream()
+              .map(entry -> entry.prependPath(pathBase))
+              .collect(toList());
+    } else {
+      return compositeLogs;
+    }
   }
 
   public void setCompositeLogs(List<LogConfigEntry> compositeLogs) {

@@ -76,11 +76,16 @@ public class LogConfigEntry {
     if (this.isPlain()) {
       return path;
     }
-    return Integer.toHexString(hashCode());
+    return Integer.toHexString(hashCode()).toUpperCase();
   }
 
   public boolean isPlain() {
     return (timestamp == null);
+  }
+
+  /*public*/ LogConfigEntry prependPath(String pathBase) {
+    path = pathBase + path;
+    return this;
   }
 
   @Override
