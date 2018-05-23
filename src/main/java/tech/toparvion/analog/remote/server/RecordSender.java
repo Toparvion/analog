@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import tech.toparvion.analog.model.api.CompositeLinesPart;
 import tech.toparvion.analog.model.api.LinesPart;
 import tech.toparvion.analog.model.api.StyledLine;
-import tech.toparvion.analog.service.AnaLogUtils;
+import tech.toparvion.analog.util.AnaLogUtils;
 
 import java.io.File;
 import java.time.LocalDateTime;

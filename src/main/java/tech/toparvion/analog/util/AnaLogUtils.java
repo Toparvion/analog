@@ -1,18 +1,22 @@
-package tech.toparvion.analog.service;
+package tech.toparvion.analog.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.tidy.Tidy;
+import tech.toparvion.analog.model.config.LogConfigEntry;
 
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.String.format;
+import static org.springframework.util.StringUtils.hasText;
 import static tech.toparvion.analog.remote.RemotingConstants.PLAIN_RECORD_LEVEL_NAME;
 
 /**
@@ -290,12 +294,12 @@ public class AnaLogUtils {
   }
 
   /**
-   * Prevents {@link Throwable}s from being thrown outside this method. Intented for use when performing some
+   * Prevents {@link Throwable}s from being thrown outside this method. Intended for use when performing some
    * error-prone action must not interrupt further steps from being taken. It is actually equal to {@code
    * try/finally} statement but more flexible and compact.
    * @implNote The class of exception is deliberately escalated to Throwable to account cases when e.g.
    * {@link AssertionError} are thrown.
-   * @param log logger to use for writting down an exception
+   * @param log logger to use for writing down an exception
    * @param action faulty action
    * @return exception happened (if any) for custom processing
    */
@@ -308,6 +312,25 @@ public class AnaLogUtils {
       log.error("Failed to perform action.", e);
       return Optional.of(e);
     }
+  }
+
+  public static List<LogConfigEntry> applyPathBase(String pathBase, List<LogConfigEntry> compositeLogs) {
+    if (hasText(pathBase)) {
+      Path base = Paths.get(pathBase);
+      assert base.isAbsolute() : format("'pathBase' parameter %s is not absolute", pathBase);
+      compositeLogs.forEach(compositeLog -> {
+            Path entryOwnPath = Paths.get(compositeLog.getPath());
+            if (!entryOwnPath.isAbsolute()) {
+              Path entryFullPath = base.resolve(entryOwnPath);
+              log.debug("Changed log config entry's path from '{}' to '{}'.", entryOwnPath, entryFullPath);
+              compositeLog.setPath(entryFullPath.toAbsolutePath().toString());
+            } else {
+              log.debug("Log path '{}' is already absolute and thus won't be prepended with base.", entryOwnPath);
+            }
+          });
+
+    }
+    return compositeLogs;
   }
 
   @FunctionalInterface

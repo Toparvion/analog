@@ -14,7 +14,10 @@ import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 import tech.toparvion.analog.model.ServerFailure;
 import tech.toparvion.analog.model.TrackingRequest;
-import tech.toparvion.analog.model.config.*;
+import tech.toparvion.analog.model.config.ChoiceProperties;
+import tech.toparvion.analog.model.config.ClusterNode;
+import tech.toparvion.analog.model.config.ClusterProperties;
+import tech.toparvion.analog.model.config.LogConfigEntry;
 import tech.toparvion.analog.remote.server.RegistrationChannelCreator;
 import tech.toparvion.analog.remote.server.RemoteGateway;
 
@@ -26,7 +29,7 @@ import static java.time.ZonedDateTime.now;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.toList;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
-import static tech.toparvion.analog.service.AnaLogUtils.*;
+import static tech.toparvion.analog.util.AnaLogUtils.*;
 
 /**
  * A component responsible for supporting lifecycle of websocket sessions and watching subscriptions.
@@ -277,13 +280,7 @@ public class WebSocketEventListener {
       return logConfigEntry.getPath();
     }
 
-    String groupPathBase = choiceProperties.getChoices().stream()
-        .filter(group -> group.getPathBase() != null)
-        .filter(group -> group.getCompositeLogs().contains(logConfigEntry))
-        .findAny()
-        .map(ChoiceGroup::getPathBase)
-        .orElse("");
-    return convertPathToUnix((groupPathBase + logConfigEntry.getPath()));
+    return convertPathToUnix(logConfigEntry.getPath());
   }
 
 }

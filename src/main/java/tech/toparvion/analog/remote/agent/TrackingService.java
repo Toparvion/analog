@@ -31,8 +31,8 @@ import java.util.Set;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
-import static tech.toparvion.analog.service.AnaLogUtils.convertPathToUnix;
-import static tech.toparvion.analog.service.AnaLogUtils.doSafely;
+import static tech.toparvion.analog.util.AnaLogUtils.convertPathToUnix;
+import static tech.toparvion.analog.util.AnaLogUtils.doSafely;
 
 /**
  * Applied logical service providing routines for remote log tracking.
