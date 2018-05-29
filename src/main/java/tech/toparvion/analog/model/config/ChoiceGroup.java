@@ -1,7 +1,5 @@
 package tech.toparvion.analog.model.config;
 
-import tech.toparvion.analog.util.AnaLogUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +46,7 @@ public class ChoiceGroup {
   }
 
   public void setCompositeLogs(List<LogConfigEntry> compositeLogs) {
-    this.compositeLogs = AnaLogUtils.applyPathBase(pathBase, compositeLogs);
+    this.compositeLogs = compositeLogs;
   }
 
   public List<String> getPlainLogs() {

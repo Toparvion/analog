@@ -3,6 +3,7 @@ package tech.toparvion.analog.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.tidy.Tidy;
+import tech.toparvion.analog.model.config.ChoiceGroup;
 import tech.toparvion.analog.model.config.LogConfigEntry;
 
 import java.io.PrintWriter;
@@ -314,23 +315,31 @@ public class AnaLogUtils {
     }
   }
 
-  public static List<LogConfigEntry> applyPathBase(String pathBase, List<LogConfigEntry> compositeLogs) {
+  /**
+   * Corrects paths in composite logs entries in a way that accounts a path base specified on group level. I.e. if a
+   * group contains a non-empty path base then this method will prepend every composite log's path with that path base.
+   * There is an exclusion though - if a log's own path is an absolute one, it won't be prepended with group path base.
+   * This prepending allows further logic to work with log config entries only, without referring to their containing
+   * groups.
+   * @param group choice group to process
+   */
+  public static void applyPathBase(ChoiceGroup group) {
+    String pathBase = group.getPathBase();
     if (hasText(pathBase)) {
       Path base = Paths.get(pathBase);
       assert base.isAbsolute() : format("'pathBase' parameter %s is not absolute", pathBase);
-      compositeLogs.forEach(compositeLog -> {
-            Path entryOwnPath = Paths.get(compositeLog.getPath());
-            if (!entryOwnPath.isAbsolute()) {
-              Path entryFullPath = base.resolve(entryOwnPath);
-              log.debug("Changed log config entry's path from '{}' to '{}'.", entryOwnPath, entryFullPath);
-              compositeLog.setPath(entryFullPath.toAbsolutePath().toString());
-            } else {
-              log.debug("Log path '{}' is already absolute and thus won't be prepended with base.", entryOwnPath);
-            }
-          });
+      for (LogConfigEntry compositeLog : group.getCompositeLogs()) {
+        Path entryOwnPath = Paths.get(compositeLog.getPath());
+        if (!entryOwnPath.isAbsolute()) {
+          Path entryFullPath = base.resolve(entryOwnPath);
+          log.debug("Changed log config entry's path from '{}' to '{}'.", entryOwnPath, entryFullPath);
+          compositeLog.setPath(entryFullPath.toAbsolutePath().toString());
+        } else {
+          log.debug("Log path '{}' is already absolute and thus won't be prepended with base.", entryOwnPath);
+        }
+      }
 
     }
-    return compositeLogs;
   }
 
   @FunctionalInterface
