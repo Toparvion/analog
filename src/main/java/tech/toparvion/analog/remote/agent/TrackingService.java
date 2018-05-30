@@ -90,17 +90,6 @@ public class TrackingService {
     log.info("Получен запрос на регистрацию наблюдателя {} за логом {}.", watcherAddress, request);
     String logPath = request.getLogFullPath();
 
-    // first let's check if it is a duplicate registration request
-    Set<String> knownWatcherFlowIds = sendingRegistry.get(logPath);
-    if (knownWatcherFlowIds != null && knownWatcherFlowIds.stream()
-        .map(flowId -> findGateway(flowId, logPath))
-        .map(AddressAwareRmiOutboundGateway::getGatewayAddress)
-        .anyMatch(knownAddress -> knownAddress.equals(watcherAddress))) {
-      log.warn("Watcher {} is already registered for log '{}'. Skip registration.", watcherAddress, logPath);
-      return;
-    }
-
-    // the watcher wasn't registered yet; we may go on
     StandardIntegrationFlow trackingFlow;
     String trackingRegistrationId = trackingRegistry.get(logPath);
     if (trackingRegistrationId != null) {
