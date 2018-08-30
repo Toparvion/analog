@@ -1,7 +1,7 @@
 buildscript {
     ext {
-        springBootVersion = '2.0.3.RELEASE'
-//        junitVersion = '5.0.2'
+        springBootVersion = '2.1.0.M1'
+        junitVersion = '5.1.0'
     }
     repositories {
         mavenCentral()
@@ -13,9 +13,9 @@ buildscript {
 }
 
 apply plugin: 'java'
+apply plugin: 'application'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
-apply plugin: 'application'
 
 bootJar {
     version = '0.10'
@@ -30,6 +30,10 @@ bootJar {
 }
 sourceCompatibility = 1.9
 targetCompatibility = 1.9
+
+test {
+    useJUnitPlatform()
+}
 
 repositories {
     // mavenLocal()
@@ -71,4 +75,9 @@ dependencies {
     // Test deps
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
     testCompile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    // JUnit family
+    testCompileOnly 'junit:junit:4.12'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.1.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
+    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.1.0'
 }

@@ -6,6 +6,16 @@ spring:
   jackson:
     # prevents Jackson mapper from serializing null values, empty arrays and false booleans
     default-property-inclusion: non_default
+  messages:
+    use-code-as-default-message: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+      cors:
+        allowed-origins: '*'
 
 javamelody:
   # Initialization parameters for JavaMelody (optional)
@@ -27,10 +37,10 @@ logging:
     tech.toparvion.analog.util.dev.LogFileGenerator: INFO
     tech.toparvion.analog.util.AnaLogUtils: DEBUG
 
-    org.springframework.messaging.simp.stomp: DEBUG
-    org.springframework.messaging.simp.broker: INFO
     org.springframework.integration.file.tail.OSDelegatingFileTailingMessageProducer: TRACE
     org.springframework.integration.aggregator.AggregatingMessageHandler: WARN
+    org.springframework.messaging.simp.stomp: DEBUG
+    org.springframework.messaging.simp.broker: INFO
     org.springframework.web.client.HttpMessageConverterExtractor: DEBUG
     org.springframework.web.socket: DEBUG
   pattern:

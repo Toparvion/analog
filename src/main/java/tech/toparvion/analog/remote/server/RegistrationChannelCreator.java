@@ -17,7 +17,7 @@ import tech.toparvion.analog.model.config.ClusterNode;
 import tech.toparvion.analog.model.config.ClusterProperties;
 
 import static java.lang.String.format;
-import static org.springframework.integration.dsl.channel.MessageChannels.direct;
+import static org.springframework.integration.dsl.MessageChannels.direct;
 import static org.springframework.integration.rmi.RmiInboundGateway.SERVICE_NAME_PREFIX;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
 

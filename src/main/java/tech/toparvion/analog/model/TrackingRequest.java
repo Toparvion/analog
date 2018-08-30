@@ -49,11 +49,11 @@ public class TrackingRequest implements Serializable {
   }
 
   /**
-   * A request with no timestamp format is considered 'plain' as it cannot be involved into complex aggregating
-   * tracking logic and thus is suitable for plain old tracking only.
-   * @return {@code true} if this is a request for plain tracking only
+   * A request with no timestamp format is considered 'flat' as it cannot be involved into lines grouping logic and
+   * thus is suitable for flat tracking only.
+   * @return {@code true} if this is a request for flat tracking only
    */
-  public boolean isPlain() {
+  public boolean isFlat() {
     return (timestampFormat == null);
   }
 
@@ -62,6 +62,7 @@ public class TrackingRequest implements Serializable {
     return "TrackingRequest{" +
         "logFullPath='" + logFullPath + '\'' +
         ", timestampFormat='" + timestampFormat + '\'' +
+        ", isFlat='" + isFlat() + '\'' +
         ", nodeName='" + nodeName + '\'' +
         ", uid='" + uid + '\'' +
         ", isTailNeeded=" + isTailNeeded +

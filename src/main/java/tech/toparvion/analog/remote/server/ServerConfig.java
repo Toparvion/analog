@@ -24,7 +24,7 @@ import java.io.InputStreamReader;
 import java.util.Collection;
 
 import static java.lang.String.format;
-import static org.springframework.integration.dsl.channel.MessageChannels.direct;
+import static org.springframework.integration.dsl.MessageChannels.direct;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
 
 /**

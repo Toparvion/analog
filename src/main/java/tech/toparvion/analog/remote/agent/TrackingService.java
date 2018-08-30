@@ -1,37 +1,32 @@
 package tech.toparvion.analog.remote.agent;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.ConfigurablePropertyAccessor;
-import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.event.EventListener;
 import org.springframework.integration.channel.PublishSubscribeChannel;
-import org.springframework.integration.core.MessagingTemplate;
+import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.dsl.StandardIntegrationFlow;
 import org.springframework.integration.dsl.context.IntegrationFlowContext;
-import org.springframework.integration.dsl.context.IntegrationFlowRegistration;
 import org.springframework.integration.file.tail.FileTailingMessageProducerSupport.FileTailingEvent;
 import org.springframework.integration.rmi.RmiInboundGateway;
-import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.integration.rmi.RmiOutboundGateway;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import tech.toparvion.analog.model.TrackingRequest;
-import tech.toparvion.analog.remote.agent.misc.AddressAwareRmiOutboundGateway;
+import tech.toparvion.analog.util.LocalizedLogger;
 import tech.toparvion.analog.util.timestamp.TimestampExtractor;
 
+import javax.annotation.Nullable;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.LinkedList;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toCollection;
+import static org.springframework.integration.dsl.context.IntegrationFlowContext.IntegrationFlowRegistration;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
-import static tech.toparvion.analog.remote.agent.TailingFlowProvider.AGGREGATOR_OUTPUT_CHANNEL_NAME;
 import static tech.toparvion.analog.util.AnaLogUtils.convertPathToUnix;
 import static tech.toparvion.analog.util.AnaLogUtils.doSafely;
 
@@ -44,113 +39,130 @@ import static tech.toparvion.analog.util.AnaLogUtils.doSafely;
 @Service
 @ManagedResource
 public class TrackingService {
-  private static final Logger log = LoggerFactory.getLogger(TrackingService.class);
-  private static final String PAYLOAD_OUT_GATEWAY_BEAN_NAME_PREFIX = "payloadOutGateway:";
-  private static final String COMPOSITE_WATCH_FLOW_PREFIX = "compositeWatch:";
-  private static final String PLAIN_WATCH_FLOW_PREFIX = "plainWatch:";
-
-  /**
-   * The registry of watchers' gateways: log path -> set of payload outbound gateway flow ids
-   * TODO удалить этот реестр, так как мы должны полагаться только на данные из FlowContext
-   */
-  private final Map<String, Set<String>> sendingRegistry = new HashMap<>();
+  private static final String GROUPING_PREFIX = "grouping_";
+  private static final String FLAT_PREFIX = "flat_";
 
   private final IntegrationFlowContext flowContext;
   private final TimestampExtractor timestampExtractor;
   private final TailingFlowProvider trackingFlowProvider;
 
+  private final LocalizedLogger log;
 
   @Autowired
   public TrackingService(IntegrationFlowContext flowContext,
                          TimestampExtractor timestampExtractor,
-                         TailingFlowProvider trackingFlowProvider) {
+                         TailingFlowProvider trackingFlowProvider,
+                         MessageSource messageSource) {
     this.flowContext = flowContext;
     this.timestampExtractor = timestampExtractor;
     this.trackingFlowProvider = trackingFlowProvider;
+
+    log = new LocalizedLogger(this, messageSource);
   }
 
   /**
    * Initiates tracking process for the log specified in {@code request}: <ol>
-   *   <li>Finds or {@link TailingFlowProvider#provideAggregatingFlow(String, boolean) creates} tailing flow (alongside
+   *   <li>Finds or {@link TailingFlowProvider#provideGroupingFlow(String, boolean) creates} tailing flow (alongside
    *   with the {@link TimestampExtractor#registerNewTimestampFormat(String, String) registration}
    *   of the specified timestamp format);</li>
    *   <li>Creates new {@code RmiOutboundGateway} capable of sending messages to the {@code watcherAddress} and makes
-   *   it a subscriber for the tailing flow output channel;</li>
-   *   <li>Stores the gateway in a {@link TrackingService#sendingRegistry registry} in order to find it when turning
-   *   the tracking off.</li>
+   *   it a subscriber for the tailing flow output channel.</li>
    * </ol>
    * @param request holder of parameters for tracking creation
    * @param watcherAddress address of the node to which the tracked messages should be sent
    */
   void registerWatcher(TrackingRequest request, InetSocketAddress watcherAddress) {
-    log.info("Получен запрос на регистрацию наблюдателя {} за логом {}.", watcherAddress, request);
-    String logPath = request.getLogFullPath();
-    boolean isPlainLogRequest = request.isPlain();
-    StandardIntegrationFlow trackingFlow;
-
-    String trackingFlowId = isPlainLogRequest
-        ? PLAIN_WATCH_FLOW_PREFIX + logPath
-        : COMPOSITE_WATCH_FLOW_PREFIX + logPath;
-    IntegrationFlowRegistration trackingRegistration = flowContext.getRegistrationById(trackingFlowId);
-    if (trackingRegistration != null) {
-      trackingFlow = (StandardIntegrationFlow) trackingRegistration.getIntegrationFlow();
-      //log.info("Found existing log tracking flow with id={}.", trackingRegistrationId);
-      log.info("Найдено существующее слежение с id={}.", trackingRegistration);
-
-    } else {
-      if (!isPlainLogRequest) {
-        log.debug("Создаю новое агрегирующее слежение для лога '{}'...", logPath);
-        trackingRegistration = flowContext
-            .registration(trackingFlowProvider.provideAggregatingFlow(logPath, request.isTailNeeded()))
-            .autoStartup(true)
-            .id(COMPOSITE_WATCH_FLOW_PREFIX +logPath)
-            .useFlowIdAsPrefix()
-            .register();
-        trackingFlow = (StandardIntegrationFlow) trackingRegistration.getIntegrationFlow();
-        timestampExtractor.registerNewTimestampFormat(request.getTimestampFormat(), logPath);
-        //log.info("Created new AGGREGATING log tracking flow with id={}.", registration.getId());
-        log.info("Создано новое АГРЕГИРУЮЩЕЕ слежение для лога '{}' с id={}.", logPath, trackingRegistration.getId());
+    log.info("received-reg-watcher-request", watcherAddress, request);
+    StandardIntegrationFlow trackingFlow = findExistingTrackingFlow(request);
+    if (trackingFlow == null) {
+      if (request.isFlat()) {
+        trackingFlow = startFlatTrackingFlow(request);
 
       } else {
-        log.debug("Создаю новое простое слежение для лога '{}'...", logPath);
-        trackingRegistration = flowContext
-            .registration(trackingFlowProvider.providePlainFlow(logPath, request.isTailNeeded()))
-            .autoStartup(true)
-            .id(PLAIN_WATCH_FLOW_PREFIX + logPath)
-            .useFlowIdAsPrefix()
-            .register();
-        trackingFlow = (StandardIntegrationFlow) trackingRegistration.getIntegrationFlow();
-        //log.info("Created new PLAIN log tracking flow with id={}.", registration.getId());
-        log.info("Создано новое ПРОСТОЕ слежение для лога '{}' с id={}.", logPath, trackingRegistration.getId());
+        trackingFlow = startGroupingTrackingFlow(request);
       }
     }
+    subscribeWatcherToTrackingFlow(trackingFlow, watcherAddress, request);
+  }
 
-    // now that tracking is up, let's establish outbound sending channel
+  @Nullable
+  private StandardIntegrationFlow findExistingTrackingFlow(TrackingRequest request) {
+    String logPath = request.getLogFullPath();
+    String flowPrefix = request.isFlat() ? FLAT_PREFIX : GROUPING_PREFIX;
+    String trackingFlowId = composeTrackingFlowId(flowPrefix, logPath);
+    IntegrationFlowRegistration trackingRegistration = flowContext.getRegistrationById(trackingFlowId);
+
+    if (trackingRegistration == null) {
+      log.debug("not-found-existing-tracking-flow", trackingFlowId);
+      return null;
+    }
+    log.info("found-existing-tracking-flow", trackingFlowId);
+    return (StandardIntegrationFlow) trackingRegistration.getIntegrationFlow();
+  }
+
+  private StandardIntegrationFlow startFlatTrackingFlow(TrackingRequest request) {
+    String logPath = request.getLogFullPath();
+    log.debug("creating-new-flat-flow", logPath);
+    IntegrationFlow flatFlow = trackingFlowProvider
+        .provideFlatFlow(logPath, request.isTailNeeded());
+    IntegrationFlowRegistration trackingRegistration = flowContext
+        .registration(flatFlow)
+        .autoStartup(true)
+        .id(composeTrackingFlowId(FLAT_PREFIX, logPath))
+        .useFlowIdAsPrefix()
+        .register();
+    log.info("created-new-flat-flow", logPath, trackingRegistration.getId());
+    return (StandardIntegrationFlow) trackingRegistration.getIntegrationFlow();
+  }
+
+  private StandardIntegrationFlow startGroupingTrackingFlow(TrackingRequest request) {
+    String logPath = request.getLogFullPath();
+    log.debug("creating-new-grouping-flow", logPath);
+    IntegrationFlow groupingFlow = trackingFlowProvider
+        .provideGroupingFlow(logPath, request.isTailNeeded());
+    IntegrationFlowRegistration trackingRegistration = flowContext
+        .registration(groupingFlow)
+        .autoStartup(true)
+        .id(composeTrackingFlowId(GROUPING_PREFIX, logPath))
+        .useFlowIdAsPrefix()
+        .register();
+    timestampExtractor.registerNewTimestampFormat(request.getTimestampFormat(), logPath);
+    log.info("created-new-grouping-flow", logPath, trackingRegistration.getId());
+    return (StandardIntegrationFlow) trackingRegistration.getIntegrationFlow();
+  }
+
+  private void subscribeWatcherToTrackingFlow(StandardIntegrationFlow trackingFlow,
+                                              InetSocketAddress watcherAddress,
+                                              TrackingRequest request) {
+    String logPath = request.getLogFullPath();
+    String sendingFlowId = composeSendingFlowId(request, watcherAddress);
+    if (flowContext.getRegistrationById(sendingFlowId) != null) {
+      log.warn("found-duplicate-watcher", sendingFlowId);
+      return;
+    }
+    log.debug("creating-new-sending-flow", sendingFlowId);
+    // by this moment the tracking must be already set up, so it's time to establish outbound sending channel
     PublishSubscribeChannel outChannel = extractOutChannel(trackingFlow);
     String payloadSendingUrl = format("rmi://%s:%d/%s%s",
         watcherAddress.getHostName(),
         watcherAddress.getPort(),
         RmiInboundGateway.SERVICE_NAME_PREFIX,
         SERVER_RMI_PAYLOAD_IN__CHANNEL);
-    AddressAwareRmiOutboundGateway payloadOutGateway = new AddressAwareRmiOutboundGateway(watcherAddress, payloadSendingUrl);
 
-    IntegrationFlowRegistration sendingRegistration = flowContext.registration(
-        IntegrationFlows
-            .from(outChannel)
-            .enrichHeaders(e -> e.header(LOG_CONFIG_ENTRY_UID__HEADER, request.getUid()))
-            .enrichHeaders(e -> e.header(SOURCE_NODE__HEADER, request.getNodeName()))
-            .handle(payloadOutGateway, spec -> spec.id(PAYLOAD_OUT_GATEWAY_BEAN_NAME_PREFIX+logPath))
-            .get())
-//        .id(plainOrCompositPrefix + watcherAddress)
-        // TODO тогда можно будет найти этот sending flow по такому ID и удалить его без sendingRegistry :-)
+    StandardIntegrationFlow sendingFlow = IntegrationFlows
+        .from(outChannel)
+        .enrichHeaders(e -> e.header(LOG_CONFIG_ENTRY_UID__HEADER, request.getUid()))
+        .enrichHeaders(e -> e.header(SOURCE_NODE__HEADER, request.getNodeName()))
+        .handle(new RmiOutboundGateway(payloadSendingUrl))
+        .get();
+    IntegrationFlowRegistration sendingRegistration = flowContext
+        .registration(sendingFlow)
+        .id(sendingFlowId)
+        .useFlowIdAsPrefix()
         .autoStartup(true)
         .register();
 
-    sendingRegistry.computeIfAbsent(logPath, s -> new HashSet<>())
-                   .add(sendingRegistration.getId());
-    log.debug("Для лога {} зарегистрирован новый слушатель: {} (регистрация: '{}').", logPath,
-        payloadOutGateway.getGatewayAddress(), sendingRegistration.getId());
-    //log.debug("Registered new payloadOutGateway with address {}", payloadOutGateway.getGatewayAddress());
+    log.debug("subscribed-new-watcher", logPath, sendingRegistration.getId());
   }
 
   /**
@@ -161,99 +173,83 @@ public class TrackingService {
    */
   void unregisterWatcher(TrackingRequest request, InetSocketAddress watcherAddress) {
     String logPath = request.getLogFullPath();
-    log.info("Получен запрос на дерегистрацию наблюдателя {} для лога: '{}'", watcherAddress, logPath);
-    boolean isPlainLogRequest = request.isPlain();
+    log.info("received-unreg-watcher-request", watcherAddress, logPath);
 
     // находим соответствующее слежение и извлекаем из него выходной канал
-    String trackingFlowId = isPlainLogRequest
-        ? PLAIN_WATCH_FLOW_PREFIX + logPath
-        : COMPOSITE_WATCH_FLOW_PREFIX + logPath;
+    String flowPrefix = request.isFlat() ? FLAT_PREFIX : GROUPING_PREFIX;
+    String trackingFlowId = composeTrackingFlowId(flowPrefix, logPath);
     IntegrationFlowRegistration trackingRegistration = flowContext.getRegistrationById(trackingFlowId);
     if (trackingRegistration == null) {
-      log.warn("Нельзя удалить слежение по id='{}', так как оно не зарегистрировано.", trackingFlowId);
+      log.warn("not-found-tracking-registration", trackingFlowId);
       return;
     }
     StandardIntegrationFlow trackingFlow = (StandardIntegrationFlow) trackingRegistration.getIntegrationFlow();
     PublishSubscribeChannel outChannel = extractOutChannel(trackingFlow);
 
     // находим соответствующего получателя
-    Set<String> watchersFlowIds = sendingRegistry.get(logPath);
-    assert (watchersFlowIds != null)
-        : String.format("No watchersFlowIds found in sending registry for logPath '%s'", logPath);
-    String sendingFlowId = watchersFlowIds.stream()
-        .filter(flowId -> findGateway(flowId, logPath).getGatewayAddress().equals(watcherAddress))
-        .findAny()
-        .orElseThrow(IllegalStateException::new);
-
+    String sendingFlowId = composeSendingFlowId(request, watcherAddress);
+    IntegrationFlowRegistration sendingRegistration = flowContext.getRegistrationById(sendingFlowId);
+    if (sendingRegistration == null) {
+      log.warn("not-found-sending-registration", sendingFlowId);
+      return;
+    }
     // безопасно отписываем наблюдателя от канала
-    doSafely(log, () -> flowContext.remove(sendingFlowId));
-    watchersFlowIds.remove(sendingFlowId);
-    log.debug("Процесс слежения с регистрацией id='{}' отписан от канала '{}'.", sendingFlowId, outChannel);
+    doSafely(getClass(), () -> flowContext.remove(sendingFlowId));   // this also unsubscribes the flow from outChannel
+    log.debug("unsubscribed-watcher", sendingFlowId, outChannel);
 //    log.debug("Watcher '{}' has been unsubscribed from channel '{}'.", registeredWatcher, outChannel);
 
-    if (watchersFlowIds.isEmpty()) {
-      // wrap into safe action to guarantee that sending and tracking registries will be updated accordingly
-      doSafely(log, () -> flowContext.remove(trackingFlowId));
-      sendingRegistry.remove(logPath);
-      log.debug("Для лога '{}' не осталось наблюдателей. Слежение прекращено.", logPath);
-//      log.debug("There is no watchers for log {} anymore. Tracking removed.", logPath);
+    if (outChannel.getSubscriberCount() < 1) {
+      // wrap into safe action to prevent error propagation in case of removal failure
+      doSafely(getClass(), () -> flowContext.remove(trackingFlowId));
+      log.debug("stopped-tracking", logPath);
     }
   }
 
   private PublishSubscribeChannel extractOutChannel(StandardIntegrationFlow logTrackingFlow) {
-    return logTrackingFlow.getIntegrationComponents().keySet()
+    LinkedList<PublishSubscribeChannel> channels = logTrackingFlow.getIntegrationComponents()
+        .keySet()
         .stream()
         .filter(PublishSubscribeChannel.class::isInstance)
         .map(PublishSubscribeChannel.class::cast)
-        .filter(channel -> AGGREGATOR_OUTPUT_CHANNEL_NAME.endsWith(channel.getComponentName()))
-        .findAny()
-        .orElseThrow(() -> new IllegalStateException(format("No '%s' found among components of logTrackingFlow: %s",
-            AGGREGATOR_OUTPUT_CHANNEL_NAME, logTrackingFlow.getIntegrationComponents().keySet()
-                                                                                      .stream()
-                                                                                      .map(Object::toString)
-                                                                                      .collect(joining()))));
-  }
-
-  private AddressAwareRmiOutboundGateway findGateway(String flowId, String logPath) {
-    IntegrationFlowRegistration registration = flowContext.getRegistrationById(flowId);
-    assert registration != null;
-    String gatewayName = PAYLOAD_OUT_GATEWAY_BEAN_NAME_PREFIX + logPath;
-    StandardIntegrationFlow flow = (StandardIntegrationFlow) registration.getIntegrationFlow();
-
-    Object lastComponent = flow.getIntegrationComponents().entrySet()
-        .stream()
-        .filter(entry -> gatewayName.equals(entry.getValue()))
-        .map(Map.Entry::getKey)
-        .findAny()
-        .orElseThrow(() -> new IllegalArgumentException(format("No bean with name '%s' found among components of " +
-                "flow with id=%s", gatewayName, flowId)));
-    ConfigurablePropertyAccessor propertyAccessor = PropertyAccessorFactory.forDirectFieldAccess(lastComponent);
-    return  (AddressAwareRmiOutboundGateway) propertyAccessor.getPropertyValue("handler");
+        .collect(toCollection(LinkedList::new));
+    if (channels.isEmpty()) {
+      throw new IllegalStateException(format("No PublishSubscribeChannel found among components of logTrackingFlow: %s",
+          logTrackingFlow.getIntegrationComponents().keySet()
+              .stream()
+              .map(Object::toString)
+              .collect(joining())));
+    }
+    return channels.getLast();
   }
 
   @EventListener
   public void processFileTailingEvent(FileTailingEvent tailingEvent) {
-    log.debug("Received file tailing event: {}", tailingEvent.toString());
+    log.debug("received-tailing-event", tailingEvent.toString());
     String logPath = convertPathToUnix(tailingEvent.getFile().getAbsolutePath());
-    Set<String> watchersFlowIds = sendingRegistry.get(logPath);
-    if (watchersFlowIds == null) {
-      // sometimes tailing event may arrive earlier than the whole watching flow is built, e.g. when the file to
-      // watch is absent and tail utility detects it immediately (see "Stream closed" message in logs)
-      log.warn("No watching flow ID found in registry by logPath='{}'.", logPath);
-      return;
-    }
-    for (String flowId : watchersFlowIds) {
-      IntegrationFlowRegistration registration = flowContext.getRegistrationById(flowId);
-      assert (registration != null);
-      MessagingTemplate messagingTemplate = registration.getMessagingTemplate();
-      messagingTemplate.send(MessageBuilder.withPayload(tailingEvent).build());
-      log.trace("Sent tailing event of file '{}' to the flow id='{}'", tailingEvent.getFile().getAbsolutePath(), flowId);
+
+    for (String prefix : new String[]{FLAT_PREFIX, GROUPING_PREFIX}) {
+      String trackingFlowId = composeTrackingFlowId(prefix, logPath);
+      log.trace("trying-to-find-tracking-flow", trackingFlowId);
+      IntegrationFlowRegistration trackingRegistration = flowContext.getRegistrationById(trackingFlowId);
+      if (trackingRegistration == null) {
+        log.trace("not-found-tracking-registration-by-id", trackingFlowId);
+        continue;
+      }
+      StandardIntegrationFlow trackingFlow = (StandardIntegrationFlow) trackingRegistration.getIntegrationFlow();
+      PublishSubscribeChannel trackingOutChannel = extractOutChannel(trackingFlow);
+      trackingOutChannel.send(MessageBuilder.withPayload(tailingEvent).build());
+      log.debug("sent-tailing-event", tailingEvent, trackingOutChannel.getComponentName());
     }
   }
 
-  @ManagedAttribute
-  public String[] getSendingRegistryKeys() {
-    return sendingRegistry.keySet().toArray(new String[0]);
+  private static String composeTrackingFlowId(String flowPrefix, String logPath) {
+    return flowPrefix + logPath;
+  }
+
+  private static String composeSendingFlowId(TrackingRequest request, InetSocketAddress watcherAddress) {
+    String logPath = request.getLogFullPath();
+    String flowsPrefix = request.isFlat() ? FLAT_PREFIX : GROUPING_PREFIX;
+    return flowsPrefix + watcherAddress + "_" + logPath;
   }
 
 }

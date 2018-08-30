@@ -8,7 +8,7 @@ import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.dsl.StandardIntegrationFlow;
 import org.springframework.integration.dsl.context.IntegrationFlowContext;
-import org.springframework.integration.dsl.context.IntegrationFlowRegistration;
+import org.springframework.integration.dsl.context.IntegrationFlowContext.IntegrationFlowRegistration;
 import org.springframework.lang.Nullable;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -25,8 +25,8 @@ import java.util.Comparator;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import static org.springframework.integration.IntegrationMessageHeaderAccessor.CORRELATION_ID;
-import static org.springframework.integration.dsl.channel.MessageChannels.publishSubscribe;
-import static org.springframework.integration.dsl.channel.MessageChannels.queue;
+import static org.springframework.integration.dsl.MessageChannels.publishSubscribe;
+import static org.springframework.integration.dsl.MessageChannels.queue;
 import static org.springframework.integration.file.dsl.Files.tailAdapter;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
 
@@ -38,8 +38,6 @@ import static tech.toparvion.analog.remote.RemotingConstants.*;
 @Component
 public class TailingFlowProvider {
   private static final Logger log = LoggerFactory.getLogger(TailingFlowProvider.class);
-
-  static final String AGGREGATOR_OUTPUT_CHANNEL_NAME = "aggregatorOutputChannel";
 
   private static final String TAIL_FLOW_PREFIX = "tailFlow_";
   private static final String TAIL_OUTPUT_CHANNEL_PREFIX = "tailOutputChannel_";
@@ -68,13 +66,13 @@ public class TailingFlowProvider {
   }
 
   /**
-   * The core method for building AnaLog dynamic behavior (for composite logs).
-   * Creates and returns an integration flow for watching given log. No duplicate flow checking is done inside.
+   * The core method for building AnaLog dynamic behavior (for grouping logs).
+   * Creates and returns a grouping integration flow for watching given log. No duplicate flow checking is done inside.
    * @param logPath full path to log file to tail
    * @param isTailNeeded should 'tail' include last several lines of the log?
    * @return a new tailing flow
    */
-  IntegrationFlow provideAggregatingFlow(String logPath, boolean isTailNeeded) {
+  IntegrationFlow provideGroupingFlow(String logPath, boolean isTailNeeded) {
     // each tailing flow must have its own instance of correlationProvider as it is stateful and not thread-safe
     CorrelationIdHeaderEnricher correlationProvider = new CorrelationIdHeaderEnricher();
     // each tailing flow must have its own instance of sequenceProvider as it is stateful and not thread-safe
@@ -92,8 +90,8 @@ public class TailingFlowProvider {
         Comparator.comparingLong(message -> message.getHeaders().get(SEQUENCE_NUMBER__HEADER, Long.class)));
     MessageChannel preAggregatorQueueChannel = queue(queue).get();
 
-    CompositeRecordAggregatorConfigurer recordAggregatorConfigurer
-        = new CompositeRecordAggregatorConfigurer(preAggregatorQueueChannel, groupSizeThreshold, groupTimeoutMs);
+    GroupingAggregatorConfigurer recordAggregatorConfigurer
+        = new GroupingAggregatorConfigurer(preAggregatorQueueChannel, groupSizeThreshold, groupTimeoutMs);
 
     return IntegrationFlows
         .from(findOrCreateTailFlow(logPath, false, isTailNeeded))
@@ -103,19 +101,18 @@ public class TailingFlowProvider {
         .enrichHeaders(e -> e.headerFunction(SEQUENCE_NUMBER__HEADER, sequenceProvider::assignSequenceNumber))
         .channel(preAggregatorQueueChannel)
         .aggregate(recordAggregatorConfigurer::configure)
-        .channel(channels -> channels.publishSubscribe(AGGREGATOR_OUTPUT_CHANNEL_NAME))   // actual channel name will
-                      // be prefixed with containing flow id by IntegrationFlowRegistrationBuilder#useFlowIdAsPrefix()
+        .channel(publishSubscribe())
         .get();
   }
 
   /**
-   * The core method for building AnaLog dynamic behavior (for plain logs).
-   * Creates and returns an integration flow for watching given log. No duplicate flow checking is done inside.
+   * The core method for building AnaLog dynamic behavior (for flat logs).
+   * Creates and returns a flat integration flow for watching given log. No duplicate flow checking is done inside.
    * @param logPath full path to log file to tail
    * @param isTailNeeded should 'tail' include last several lines of the log?
    * @return a new tailing flow
    */
-  IntegrationFlow providePlainFlow(String logPath, boolean isTailNeeded) {
+  IntegrationFlow provideFlatFlow(String logPath, boolean isTailNeeded) {
     return IntegrationFlows
         .from(findOrCreateTailFlow(logPath, true, isTailNeeded))
         .aggregate(aggregatorSpec -> aggregatorSpec
@@ -125,8 +122,7 @@ public class TailingFlowProvider {
             .expireGroupsUponTimeout(true)
             .expireGroupsUponCompletion(true)
             .sendPartialResultOnExpiry(true))
-        .channel(channels -> channels.publishSubscribe(AGGREGATOR_OUTPUT_CHANNEL_NAME))   // actual channel name will
-                      // be prefixed with containing flow id by IntegrationFlowRegistrationBuilder#useFlowIdAsPrefix()
+        .channel(publishSubscribe())
         .get();
   }
 
@@ -134,7 +130,7 @@ public class TailingFlowProvider {
    * Checks whether tail flow for given log already exists and, if not, creates it. Either way composes name of the
    * flow's output pub-sub channel and returns it as result.
    * @param logPath absolute path to log file to tail
-   * @param isLogPlain is log to watch is plain (not composite)
+   * @param isLogPlain is log to watch is flat (not grouping)
    * @param isTailNeeded whether previous lines of log file are required or not
    * @return bean name of the flow's output channel to subscribe to
    * @implNote the method is declared {@code synchronized} in order to prevent double flow registration in case of

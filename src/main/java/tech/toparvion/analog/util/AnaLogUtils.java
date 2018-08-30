@@ -300,17 +300,17 @@ public class AnaLogUtils {
    * try/finally} statement but more flexible and compact.
    * @implNote The class of exception is deliberately escalated to Throwable to account cases when e.g.
    * {@link AssertionError} are thrown.
-   * @param log logger to use for writing down an exception
+   * @param callerClass class of calling object to use for writing down an exception on behalf of
    * @param action faulty action
    * @return exception happened (if any) for custom processing
    */
-  public static Optional<Throwable> doSafely(Logger log, SafeAction action) {
+  public static Optional<Throwable> doSafely(Class<?> callerClass, SafeAction action) {
     try {
       action.act();
       return Optional.empty();
 
     } catch (Throwable e) {
-      log.error("Failed to perform action.", e);
+      LoggerFactory.getLogger(callerClass).error("Failed to perform action.", e);
       return Optional.of(e);
     }
   }
