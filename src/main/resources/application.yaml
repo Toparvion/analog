@@ -3,21 +3,18 @@ spring:
     name: analog
     admin:
       enabled: true
+  main:
+    banner-mode: log
   jackson:
     # prevents Jackson mapper from serializing null values, empty arrays and false booleans
     default-property-inclusion: non_default
-  messages:
-    use-code-as-default-message: true
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: '*'
-      cors:
-        allowed-origins: '*'
+server:
+  servlet:
+    application-display-name: AnaLog
 
 javamelody:
+  # Enable JavaMelody auto-configuration (optional, default: true)
+  enabled: true
   # Initialization parameters for JavaMelody (optional)
   # See: https://github.com/javamelody/javamelody/wiki/UserGuide#6-optional-parameters
   init-parameters:
@@ -25,27 +22,12 @@ javamelody:
     log: true
     # to exclude images, css, fonts and js urls from the monitoring:
     url-exclude-pattern: (/webjars/.*|/css/.*|/images/.*|/fonts/.*|/js/.*)
-
-logging:
-  level:
-    root: INFO
-    tech.toparvion.analog: TRACE
-    tech.toparvion.analog.remote.agent.misc.AddressAwareRmiOutboundGateway: INFO
-    tech.toparvion.analog.remote.agent.RecordAggregatorConfigurer: INFO
-    tech.toparvion.analog.remote.agent.CompositeRecordAggregatorConfigurer: INFO
-    tech.toparvion.analog.remote.server.RecordSender: DEBUG
-    tech.toparvion.analog.util.dev.LogFileGenerator: INFO
-    tech.toparvion.analog.util.AnaLogUtils: DEBUG
-
-    org.springframework.integration.file.tail.OSDelegatingFileTailingMessageProducer: TRACE
-    org.springframework.integration.aggregator.AggregatingMessageHandler: WARN
-    org.springframework.messaging.simp.stomp: DEBUG
-    org.springframework.messaging.simp.broker: INFO
-    org.springframework.web.client.HttpMessageConverterExtractor: DEBUG
-    org.springframework.web.socket: DEBUG
-  pattern:
-    console: '%clr(%d{${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:%5p}) %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:%wEx}'
-    dateformat: HH:mm:ss.SSS
+    # to add basic auth:
+    #authorized-users: admin:pwd
+    # to change the default storage directory:
+    #storage-directory: /tmp/javamelody
+    # to change the default "/monitoring" path
+    #monitoring-path: /admin/performance
 
 tracking:
   group:

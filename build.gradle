@@ -1,3 +1,8 @@
+import com.bmuschko.gradle.docker.tasks.DockerInfo
+import com.bmuschko.gradle.docker.tasks.DockerVersion
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+import com.bmuschko.gradle.docker.tasks.image.Dockerfile
+
 buildscript {
     ext {
         springBootVersion = '2.1.0.M1'
@@ -8,17 +13,24 @@ buildscript {
         maven { url 'https://repo.spring.io/libs-snapshot' }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath group: 'org.springframework.boot', name: 'spring-boot-gradle-plugin', version: "${springBootVersion}"
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.1'
+        classpath group: 'com.bmuschko', name: 'gradle-docker-plugin', version: '3.5.0'
     }
 }
 
 apply plugin: 'java'
-apply plugin: 'application'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.junit.platform.gradle.plugin'
+apply plugin: 'application'
+apply plugin: 'com.bmuschko.docker-remote-api'
+
+version = '0.10.1'
+sourceCompatibility = 1.9
+targetCompatibility = 1.9
 
 bootJar {
-    version = '0.10'
     archiveName = 'analog.jar'
     manifest {
         attributes(
@@ -28,8 +40,67 @@ bootJar {
         )
     }
 }
-sourceCompatibility = 1.9
-targetCompatibility = 1.9
+
+//<editor-fold desc="Задачи по работе с Docker-образами">
+docker {
+    url = project['docker.url']
+    registryCredentials {
+        url = project['docker.registry.url']
+        username = project['docker.registry.username']
+        password = project['docker.registry.password']
+        email = project['docker.registry.email']
+    }
+}
+task createDockerfile(type: Dockerfile) {
+    description 'Генерирует Dockerfile для сборки образа микросервиса'
+    group 'docker'
+
+    from 'openjdk:10-jdk-slim'
+    // все дальнейшие команды будут разрешать пути внутри контейнера относительно этой:
+    workingDir "/analog"
+    // копируем исполняемый файл микросервиса:
+    copyFile bootJar.archiveName, bootJar.archiveName
+    // копируем файлы конфигурации:
+    copyFile 'config/', 'config/'
+    // монтируем директории для сохранения данных мониторинга и Tomcat'а между перезапусками:
+    // volume "/microservice/work", "/microservice/log"
+    environmentVariable 'APP_NAME', project.name
+    // формируем команду на запуск:
+    entryPoint 'java'
+    // вся команда на запуск будет выглядеть 'java -X... -jar restorun.jar'
+    defaultCommand '-Xmx256M', '-XX:MaxMetaspaceSize=256M', '-XX:+HeapDumpOnOutOfMemoryError',
+                   '-jar', "${bootJar.archiveName}"
+}
+
+task syncImageFiles(type: Sync) {
+    description 'Копирует в директорию build/docker файлы микросервиса для сборки образа'
+    group 'docker'
+
+    dependsOn assemble
+    from bootJar.archivePath
+    into createDockerfile.destFile.parentFile
+    // отдельно указываем, что файлы конфигурации нужно положить в директорию config
+    into 'config/', {
+        from 'config/'
+    }
+}
+createDockerfile.dependsOn syncImageFiles
+
+task buildImage(type: DockerBuildImage) {
+    description 'Собирает и загружает в Docker образ микросервиса'
+
+    dependsOn createDockerfile
+    inputDir = createDockerfile.destFile.parentFile
+    tag = "${project.name}:${project.version}"
+}
+
+task dockerVersion(type: DockerVersion) {
+    description 'Выводит информацию о версии Docker'
+}
+task dockerInfo(type: DockerInfo) {
+    description 'Выводит общие сведения об используемом экземпляре Docker'
+}
+//</editor-fold>
 
 test {
     useJUnitPlatform()
@@ -80,4 +151,12 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.1.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
     testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.1.0'
+}
+
+junitPlatform {
+    enableStandardTestTask = true
+}
+
+startScripts {
+    enabled = false
 }

@@ -1,0 +1,21 @@
+server:
+    port: 8083
+    address: 0.0.0.0
+logging:
+  config: config/logback-file.xml
+
+nodes:
+  - name: myself
+    host: localhost
+    agentPort: 8085
+    myself: true
+
+choices:
+  - group: АнаЛог
+    plainLogs:
+      - ${user.dir}/log/${APP_NAME}.log as "Логи АнаЛога :-)"
+
+#  - group: Микросервисы в Docker
+#    pathBase: /micros/
+#    plainLogs:
+#      - toffee/log/toffee.log as ToFFee (selected)
