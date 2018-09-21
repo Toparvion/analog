@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
+import org.springframework.integration.dsl.MessageProducerSpec;
 import org.springframework.integration.dsl.StandardIntegrationFlow;
 import org.springframework.integration.dsl.context.IntegrationFlowContext;
 import org.springframework.integration.dsl.context.IntegrationFlowContext.IntegrationFlowRegistration;
@@ -15,6 +16,7 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.stereotype.Component;
 import tech.toparvion.analog.remote.agent.misc.CorrelationIdHeaderEnricher;
 import tech.toparvion.analog.remote.agent.misc.SequenceNumberHeaderEnricher;
+import tech.toparvion.analog.remote.agent.si.ProcessTailAdapterSpec;
 import tech.toparvion.analog.service.RecordLevelDetector;
 import tech.toparvion.analog.service.tail.TailSpecificsProvider;
 import tech.toparvion.analog.util.timestamp.TimestampExtractor;
@@ -24,6 +26,7 @@ import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.concurrent.PriorityBlockingQueue;
 
+import static java.lang.String.format;
 import static org.springframework.integration.IntegrationMessageHeaderAccessor.CORRELATION_ID;
 import static org.springframework.integration.dsl.MessageChannels.publishSubscribe;
 import static org.springframework.integration.dsl.MessageChannels.queue;
@@ -41,6 +44,8 @@ public class TailingFlowProvider {
 
   private static final String TAIL_FLOW_PREFIX = "tailFlow_";
   private static final String TAIL_OUTPUT_CHANNEL_PREFIX = "tailOutputChannel_";
+  private static final String DOCKER_PATH_PREFIX = "//docker/";
+  private static final String KUBERNETES_PATH_PREFIX = "//kubernetes/";
 
   private final TimestampExtractor timestampExtractor;
   private final TailSpecificsProvider tailSpecificsProvider;
@@ -94,7 +99,7 @@ public class TailingFlowProvider {
         = new GroupingAggregatorConfigurer(preAggregatorQueueChannel, groupSizeThreshold, groupTimeoutMs);
 
     return IntegrationFlows
-        .from(findOrCreateTailFlow(logPath, false, isTailNeeded))
+        .from(findOrCreateFileTailFlow(logPath, false, isTailNeeded))
         .enrichHeaders(e -> e.headerFunction(LOG_TIMESTAMP_VALUE__HEADER, timestampExtractor::extractTimestamp))
         .enrichHeaders(e -> e.headerFunction(CORRELATION_ID, correlationProvider::obtainCorrelationId))
         .enrichHeaders(e -> e.headerFunction(RECORD_LEVEL__HEADER, this::detectRecordLevel))
@@ -114,7 +119,7 @@ public class TailingFlowProvider {
    */
   IntegrationFlow provideFlatFlow(String logPath, boolean isTailNeeded) {
     return IntegrationFlows
-        .from(findOrCreateTailFlow(logPath, true, isTailNeeded))
+        .from(findOrCreateFileTailFlow(logPath, true, isTailNeeded))
         .aggregate(aggregatorSpec -> aggregatorSpec
             .correlationStrategy(message -> BigDecimal.ONE)
             .releaseStrategy(group -> group.size() > groupSizeThreshold)
@@ -136,7 +141,7 @@ public class TailingFlowProvider {
    * @implNote the method is declared {@code synchronized} in order to prevent double flow registration in case of
    * simultaneous requests from clients
    */
-  private synchronized String findOrCreateTailFlow(String logPath, boolean isLogPlain, boolean isTailNeeded) {
+  private synchronized String findOrCreateFileTailFlow(String logPath, boolean isLogPlain, boolean isTailNeeded) {
     // tail output channel name does not depend on whether the flow already exists or not, so we can define it early
     String tailOutputChannelName = TAIL_OUTPUT_CHANNEL_PREFIX + logPath;
     // to prevent double tailing let's check if such tail flow already exists
@@ -144,15 +149,8 @@ public class TailingFlowProvider {
     if (tailFlowRegistration == null) {
       log.debug("No tail flow found for log '{}'. Will create a new one...", logPath);
       // first declare the tail flow alongside with its output channel (to subscribe to some time later)
-      String tailNativeOptions = isLogPlain
-          ? tailSpecificsProvider.getPlainTailNativeOptions(isTailNeeded)
-          : tailSpecificsProvider.getCompositeTailNativeOptions(isTailNeeded);
       StandardIntegrationFlow tailFlow = IntegrationFlows
-          .from(tailAdapter(new File(logPath))
-              .id("tailProcess_" + logPath)
-              .nativeOptions(tailNativeOptions)
-              .fileDelay(tailSpecificsProvider.getAttemptsDelay())
-              .enableStatusReader(true))   // to receive events of log rotation, etc.
+          .from(createAppropriateAdapter(logPath, isLogPlain, isTailNeeded))
           .channel(publishSubscribe(tailOutputChannelName))
           .get();
       // then register it within the app context
@@ -166,10 +164,52 @@ public class TailingFlowProvider {
       // we suppose that tail flow is structurally immutable so that the existence of a flow guarantees the existence
       // of its output channel with corresponding name
       log.debug("Found existing tail flow with output channel '{}'. Will reuse it.", tailOutputChannelName);
-
     }
-
     return tailOutputChannelName;
+  }
+
+  private MessageProducerSpec<?, ?> createAppropriateAdapter(String logPath, boolean isLogPlain, boolean isTailNeeded) {
+    String adapterId = "tailProcess_" + logPath;
+    MessageProducerSpec<?, ?> tailAdapter;
+    if (logPath.startsWith(DOCKER_PATH_PREFIX)) {
+      String target = logPath.substring(DOCKER_PATH_PREFIX.length());
+      int tailLength = isTailNeeded
+              ? isLogPlain ? 45 : 20
+              : 0;
+      String dockerLogsOptions = format("--follow --tail=%d", tailLength);
+      tailAdapter = new ProcessTailAdapterSpec()
+              .executable("sudo docker logs")
+              .target(target)
+              .id(adapterId)
+              .nativeOptions(dockerLogsOptions)
+              .fileDelay(1000)
+              .enableStatusReader(true);          // to receive events of log rotation, etc.
+
+    } else if (logPath.startsWith(KUBERNETES_PATH_PREFIX)) {
+      String target = logPath.substring(KUBERNETES_PATH_PREFIX.length());
+      int tailLength = isTailNeeded
+              ? isLogPlain ? 45 : 20
+              : 1;                                // why 1 see in https://github.com/kubernetes/kubernetes/issues/35335
+      String k8sLogsOptions = format("--follow --tail=%d", tailLength);
+      tailAdapter = new ProcessTailAdapterSpec()
+              .executable("kubectl logs")
+              .target(target)
+              .id(adapterId)
+              .nativeOptions(k8sLogsOptions)
+              .fileDelay(1000)
+              .enableStatusReader(true);          // to receive events of log rotation, etc.
+
+    } else {
+      String tailNativeOptions = isLogPlain
+          ? tailSpecificsProvider.getPlainTailNativeOptions(isTailNeeded)
+          : tailSpecificsProvider.getCompositeTailNativeOptions(isTailNeeded);
+      tailAdapter = tailAdapter(new File(logPath))
+              .id(adapterId)
+              .nativeOptions(tailNativeOptions)
+              .fileDelay(tailSpecificsProvider.getAttemptsDelay())
+              .enableStatusReader(true);          // to receive events of log rotation, etc.
+    }
+    return tailAdapter;
   }
 
   @Nullable

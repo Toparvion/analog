@@ -11,7 +11,6 @@ import tech.toparvion.analog.model.config.ChoiceGroup;
 import tech.toparvion.analog.model.config.ChoiceProperties;
 import tech.toparvion.analog.model.config.ClusterProperties;
 import tech.toparvion.analog.model.config.LogConfigEntry;
-import tech.toparvion.analog.util.AnaLogUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,7 +25,7 @@ import static java.lang.String.format;
 import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import static tech.toparvion.analog.util.AnaLogUtils.convertPathToUnix;
+import static tech.toparvion.analog.util.AnaLogUtils.*;
 
 /**
  * @author Toparvion
@@ -71,11 +70,16 @@ public class LogChoicesProvider {
       if (coms == null) continue; // the origin of this object is responsible for logging in this case
       String title = expandTitle(coms.getPurePath(), coms.getPureTitle(), groupName);
       // String fullPath = group.getPathBase() + coms.getPurePath();
-      Path rawPath = Paths.get(group.getPathBase(), coms.getPurePath());
-      Path absPath = rawPath.isAbsolute()
-          ? rawPath
-          : rawPath.toAbsolutePath();
-      String fullPath = absPath.toString();
+      String fullPath;
+      if (isAbsoluteUri(coms.getPurePath())) {
+        fullPath = coms.getPurePath();
+      } else {
+        Path rawPath = Paths.get(group.getPathBase(), coms.getPurePath());
+        Path absPath = rawPath.isAbsolute()
+                ? rawPath
+                : rawPath.toAbsolutePath();
+        fullPath = absPath.toString();
+      }
       LogChoice choice = new LogChoiceBuilder()
           .setGroup(groupName)
           .setPath(fullPath)
@@ -94,14 +98,19 @@ public class LogChoicesProvider {
     // traverse and process all of the path entries as they are commonly used in groups
     for (LogConfigEntry logConfigEntry : group.getCompositeLogs()) {
       String path = logConfigEntry.getPath();
-      String node = AnaLogUtils.nvls(logConfigEntry.getNode(), myselfNodeName);
-      String titleFormat = AnaLogUtils.nvls(logConfigEntry.getTitle(), DEFAULT_TITLE_FORMAT);
+      String node = nvls(logConfigEntry.getNode(), myselfNodeName);
+      String titleFormat = nvls(logConfigEntry.getTitle(), DEFAULT_TITLE_FORMAT);
       String title = expandTitle(path, titleFormat, groupName);
-      Path rawPath = Paths.get(path);
-      Path absPath = rawPath.isAbsolute()
-          ? rawPath
-          : rawPath.toAbsolutePath();
-      String fullPath = absPath.toString();
+      String fullPath;
+      if (isAbsoluteUri(path)) {
+        fullPath = path;
+      } else {
+        Path rawPath = Paths.get(path);
+        Path absPath = rawPath.isAbsolute()
+                ? rawPath
+                : rawPath.toAbsolutePath();
+        fullPath = absPath.toString();
+      }
       LogChoice choice = new LogChoiceBuilder()
           .setGroup(groupName)
           .setPath(fullPath)
@@ -143,7 +152,7 @@ public class LogChoicesProvider {
   }
 
   private String expandTitle(String purePath, String pureTitle, String groupName) {
-    String fileName = AnaLogUtils.extractFileName(purePath);
+    String fileName = extractFileName(purePath);
     return pureTitle.replaceAll("(?i)\\$f", fileName)
         .replaceAll("(?i)\\$g", groupName)
         .replaceAll("(^\")|(\"$)", "");

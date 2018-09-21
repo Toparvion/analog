@@ -1,8 +1,6 @@
 server:
     port: 8083
     address: 0.0.0.0
-logging:
-  config: config/logback-file.xml
 
 nodes:
   - name: myself
@@ -13,7 +11,8 @@ nodes:
 choices:
   - group: АнаЛог
     plainLogs:
-      - ${user.dir}/log/${APP_NAME}.log as "Логи АнаЛога :-)"
+      - ${user.dir}/log/${spring.application.name}.log as "Логи АнаЛога :-)" (selected)
+      - //kubernetes/deployment/devrel-restorun as "Логи контейнера RESToRun в Kubernetes"
 
 #  - group: Микросервисы в Docker
 #    pathBase: /micros/

@@ -11,6 +11,8 @@ spring:
 server:
   servlet:
     application-display-name: AnaLog
+logging:
+  config: config/logback-file.xml
 
 javamelody:
   # Enable JavaMelody auto-configuration (optional, default: true)

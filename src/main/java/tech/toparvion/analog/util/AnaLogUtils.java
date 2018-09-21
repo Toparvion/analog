@@ -282,10 +282,20 @@ public class AnaLogUtils {
         : path;
   }
 
+  public static boolean isAbsoluteUri(String path) {
+    return path.startsWith("//");                      // for paths starting like //docker/ or //kubernetes/
+  }
+
   public static String extractFileName(String path) {
-    return Paths.get(convertPathFromUnix(path))
-                .getFileName()
-                .toString();
+    if (isAbsoluteUri(path)) {
+      int thirdSlashIndex = path.indexOf('/', 3);
+      return path.substring(thirdSlashIndex+1);
+
+    } else {
+      return Paths.get(convertPathFromUnix(path))
+              .getFileName()
+              .toString();
+    }
   }
 
   public static String nvls(String s, String def) {
