@@ -23,14 +23,14 @@ import static org.springframework.messaging.support.MessageBuilder.withPayload;
  * @author Toparvion
  * @since v0.7
  */
-class CompositeRecordAggregatorConfigurer {
-  private static final Logger log = LoggerFactory.getLogger(CompositeRecordAggregatorConfigurer.class);
+class GroupingAggregatorConfigurer {
+  private static final Logger log = LoggerFactory.getLogger(GroupingAggregatorConfigurer.class);
 
   private final MessagingTemplate preAggregatorQueueSender;
   private final int groupSizeThreshold;
   private final long groupTimeout;
 
-  CompositeRecordAggregatorConfigurer(MessageChannel preAggregatorQueueChannel, int groupSizeThreshold, long groupTimeout) {
+  GroupingAggregatorConfigurer(MessageChannel preAggregatorQueueChannel, int groupSizeThreshold, long groupTimeout) {
     this.preAggregatorQueueSender = new MessagingTemplate(preAggregatorQueueChannel);
     this.groupSizeThreshold = groupSizeThreshold;
     this.groupTimeout = groupTimeout;
@@ -64,7 +64,7 @@ class CompositeRecordAggregatorConfigurer {
 
     boolean isGroupComplete = !Objects.equals(lastMessageCorrId, prevMessageCorrId);
     if (isGroupComplete) {
-      log.debug("Group {} is about to be released as last corrId {} differs from previous ones {}.",
+      log.trace("Group {} is about to be released as last corrId {} differs from previous ones {}.",
           group.getGroupId(), lastMessageCorrId, prevMessageCorrId);
     }
     return isGroupComplete;

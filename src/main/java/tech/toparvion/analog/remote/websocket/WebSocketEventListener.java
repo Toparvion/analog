@@ -14,7 +14,10 @@ import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 import tech.toparvion.analog.model.ServerFailure;
 import tech.toparvion.analog.model.TrackingRequest;
-import tech.toparvion.analog.model.config.*;
+import tech.toparvion.analog.model.config.ChoiceProperties;
+import tech.toparvion.analog.model.config.ClusterNode;
+import tech.toparvion.analog.model.config.ClusterProperties;
+import tech.toparvion.analog.model.config.LogConfigEntry;
 import tech.toparvion.analog.remote.server.RegistrationChannelCreator;
 import tech.toparvion.analog.remote.server.RemoteGateway;
 
@@ -24,8 +27,9 @@ import java.util.List;
 import static java.lang.String.format;
 import static java.time.ZonedDateTime.now;
 import static java.util.Collections.singletonMap;
+import static java.util.stream.Collectors.toList;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
-import static tech.toparvion.analog.service.AnaLogUtils.*;
+import static tech.toparvion.analog.util.AnaLogUtils.*;
 
 /**
  * A component responsible for supporting lifecycle of websocket sessions and watching subscriptions.
@@ -156,7 +160,7 @@ public class WebSocketEventListener {
     // in case it was the latest session watching that log we should stop the tracking
     LogConfigEntry watchingLog = registry.findLogConfigEntryBy(sessionId);
     log.debug("No sessions left watching log '{}'. Will deactivate the tracking...", watchingLog.getUid());
-    doSafely(log, () -> stopTrackingOnServer(watchingLog));
+    doSafely(getClass(), () -> stopTrackingOnServer(watchingLog));
     // now that the log is not tracked anymore we need to remove it from the registry
     registry.removeEntry(watchingLog);
     log.info("Current node has unregistered itself from tracking log '{}' as there is no watching sessions anymore.",
@@ -195,11 +199,18 @@ public class WebSocketEventListener {
 
   @NotNull
   private LogConfigEntry findCompositeLogConfigEntry(String uid) {
-    LogConfigEntry matchingEntry = choiceProperties.getChoices().stream()
-        .flatMap(choiceGroup -> choiceGroup.getCompositeLogs().stream())
-        .filter(entry -> entry.getUid().equals(uid))
-        .findAny()
-        .orElseThrow(() -> new IllegalArgumentException(format("No log configuration entry found for uid=%s", uid)));
+    List<LogConfigEntry> matchingEntries = choiceProperties.getChoices().stream()
+            .flatMap(choiceGroup -> choiceGroup.getCompositeLogs().stream())
+            .filter(entry -> entry.getUid().equals(uid))
+            .collect(toList());
+    if (matchingEntries.isEmpty()) {
+      throw new IllegalArgumentException(format("No log configuration entry found for uid=%s", uid));
+    }
+    LogConfigEntry matchingEntry;
+    if (matchingEntries.size() > 1) {
+      log.warn("Multiple matching entries found for uid={}. Will pick the first one.\n{}", uid, matchingEntries);
+    }
+    matchingEntry = matchingEntries.get(0);
     log.debug("Found matching composite log config entry: {}", matchingEntry);
     return matchingEntry;
   }
@@ -214,7 +225,7 @@ public class WebSocketEventListener {
         .filter(entry -> entry.getNode() != null)
         .forEach(entry -> {
           registrationChannelCreator.createRegistrationChannelIfNeeded(entry.getNode());
-          // additionally warn the user if this entry contains other includes
+          // additionally warn the administrator if this entry contains other includes
           if (!entry.getIncludes().isEmpty()) {
             log.warn("Encountered included log config entry that itself contains other included entries. Nested " +
                 "inclusion levels deeper than 2 are not supported and will be ignored. Invalid entry: {}", entry);
@@ -269,13 +280,7 @@ public class WebSocketEventListener {
       return logConfigEntry.getPath();
     }
 
-    String groupPathBase = choiceProperties.getChoices().stream()
-        .filter(group -> group.getPathBase() != null)
-        .filter(group -> group.getCompositeLogs().contains(logConfigEntry))
-        .findAny()
-        .map(ChoiceGroup::getPathBase)
-        .orElse("");
-    return convertPathToUnix((groupPathBase + logConfigEntry.getPath()));
+    return convertPathToUnix(logConfigEntry.getPath());
   }
 
 }

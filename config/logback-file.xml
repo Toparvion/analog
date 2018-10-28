@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!--<editor-fold desc="Файловый аппендер">-->
+    <property name="FILE_LOG_PATTERN"
+              value="%d{ISO8601} ${LOG_LEVEL_PATTERN:-%5p} [%t] - %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>log/${APP_NAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover. Make sure the path matches the one in the file element or else
+             the rollover logs are placed in the working directory. -->
+            <fileNamePattern>log/${APP_NAME}_%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>15MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+    <!--</editor-fold>-->
+
+    <!-- Умолчательный (корневой) уровень логирования и аппендер -->
+    <root level="INFO">
+        <appender-ref ref="FILE"/>
+    </root>
+
+    <!-- ================================== Прикладные логгеры (от бизнес-логики) ================================ -->
+    <logger name="tech.toparvion.analog" level="DEBUG"/>
+    <!-- ===================================== Системные логгеры (от библиотек) ================================== -->
+
+</configuration>

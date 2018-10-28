@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
-import tech.toparvion.analog.service.AnaLogUtils;
+import tech.toparvion.analog.util.AnaLogUtils;
 
 import javax.annotation.Nullable;
 import java.io.File;

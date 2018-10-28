@@ -3,7 +3,7 @@ package tech.toparvion.analog.model.api;
 import java.util.List;
 
 import static org.springframework.util.StringUtils.hasText;
-import static tech.toparvion.analog.service.AnaLogUtils.convertPathToUnix;
+import static tech.toparvion.analog.util.AnaLogUtils.convertPathToUnix;
 
 /**
  * Helper class aimed to simplicfy log choice instances construction

@@ -1,8 +1,12 @@
+import com.bmuschko.gradle.docker.tasks.DockerInfo
+import com.bmuschko.gradle.docker.tasks.DockerVersion
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+import com.bmuschko.gradle.docker.tasks.image.Dockerfile
+
 buildscript {
     ext {
-        springBootVersion = '2.0.1.RELEASE'
-        springIntegrationVersion = '5.0.4.RELEASE'
-        junitVersion = '5.0.2'
+        springBootVersion = '2.1.0.M1'
+        junitVersion = '5.1.0'
     }
     repositories {
         mavenCentral()
@@ -11,6 +15,7 @@ buildscript {
     dependencies {
         classpath group: 'org.springframework.boot', name: 'spring-boot-gradle-plugin', version: "${springBootVersion}"
         classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.1'
+        classpath group: 'com.bmuschko', name: 'gradle-docker-plugin', version: '3.5.0'
     }
 }
 
@@ -19,9 +24,13 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'application'
+apply plugin: 'com.bmuschko.docker-remote-api'
 
-jar {
-    version = '0.10'
+version = '0.10.1'
+sourceCompatibility = 1.9
+targetCompatibility = 1.9
+
+bootJar {
     archiveName = 'analog.jar'
     manifest {
         attributes(
@@ -31,8 +40,71 @@ jar {
         )
     }
 }
-sourceCompatibility = 1.9
-targetCompatibility = 1.9
+
+//<editor-fold desc="Задачи по работе с Docker-образами">
+docker {
+    url = project['docker.url']
+    registryCredentials {
+        url = project['docker.registry.url']
+        username = project['docker.registry.username']
+        password = project['docker.registry.password']
+        email = project['docker.registry.email']
+    }
+}
+task createDockerfile(type: Dockerfile) {
+    description 'Генерирует Dockerfile для сборки образа микросервиса'
+    group 'docker'
+
+    from 'openjdk:10-jdk-slim'
+    // все дальнейшие команды будут разрешать пути внутри контейнера относительно этой:
+    workingDir "/analog"
+    // копируем исполняемый файл микросервиса:
+    copyFile bootJar.archiveName, bootJar.archiveName
+    // копируем файлы конфигурации:
+    copyFile 'config/', 'config/'
+    // монтируем директории для сохранения данных мониторинга и Tomcat'а между перезапусками:
+    // volume "/microservice/work", "/microservice/log"
+    environmentVariable 'APP_NAME', project.name
+    // формируем команду на запуск:
+    entryPoint 'java'
+    // вся команда на запуск будет выглядеть 'java -X... -jar restorun.jar'
+    defaultCommand '-Xmx256M', '-XX:MaxMetaspaceSize=256M', '-XX:+HeapDumpOnOutOfMemoryError',
+                   '-jar', "${bootJar.archiveName}"
+}
+
+task syncImageFiles(type: Sync) {
+    description 'Копирует в директорию build/docker файлы микросервиса для сборки образа'
+    group 'docker'
+
+    dependsOn assemble
+    from bootJar.archivePath
+    into createDockerfile.destFile.parentFile
+    // отдельно указываем, что файлы конфигурации нужно положить в директорию config
+    into 'config/', {
+        from 'config/'
+    }
+}
+createDockerfile.dependsOn syncImageFiles
+
+task buildImage(type: DockerBuildImage) {
+    description 'Собирает и загружает в Docker образ микросервиса'
+
+    dependsOn createDockerfile
+    inputDir = createDockerfile.destFile.parentFile
+    tag = "${project.name}:${project.version}"
+}
+
+task dockerVersion(type: DockerVersion) {
+    description 'Выводит информацию о версии Docker'
+}
+task dockerInfo(type: DockerInfo) {
+    description 'Выводит общие сведения об используемом экземпляре Docker'
+}
+//</editor-fold>
+
+test {
+    useJUnitPlatform()
+}
 
 repositories {
     // mavenLocal()
@@ -44,14 +116,13 @@ repositories {
 dependencies {
     // Backend compile deps
 //    compile("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: "${springBootVersion}"
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: "${springBootVersion}"
-    compile group: 'org.springframework.boot' , name: 'spring-boot-starter-websocket', version: "${springBootVersion}"
-    compile group: 'net.bull.javamelody', name: 'javamelody-spring-boot-starter', version: '1.71.0'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
+    compile group: 'org.springframework.boot' , name: 'spring-boot-starter-websocket'
+    compile group: 'net.bull.javamelody', name: 'javamelody-spring-boot-starter', version: '1.72.0'
 
-    compile group: 'org.springframework.integration', name: 'spring-integration-core', version: "${springIntegrationVersion}"
-    compile group: 'org.springframework.integration', name: 'spring-integration-file', version: "${springIntegrationVersion}"
-    compile group: 'org.springframework.integration', name: 'spring-integration-rmi', version: "${springIntegrationVersion}"
+    compile group: 'org.springframework.integration', name: 'spring-integration-file'
+    compile group: 'org.springframework.integration', name: 'spring-integration-rmi'
 
     compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
     compile group: 'net.sf.jtidy', name: 'jtidy', version: 'r938'
@@ -68,17 +139,24 @@ dependencies {
     compile group: 'org.webjars', name: 'angular-ui-select', version: '0.19.6'
     compile group: 'org.webjars.npm', name: 'balloon-css', version: '0.5.0'
 
+    compileOnly('org.springframework.boot:spring-boot-configuration-processor')
+
     runtime group: 'commons-logging', name: 'commons-logging', version: '1.2'
-    runtime("org.springframework.boot:spring-boot-properties-migrator")         // TODO remove after migration
 
     // Test deps
-    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: "${springBootVersion}"
-    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: "${junitVersion}"
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
     testCompile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
-    
-    testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version:  "${junitVersion}"
+    // JUnit family
+    testCompileOnly 'junit:junit:4.12'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.1.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
+    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine:5.1.0'
 }
 
 junitPlatform {
     enableStandardTestTask = true
+}
+
+startScripts {
+    enabled = false
 }

@@ -11,6 +11,7 @@ import tech.toparvion.analog.model.config.ChoiceGroup;
 import tech.toparvion.analog.model.config.ChoiceProperties;
 import tech.toparvion.analog.model.config.ClusterProperties;
 import tech.toparvion.analog.model.config.LogConfigEntry;
+import tech.toparvion.analog.util.AnaLogUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,7 +26,7 @@ import static java.lang.String.format;
 import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import static tech.toparvion.analog.service.AnaLogUtils.convertPathToUnix;
+import static tech.toparvion.analog.util.AnaLogUtils.convertPathToUnix;
 
 /**
  * @author Toparvion
@@ -96,7 +97,7 @@ public class LogChoicesProvider {
       String node = AnaLogUtils.nvls(logConfigEntry.getNode(), myselfNodeName);
       String titleFormat = AnaLogUtils.nvls(logConfigEntry.getTitle(), DEFAULT_TITLE_FORMAT);
       String title = expandTitle(path, titleFormat, groupName);
-      Path rawPath = Paths.get(group.getPathBase(), path);
+      Path rawPath = Paths.get(path);
       Path absPath = rawPath.isAbsolute()
           ? rawPath
           : rawPath.toAbsolutePath();

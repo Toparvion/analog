@@ -12,7 +12,7 @@ import tech.toparvion.analog.model.config.ClusterProperties;
 
 import java.net.InetSocketAddress;
 
-import static org.springframework.integration.dsl.channel.MessageChannels.direct;
+import static org.springframework.integration.dsl.MessageChannels.direct;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
 
 /**

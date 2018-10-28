@@ -21,12 +21,12 @@ public class SolarisTailSpecificsProvider implements TailSpecificsProvider {
 
   @Override
   public String getCompositeTailNativeOptions(boolean includePreviousLines) {
-    return format("-%sf", includePreviousLines?"20":"0");     // -F option is not supported on SunOS
+    return format("-%sf", includePreviousLines ? "20" : "0");     // -F option is not supported on SunOS
   }
 
   @Override
   public String getPlainTailNativeOptions(boolean includePreviousLines) {
-    return format("-%sf", includePreviousLines?"45":"0");     // -F option is not supported on SunOS
+    return format("-%sf", includePreviousLines ? "45" : "0");     // -F option is not supported on SunOS
   }
 
   @Override

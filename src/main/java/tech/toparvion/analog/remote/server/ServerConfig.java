@@ -24,7 +24,7 @@ import java.io.InputStreamReader;
 import java.util.Collection;
 
 import static java.lang.String.format;
-import static org.springframework.integration.dsl.channel.MessageChannels.direct;
+import static org.springframework.integration.dsl.MessageChannels.direct;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
 
 /**
@@ -128,9 +128,8 @@ public class ServerConfig {
       process = Runtime.getRuntime().exec("tail --version");
     } catch (IOException e) {
       if (e.getMessage().startsWith("Cannot run program")) {
-        log.error("Failed to find 'tail' program on this server. Please check if it is correctly " +
-            "installed, accessible for AnaLog and its path is included into PATH environment variable. Root cause: "
-            + e.getMessage());
+        log.error("Failed to find 'tail' program on this server. Please check if it is correctly installed, accessible " +
+            "for AnaLog and its path is included into PATH environment variable. Root cause: {}", e.getMessage());
       }
       throw e;
     }
