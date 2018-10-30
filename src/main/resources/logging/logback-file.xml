@@ -2,7 +2,7 @@
 <configuration scan="true" scanPeriod="30 seconds">
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
-    <!--<editor-fold desc="Файловый аппендер">-->
+    <!--<editor-fold desc="File appender">-->
     <property name="FILE_LOG_PATTERN"
               value="%d{ISO8601} ${LOG_LEVEL_PATTERN:-%5p} [%t] - %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
 
@@ -22,13 +22,13 @@
     </appender>
     <!--</editor-fold>-->
 
-    <!-- Умолчательный (корневой) уровень логирования и аппендер -->
+    <!-- Default (root) log level and appender -->
     <root level="INFO">
         <appender-ref ref="FILE"/>
     </root>
 
-    <!-- ================================== Прикладные логгеры (от бизнес-логики) ================================ -->
+    <!-- =============================== Application loggers (from business logic) ============================== -->
     <logger name="tech.toparvion.analog" level="DEBUG"/>
-    <!-- ===================================== Системные логгеры (от библиотек) ================================== -->
+    <!-- ===================================== System loggers (from libraries) ================================== -->
 
 </configuration>

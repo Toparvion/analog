@@ -16,16 +16,15 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import static java.nio.file.StandardOpenOption.*;
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * @author Toparvion
@@ -59,22 +58,23 @@ public class LogFileGenerator implements Runnable, InitializingBean {
     this.destinationFilePath = Paths.get(destinationFilePath);
     this.sourceTimestampPattern = Pattern.compile(sourceTimestampPattern);
     this.destinationTimestampFormatter = DateTimeFormatter.ofPattern(destinationTimestampFormat);
-    this.trigger = new DynamicPeriodicTrigger(generationPeriod, SECONDS);
+    this.trigger = new DynamicPeriodicTrigger(Duration.ofSeconds(generationPeriod));
     this.bunchSize = bunchSize;
     this.taskScheduler = taskScheduler;
 
     this.trigger.setFixedRate(false); // in order to prevent accumulation of unpublished records during a pause
-    this.trigger.setInitialDelay(5);  // to start generation after the application is fully up and running
+    this.trigger.setInitialDuration(Duration.ofSeconds(5));  // to start after the application is fully up and running
   }
 
   @Override
   public void run() {
     makePauseIfNeeded();
-    log.trace("I'm Generator and I know it! Current period: {} {} ", getGenerationPeriod(),
-        trigger.getTimeUnit().name().toLowerCase());
+    log.trace("I'm Generator and I know it! Current period: {} seconds.", getGenerationPeriod());
     String record = getSingleRandomRecord();
     try {
+      //noinspection ReadWriteStringCanBeUsed
       Files.write(destinationFilePath, record.getBytes(Charset.defaultCharset()), CREATE, APPEND, SYNC);
+//      Files.writeString(destinationFilePath, record, Charset.defaultCharset(), CREATE, APPEND, SYNC);
 
     } catch (IOException e) {
       log.error("Couldn't write new records to log file.", e);
@@ -142,14 +142,13 @@ public class LogFileGenerator implements Runnable, InitializingBean {
 
   @ManagedAttribute
   public long getGenerationPeriod() {
-    return TimeUnit.MILLISECONDS.toSeconds(trigger.getPeriod());
+    return trigger.getDuration().getSeconds();
   }
 
   @ManagedAttribute
   public void setGenerationPeriod(long generationPeriod) {
-    log.info("JMX command: changing generation period from {} to {} {}.", getGenerationPeriod(), generationPeriod,
-        trigger.getTimeUnit().name().toLowerCase());
-    trigger.setPeriod(generationPeriod);
+    log.info("JMX command: changing generation period from {} to {} seconds.", getGenerationPeriod(), generationPeriod);
+    trigger.setDuration(Duration.ofSeconds(generationPeriod));
   }
 
   @ManagedAttribute(description = "Source file path")

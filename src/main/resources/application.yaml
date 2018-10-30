@@ -12,7 +12,7 @@ server:
   servlet:
     application-display-name: AnaLog
 logging:
-  config: config/logback-file.xml
+  config: classpath:logging/logback-console.xml
 
 javamelody:
   # Enable JavaMelody auto-configuration (optional, default: true)

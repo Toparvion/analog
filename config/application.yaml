@@ -12,9 +12,3 @@ choices:
   - group: АнаЛог
     plainLogs:
       - ${user.dir}/log/${spring.application.name}.log as "Логи АнаЛога :-)" (selected)
-      - //kubernetes/deployment/devrel-restorun as "Логи контейнера RESToRun в Kubernetes"
-
-#  - group: Микросервисы в Docker
-#    pathBase: /micros/
-#    plainLogs:
-#      - toffee/log/toffee.log as ToFFee (selected)

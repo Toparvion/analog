@@ -3,8 +3,8 @@ package tech.toparvion.analog.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.PathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -133,7 +133,7 @@ public class DownloadController {
           : 0;
       if (readStartPosition == 0) {
         log.debug("Read start position is 0 so returning the file at whole...");
-        Resource pathResource = new PathResource(path);
+        Resource pathResource = new FileSystemResource(path);
         response.setHeader(CONTENT_DISPOSITION, format("attachment; filename=\"%s\"", path.getFileName().toString()));
         response.setHeader(CONTENT_TYPE, new MediaType(TEXT_PLAIN, DEFAULT_CHARSET).toString());
         return new ResponseEntity<>(pathResource, OK);
