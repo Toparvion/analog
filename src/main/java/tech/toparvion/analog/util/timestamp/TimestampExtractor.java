@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
-import tech.toparvion.analog.util.AnaLogUtils;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -18,6 +17,7 @@ import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 import static org.springframework.integration.file.FileHeaders.ORIGINAL_FILE;
+import static tech.toparvion.analog.util.AnaLogUtils.convertToUnixStyle;
 
 /**
  * An internal tool to extract parsed timestamps from log lines.
@@ -82,7 +82,7 @@ public class TimestampExtractor {
     File logFile = lineMessage.getHeaders().get(ORIGINAL_FILE, File.class);
     assert (logFile != null) : "lineMessage doesn't contain 'file_originalFile' header; check tailAdapter.";
 
-    String logPath = AnaLogUtils.convertPathToUnix(logFile.getAbsolutePath());
+    String logPath = convertToUnixStyle(logFile.getAbsolutePath(), false);
     PatternAndFormatter paf = registry.get(logPath);
     assert (paf != null) : format("Log path '%s' is not registered but its line message was received.", logPath);
 

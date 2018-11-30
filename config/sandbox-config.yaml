@@ -1,5 +1,3 @@
-server:
-  port: 8080
 jmx:
   rmi:
     host: localhost
@@ -18,15 +16,18 @@ nodes:
     host: tobol.ftc.ru
     agentPort: 7803
 
-recordLevels:
-  - TRACE
-  - DEBUG
-  - INFO
-  - WARN
-  - ERROR
-  - FATAL
-
 choices:
+  - group: STDOUT
+    plainLogs:
+      - /home/upc/app.log
+      - //home/upc/app.log
+      - C:/Users/upc/app.log
+      - kubernetes://deployment/app
+      - k8s://deployment/app
+      - docker://mycontainer
+      - node://angara/home/upc/app.log
+      - composite://34XF5TG6
+
   - group: MT
     pathBase: C:\lang\analog\log-samples\
     plainLogs:
@@ -38,18 +39,20 @@ choices:
         node: angara
         title: $f - $g
         selected: true
-        encoding: CP-1251
         timestamp: dd.MM.yy HH:mm:ss,SSS
         includes:
           - path: C:\lang\analog\log-samples\generated\core.log
             node: angara
             timestamp: yyyy-MM-dd HH:mm:ss,SSS # 2017-11-09 22:31:03,084
-          - node: volga
-            path: C:\lang\analog\log-samples\cluster\composite.log
-            timestamp: dd.MM.yy HH:mm:ss,SSS
-          - node: volga
-            path: C:\lang\analog\log-samples\cluster\composite-2.log
-            timestamp: dd.MM.yy HH:mm:ss,SSS
+#          - node: volga
+#            path: C:\lang\analog\log-samples\cluster\composite.log
+#            timestamp: dd.MM.yy HH:mm:ss,SSS
+#          - node: volga
+#            path: C:\lang\analog\log-samples\cluster\composite-2.log
+#            timestamp: dd.MM.yy HH:mm:ss,SSS
+      - path: c:\lang\jmint\log.log
+        node: angara
+        timestamp: dd.MM.yy HH:mm:ss,SSS
 
   - group: Микросервисы
     pathBase: C:\lang\analog\log-samples\

@@ -69,16 +69,18 @@ public class LogChoicesProvider {
       ChoiceTokens coms = extractChoiceTokens(path);
       if (coms == null) continue; // the origin of this object is responsible for logging in this case
       String title = expandTitle(coms.getPurePath(), coms.getPureTitle(), groupName);
-      // String fullPath = group.getPathBase() + coms.getPurePath();
+      // here we're processing paths coming from config file so there is no need to clean them out from leading slash
       String fullPath;
-      if (isAbsoluteUri(coms.getPurePath())) {
-        fullPath = coms.getPurePath();
-      } else {
+      // let's make log path absolute by prepending it with pathBase, but we should do it for local file paths only
+      if (isLocalFilePath(coms.getPurePath())) {
+        // by default, pathBase is empty therefore it is always safe to prepend purePath with it
         Path rawPath = Paths.get(group.getPathBase(), coms.getPurePath());
         Path absPath = rawPath.isAbsolute()
                 ? rawPath
                 : rawPath.toAbsolutePath();
         fullPath = absPath.toString();
+      } else {
+        fullPath = coms.getPurePath();
       }
       LogChoice choice = new LogChoiceBuilder()
           .setGroup(groupName)
@@ -102,14 +104,14 @@ public class LogChoicesProvider {
       String titleFormat = nvls(logConfigEntry.getTitle(), DEFAULT_TITLE_FORMAT);
       String title = expandTitle(path, titleFormat, groupName);
       String fullPath;
-      if (isAbsoluteUri(path)) {
-        fullPath = path;
-      } else {
+      if (isLocalFilePath(path)) {
         Path rawPath = Paths.get(path);
         Path absPath = rawPath.isAbsolute()
                 ? rawPath
                 : rawPath.toAbsolutePath();
         fullPath = absPath.toString();
+      } else {
+        fullPath = path;
       }
       LogChoice choice = new LogChoiceBuilder()
           .setGroup(groupName)
@@ -186,7 +188,7 @@ public class LogChoicesProvider {
   private List<CompositeInclusion> getIncludes(LogConfigEntry logConfigEntry) {
     return logConfigEntry.getIncludes()
         .stream()
-        .map(inclusion -> new CompositeInclusion(inclusion.getNode(), convertPathToUnix(inclusion.getPath())))
+        .map(inclusion -> new CompositeInclusion(inclusion.getNode(), convertToUnixStyle(inclusion.getPath(), true)))
         .collect(toList());
   }
 

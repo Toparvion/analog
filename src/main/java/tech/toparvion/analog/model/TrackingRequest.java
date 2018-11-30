@@ -12,17 +12,28 @@ import java.io.Serializable;
  */
 public class TrackingRequest implements Serializable {
   private final String logFullPath;
+  /** May be null in case of plain (non-composite) log. */
   @Nullable
   private final String timestampFormat;
   private final String nodeName;
-  private final String uid;
+  /**
+   * Logical address for broadcasting log's records to WebSocket clients. Usually looks exactly as specified on the
+   * client side, e.g. {@code node://angara/home/upc/app.log}.<p>
+   * May be null in case switching the tracking off.
+   */
+  @Nullable
+  private final String clientDestination;
   private final boolean isTailNeeded;
 
-  public TrackingRequest(String logFullPath, @Nullable String timestampFormat, String nodeName, String uid, boolean isTailNeeded) {
+  public TrackingRequest(String logFullPath,
+                         @Nullable String timestampFormat,
+                         String nodeName,
+                         @Nullable String clientDestination,
+                         boolean isTailNeeded) {
     this.logFullPath = logFullPath;
     this.timestampFormat = timestampFormat;
     this.nodeName = nodeName;
-    this.uid = uid;
+    this.clientDestination = clientDestination;
     this.isTailNeeded = isTailNeeded;
   }
 
@@ -40,8 +51,9 @@ public class TrackingRequest implements Serializable {
     return nodeName;
   }
 
-  public String getUid() {
-    return uid;
+  @Nullable
+  public String getClientDestination() {
+    return clientDestination;
   }
 
   public boolean isTailNeeded() {
@@ -64,9 +76,8 @@ public class TrackingRequest implements Serializable {
         ", timestampFormat='" + timestampFormat + '\'' +
         ", isFlat='" + isFlat() + '\'' +
         ", nodeName='" + nodeName + '\'' +
-        ", uid='" + uid + '\'' +
+        ", clientDestination='" + clientDestination + '\'' +
         ", isTailNeeded=" + isTailNeeded +
         '}';
   }
-
 }

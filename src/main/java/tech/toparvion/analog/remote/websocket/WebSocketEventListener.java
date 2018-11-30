@@ -21,6 +21,7 @@ import tech.toparvion.analog.model.config.LogConfigEntry;
 import tech.toparvion.analog.remote.server.RegistrationChannelCreator;
 import tech.toparvion.analog.remote.server.RemoteGateway;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -30,6 +31,7 @@ import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.toList;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
 import static tech.toparvion.analog.util.AnaLogUtils.*;
+import static tech.toparvion.analog.util.PathConstants.*;
 
 /**
  * A component responsible for supporting lifecycle of websocket sessions and watching subscriptions.
@@ -50,6 +52,7 @@ public class WebSocketEventListener {
   private final SimpMessagingTemplate messagingTemplate;
 
   @Autowired
+  @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")    // IDEA doesn't see remoteGateway
   public WebSocketEventListener(ChoiceProperties choiceProperties,
                                 WatchRegistry registry,
                                 RegistrationChannelCreator registrationChannelCreator,
@@ -81,7 +84,7 @@ public class WebSocketEventListener {
     assert (destination != null) && destination.startsWith(WEBSOCKET_TOPIC_PREFIX)
         : "Subscriber's 'destination' header is absent or malformed: " + destination;
     log.debug("Received start watching (SUBSCRIBE) command for {} destination '{}' within session id={}.",
-        (isPlain?"plain":"composite"), destination, sessionId);
+        (isPlain ? "plain" : "composite"), destination, sessionId);
 
     // Then create or find corresponding log config entry
     destination = destination.replace(WEBSOCKET_TOPIC_PREFIX, "");
@@ -98,7 +101,7 @@ public class WebSocketEventListener {
         // 1. Ensure that all RMI registration channels are created
         ensureRegistrationChannelsCreated(logConfig);
         // 2. Register the tracking on specified nodes
-        startTrackingOnServer(logConfig, isTailNeeded);
+        startTrackingOnServer(logConfig, destination, isTailNeeded);
         // 3. Remember the tracking in the registry
         registry.addEntry(logConfig, sessionId);
         log.info("New tracking for log '{}' has started within session id={}.", logConfig.getUid(), sessionId);
@@ -175,25 +178,48 @@ public class WebSocketEventListener {
   }
 
   /**
-   * When watching request comes for a plain log AnaLog does not tries to find corresponding log config entry.
+   * When watching request of web client comes for a plain log, AnaLog doesn't search for corresponding log config entry.
    * Instead it just creates new ('artificial') entry and then works with it only. This approach allows AnaLog to
    * watch arbitrary plain logs independently of its configuration. Particularly, it means that a user can set any
    * path into AnaLog's address line and start to watch it the same way as if it was pre-configured as a choice
-   * variant in AnaLog configuration.
+   * variant in configuration file.
    *
    * @param path full path of log file to watch for
    * @return newly created log config entry for the specified path
    */
   @NotNull
-  private LogConfigEntry createPlainLogConfigEntry(String path) {
+  /*private*/ LogConfigEntry createPlainLogConfigEntry(String path) {
+    // first, let's remove the leading 'artificial' slash (added by frontend) from the path
+    String unleadedPath = removeLeadingSlash(path);
+    String cleanPath, detectedNode;
+    if (isLocalFilePath(unleadedPath)) {
+      cleanPath = unleadedPath;
+      detectedNode = clusterProperties.getMyselfNode().getName();
+
+    } else if (unleadedPath.startsWith(NODE_PATH_PREFIX)) {
+      int prefixIndex = unleadedPath.indexOf(CUSTOM_SCHEMA_SEPARATOR);
+      var nodefulPath = unleadedPath.substring(prefixIndex + CUSTOM_SCHEMA_SEPARATOR.length());
+      int nodeSeparatorIndex = nodefulPath.indexOf('/');
+      detectedNode = nodefulPath.substring(0, nodeSeparatorIndex);
+      cleanPath = nodefulPath.substring(nodeSeparatorIndex + 1);
+
+    } else if (unleadedPath.startsWith(COMPOSITE_PATH_PREFIX)) {
+      throw new IllegalArgumentException(format("Composite log path '%s' must not be passed " +
+          "to plain log path processing.", unleadedPath));
+
+    } else {
+      cleanPath = unleadedPath;
+      detectedNode = clusterProperties.getMyselfNode().getName();
+
+    }
+    String title = extractFileName(cleanPath);
+
     LogConfigEntry artificialEntry = new LogConfigEntry();
-    artificialEntry.setPath(path);
-    artificialEntry.setNode(clusterProperties.getMyselfNode().getName());
-    // Perhaps it's worth here to parse the path and extract node name if it is specified like
-    // '~~angara~~/pub/home/analog/out.log'. This would be however applicable to paths specified in URL only
-    // because paths configured in file may conflict with each other's node specification.
-    artificialEntry.setTitle(extractFileName(path));
-    log.debug("New plain log config entry created for path '{}'", path);
+    artificialEntry.setPath(cleanPath);
+    artificialEntry.setNode(detectedNode);
+    artificialEntry.setTitle(title);
+    log.debug("For path  '{}' new plain log config entry created with cleanPath='{}', node='{}' and title='{}'",
+        path, cleanPath, detectedNode, title);
     return artificialEntry;
   }
 
@@ -233,22 +259,27 @@ public class WebSocketEventListener {
         });
   }
 
+  private void startTrackingOnServer(LogConfigEntry logConfigEntry, String destination, boolean isTailNeeded) {
+    switchTrackingOnServer(logConfigEntry, destination, true, isTailNeeded);
+  }
+
   private void stopTrackingOnServer(LogConfigEntry logConfigEntry) {
-    switchTrackingOnServer(logConfigEntry, false, false);
+    switchTrackingOnServer(logConfigEntry, null, false, false);
   }
 
-  private void startTrackingOnServer(LogConfigEntry logConfigEntry, boolean isTailNeeded) {
-    switchTrackingOnServer(logConfigEntry, true, isTailNeeded);
-  }
-
-  private void switchTrackingOnServer(LogConfigEntry logConfigEntry, boolean isOn, boolean isTailNeeded) {
+  private void switchTrackingOnServer(LogConfigEntry logConfigEntry, @Nullable String destination, boolean isOn,
+                                      boolean isTailNeeded) {
     assert !(isTailNeeded && !isOn) : "isTailNeeded flag should not be raised when switching the tracking off";
     ClusterNode myselfNode = clusterProperties.getMyselfNode();
-    String fullPath = buildFullPath(logConfigEntry);
     String nodeName = nvls(logConfigEntry.getNode(), myselfNode.getName());
 
     // send registration request for the main entry
-    TrackingRequest primaryRequest = new TrackingRequest(fullPath, logConfigEntry.getTimestamp(), nodeName, logConfigEntry.getUid(), isTailNeeded);
+    TrackingRequest primaryRequest = new TrackingRequest(
+        convertToUnixStyle(logConfigEntry.getPath(), false),
+        logConfigEntry.getTimestamp(),
+        nodeName,
+        destination,
+        isTailNeeded);
     log.debug("Switching {} the registration by PRIMARY request: {}", isOn ? "ON":"OFF", primaryRequest);
     remoteGateway.switchRegistration(primaryRequest, isOn);
 
@@ -257,10 +288,10 @@ public class WebSocketEventListener {
       TrackingRequest includedRequest = null;
       try {
         includedRequest = new TrackingRequest(
-            convertPathToUnix(included.getPath()),
+            convertToUnixStyle(included.getPath(), false),
             included.getTimestamp(),
             nvls(included.getNode(), myselfNode.getName()),
-            logConfigEntry.getUid(),
+            destination,
             isTailNeeded);
         log.debug("Switching {} the registration by INCLUDED request: {}", isOn ? "ON":"OFF", includedRequest);
         remoteGateway.switchRegistration(includedRequest, isOn);
@@ -271,16 +302,6 @@ public class WebSocketEventListener {
         // TODO inform the user about this partial failure by sending ServerFault notification
       }
     }
-  }
-
-  private String buildFullPath(LogConfigEntry logConfigEntry) {
-    // The absence of timestamp indirectly points that this entry is "artificial" one and thus doesn't belong to
-    // any group. Hence there is no need to build full path for it. It is not the most reliable way to do it though.
-    if (logConfigEntry.isPlain()) {
-      return logConfigEntry.getPath();
-    }
-
-    return convertPathToUnix(logConfigEntry.getPath());
   }
 
 }

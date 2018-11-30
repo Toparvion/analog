@@ -83,11 +83,6 @@ public class LogConfigEntry {
     return (timestamp == null);
   }
 
-  /*public*/ LogConfigEntry prependPath(String pathBase) {
-    path = pathBase + path;
-    return this;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;

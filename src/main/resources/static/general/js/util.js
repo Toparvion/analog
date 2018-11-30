@@ -7,7 +7,9 @@ function extractFileName(path) {
 
 function arePathsEqual(path1, path2) {
     // the following replacements allow us to correctly compare paths from different OS'es
-    return (path1.toLowerCase().replace(new RegExp("\\\\", 'g'), "/") === path2.toLowerCase().replace(new RegExp("\\\\", 'g'), "/"));
+    let normalizedPath1 = path1.toLowerCase().replace(new RegExp("\\\\", 'g'), "/");
+    let normalizedPath2 = path2.toLowerCase().replace(new RegExp("\\\\", 'g'), "/");
+    return (normalizedPath1 === normalizedPath2);
 }
 
 // TODO move to Angular app initialization
@@ -22,6 +24,7 @@ if (!String.prototype.format) {
         });
     };
 }
+
 function removeDuplicates(data, param){
     return data.filter(function(item, pos, array){
         return array.map(function(mapItem){ return mapItem[param]; }).indexOf(item[param]) === pos;

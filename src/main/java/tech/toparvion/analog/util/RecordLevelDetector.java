@@ -1,4 +1,4 @@
-package tech.toparvion.analog.service;
+package tech.toparvion.analog.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,7 +102,7 @@ public class RecordLevelDetector {
     int curPos = startPos;
     char curChar = record.charAt(startPos);
     int wordPos = 0;
-    boolean matchingLevels[] = new boolean[levelMatrix.getLevelsCount()];
+    boolean[] matchingLevels = new boolean[levelMatrix.getLevelsCount()];
     int firstMatchingLevelIdx;
     do {
       matchingLevels = levelMatrix.markMatchingLevels(curChar, wordPos, matchingLevels);

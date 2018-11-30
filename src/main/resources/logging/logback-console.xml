@@ -4,7 +4,7 @@
 
     <!--<editor-fold desc="Console appender">-->
     <property name="CONSOLE_LOG_PATTERN"
-              value="%clr(%d{HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) - %clr([%15.15t]){faint} - %clr(%-40.40logger{39}){cyan} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+              value="%clr(%d{HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(%15.15t){faint} - %clr(%-40.40logger{39}){cyan} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <charset>UTF-8</charset>
@@ -23,5 +23,6 @@
     <logger name="tech.toparvion.analog.remote.server.RecordSender" level="DEBUG"/>
     <logger name="tech.toparvion.analog.util.dev.LogFileGenerator" level="DEBUG"/>
     <!-- ===================================== System loggers (from libraries) ================================== -->
+    <logger name="org.springframework.integration.file.tail.OSDelegatingFileTailingMessageProducer" level="DEBUG"/>
 
 </configuration>

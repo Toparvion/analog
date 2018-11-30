@@ -17,8 +17,8 @@ import org.springframework.stereotype.Component;
 import tech.toparvion.analog.remote.agent.misc.CorrelationIdHeaderEnricher;
 import tech.toparvion.analog.remote.agent.misc.SequenceNumberHeaderEnricher;
 import tech.toparvion.analog.remote.agent.si.ProcessTailAdapterSpec;
-import tech.toparvion.analog.service.RecordLevelDetector;
 import tech.toparvion.analog.service.tail.TailSpecificsProvider;
+import tech.toparvion.analog.util.RecordLevelDetector;
 import tech.toparvion.analog.util.timestamp.TimestampExtractor;
 
 import java.io.File;
@@ -32,6 +32,9 @@ import static org.springframework.integration.dsl.MessageChannels.publishSubscri
 import static org.springframework.integration.dsl.MessageChannels.queue;
 import static org.springframework.integration.file.dsl.Files.tailAdapter;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
+import static tech.toparvion.analog.remote.agent.AgentConstants.TAIL_FLOW_PREFIX;
+import static tech.toparvion.analog.remote.agent.AgentConstants.TAIL_OUTPUT_CHANNEL_PREFIX;
+import static tech.toparvion.analog.util.PathConstants.*;
 
 /**
  *
@@ -42,18 +45,12 @@ import static tech.toparvion.analog.remote.RemotingConstants.*;
 public class TailingFlowProvider {
   private static final Logger log = LoggerFactory.getLogger(TailingFlowProvider.class);
 
-  private static final String TAIL_FLOW_PREFIX = "tailFlow_";
-  private static final String TAIL_OUTPUT_CHANNEL_PREFIX = "tailOutputChannel_";
-  private static final String DOCKER_PATH_PREFIX = "//docker/";
-  private static final String KUBERNETES_PATH_PREFIX = "//kubernetes/";
-
   private final TimestampExtractor timestampExtractor;
   private final TailSpecificsProvider tailSpecificsProvider;
   private final RecordLevelDetector recordLevelDetector;
   private final IntegrationFlowContext flowContext;
   private final int groupSizeThreshold;
   private final int groupTimeoutMs;
-
 
   @Autowired
   public TailingFlowProvider(TimestampExtractor timestampExtractor,
@@ -118,8 +115,9 @@ public class TailingFlowProvider {
    * @return a new tailing flow
    */
   IntegrationFlow provideFlatFlow(String logPath, boolean isTailNeeded) {
+    String tailFlowOutChannelName = findOrCreateFileTailFlow(logPath, true, isTailNeeded);
     return IntegrationFlows
-        .from(findOrCreateFileTailFlow(logPath, true, isTailNeeded))
+        .from(tailFlowOutChannelName)
         .aggregate(aggregatorSpec -> aggregatorSpec
             .correlationStrategy(message -> BigDecimal.ONE)
             .releaseStrategy(group -> group.size() > groupSizeThreshold)
@@ -150,13 +148,13 @@ public class TailingFlowProvider {
       log.debug("No tail flow found for log '{}'. Will create a new one...", logPath);
       // first declare the tail flow alongside with its output channel (to subscribe to some time later)
       StandardIntegrationFlow tailFlow = IntegrationFlows
-          .from(createAppropriateAdapter(logPath, isLogPlain, isTailNeeded))
+          .from(findAppropriateAdapter(logPath, isLogPlain, isTailNeeded))
           .channel(publishSubscribe(tailOutputChannelName))
           .get();
       // then register it within the app context
       tailFlowRegistration = flowContext.registration(tailFlow)
           .id(TAIL_FLOW_PREFIX + logPath)
-          .autoStartup(true)      // may be postpone this to the moment when the client gets ready to receive messages
+          .autoStartup(false)   // to prevent the flow from premature sending log lines to uninitialized tracking flow
           .register();
       log.info("New tail flow has been registered with id='{}'.", tailFlowRegistration.getId());
 
@@ -168,48 +166,65 @@ public class TailingFlowProvider {
     return tailOutputChannelName;
   }
 
-  private MessageProducerSpec<?, ?> createAppropriateAdapter(String logPath, boolean isLogPlain, boolean isTailNeeded) {
+  private MessageProducerSpec<?, ?> findAppropriateAdapter(String logPath, boolean isLogPlain, boolean isTailNeeded) {
     String adapterId = "tailProcess_" + logPath;
     MessageProducerSpec<?, ?> tailAdapter;
     if (logPath.startsWith(DOCKER_PATH_PREFIX)) {
-      String target = logPath.substring(DOCKER_PATH_PREFIX.length());
-      int tailLength = isTailNeeded
-              ? isLogPlain ? 45 : 20
-              : 0;
-      String dockerLogsOptions = format("--follow --tail=%d", tailLength);
-      tailAdapter = new ProcessTailAdapterSpec()
-              .executable("sudo docker logs")
-              .target(target)
-              .id(adapterId)
-              .nativeOptions(dockerLogsOptions)
-              .fileDelay(1000)
-              .enableStatusReader(true);          // to receive events of log rotation, etc.
+      tailAdapter = newTailAdapter4Docker(logPath, isLogPlain, isTailNeeded, adapterId);
 
-    } else if (logPath.startsWith(KUBERNETES_PATH_PREFIX)) {
-      String target = logPath.substring(KUBERNETES_PATH_PREFIX.length());
-      int tailLength = isTailNeeded
-              ? isLogPlain ? 45 : 20
-              : 1;                                // why 1 see in https://github.com/kubernetes/kubernetes/issues/35335
-      String k8sLogsOptions = format("--follow --tail=%d", tailLength);
-      tailAdapter = new ProcessTailAdapterSpec()
-              .executable("kubectl logs")
-              .target(target)
-              .id(adapterId)
-              .nativeOptions(k8sLogsOptions)
-              .fileDelay(1000)
-              .enableStatusReader(true);          // to receive events of log rotation, etc.
+    } else if (logPath.startsWith(KUBERNETES_PATH_PREFIX) || logPath.startsWith(K8S_PATH_PREFIX)) {
+      tailAdapter = newTailAdapter4Kubernetes(logPath, isLogPlain, isTailNeeded, adapterId);
 
     } else {
-      String tailNativeOptions = isLogPlain
-          ? tailSpecificsProvider.getPlainTailNativeOptions(isTailNeeded)
-          : tailSpecificsProvider.getCompositeTailNativeOptions(isTailNeeded);
-      tailAdapter = tailAdapter(new File(logPath))
-              .id(adapterId)
-              .nativeOptions(tailNativeOptions)
-              .fileDelay(tailSpecificsProvider.getAttemptsDelay())
-              .enableStatusReader(true);          // to receive events of log rotation, etc.
+      tailAdapter = newTailAdapter4File(logPath, isLogPlain, isTailNeeded, adapterId);
     }
     return tailAdapter;
+  }
+
+  private MessageProducerSpec<?, ?> newTailAdapter4Docker(
+      String logPath, boolean isLogPlain, boolean isTailNeeded, String adapterId) {
+    // target is logPath without custom schema prefix, e.g. my-container derived from docker://my-container
+    var target = logPath.substring(logPath.indexOf(CUSTOM_SCHEMA_SEPARATOR) + CUSTOM_SCHEMA_SEPARATOR.length());
+    var tailLength = isTailNeeded
+            ? isLogPlain ? 45 : 20
+            : 0;
+    var dockerLogsOptions = format("--follow --tail=%d", tailLength);
+    return new ProcessTailAdapterSpec()
+        .executable("sudo docker logs")
+        .target(target)
+        .id(adapterId)
+        .nativeOptions(dockerLogsOptions)
+        .fileDelay(1000)
+        .enableStatusReader(true);
+  }
+
+  private MessageProducerSpec<?, ?> newTailAdapter4Kubernetes(
+      String logPath, boolean isLogPlain, boolean isTailNeeded, String adapterId) {
+    // target is logPath without custom schema prefix, e.g. deploy/my-container derived from k8s://deploy/my-container
+    var target = logPath.substring(logPath.indexOf(CUSTOM_SCHEMA_SEPARATOR) + CUSTOM_SCHEMA_SEPARATOR.length());
+    var tailLength = isTailNeeded
+        ? isLogPlain ? 45 : 20
+        : 1;                                // why 1 see in https://github.com/kubernetes/kubernetes/issues/35335
+    var k8sLogsOptions = format("--follow --tail=%d", tailLength);
+    return new ProcessTailAdapterSpec()
+        .executable("kubectl logs")
+        .target(target)
+        .id(adapterId)
+        .nativeOptions(k8sLogsOptions)
+        .fileDelay(1000)
+        .enableStatusReader(true);
+  }
+
+  private MessageProducerSpec<?, ?> newTailAdapter4File(
+      String logPath, boolean isLogPlain, boolean isTailNeeded, String adapterId) {
+    String tailNativeOptions = isLogPlain
+        ? tailSpecificsProvider.getPlainTailNativeOptions(isTailNeeded)
+        : tailSpecificsProvider.getCompositeTailNativeOptions(isTailNeeded);
+    return tailAdapter(new File(logPath))
+        .id(adapterId)
+        .nativeOptions(tailNativeOptions)
+        .fileDelay(tailSpecificsProvider.getAttemptsDelay())
+        .enableStatusReader(true);
   }
 
   @Nullable

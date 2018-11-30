@@ -26,12 +26,18 @@ app.factory('watchingService', ['$log', '$rootScope', 'renderingService', 'confi
     }
 
     function startWatching(selectedLog, isTailNeeded) {
+        const leadingSlashRegExp = /^\//;
         var logId, isPlain;
         if (selectedLog.uid) {
             logId = selectedLog.uid;
             isPlain = false;
         } else {
-            logId = selectedLog.path;
+            let logPath = selectedLog.path;
+            if (logPath.includes(":")) {
+                logPath = logPath.replace(leadingSlashRegExp, "");
+                $log.log('Removed leading slash: %s', logPath);
+            }
+            logId = logPath;
             isPlain = true;
         }
         var headers = {

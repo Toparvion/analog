@@ -23,11 +23,13 @@ import java.net.InetSocketAddress;
 import java.util.LinkedList;
 
 import static java.lang.String.format;
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toCollection;
 import static org.springframework.integration.dsl.context.IntegrationFlowContext.IntegrationFlowRegistration;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
-import static tech.toparvion.analog.util.AnaLogUtils.convertPathToUnix;
+import static tech.toparvion.analog.remote.agent.AgentConstants.*;
+import static tech.toparvion.analog.util.AnaLogUtils.convertToUnixStyle;
 import static tech.toparvion.analog.util.AnaLogUtils.doSafely;
 
 /**
@@ -39,9 +41,6 @@ import static tech.toparvion.analog.util.AnaLogUtils.doSafely;
 @Service
 @ManagedResource
 public class TrackingService {
-  private static final String GROUPING_PREFIX = "grouping_";
-  private static final String FLAT_PREFIX = "flat_";
-
   private final IntegrationFlowContext flowContext;
   private final TimestampExtractor timestampExtractor;
   private final TailingFlowProvider trackingFlowProvider;
@@ -76,13 +75,14 @@ public class TrackingService {
     StandardIntegrationFlow trackingFlow = findExistingTrackingFlow(request);
     if (trackingFlow == null) {
       if (request.isFlat()) {
-        trackingFlow = startFlatTrackingFlow(request);
+        trackingFlow = createFlatTrackingFlow(request);
 
       } else {
-        trackingFlow = startGroupingTrackingFlow(request);
+        trackingFlow = createGroupingTrackingFlow(request);
       }
     }
     subscribeWatcherToTrackingFlow(trackingFlow, watcherAddress, request);
+    startFlows(trackingFlow, request);
   }
 
   @Nullable
@@ -100,14 +100,19 @@ public class TrackingService {
     return (StandardIntegrationFlow) trackingRegistration.getIntegrationFlow();
   }
 
-  private StandardIntegrationFlow startFlatTrackingFlow(TrackingRequest request) {
+  /**
+   * @return the un-started flow to let the caller finish building of subsequent flow before the returned flow
+   * begins to use it. So it is caller's responsibility to invoke {@link StandardIntegrationFlow#start() start()} on
+   * the returned flow when ready.
+   */
+  private StandardIntegrationFlow createFlatTrackingFlow(TrackingRequest request) {
     String logPath = request.getLogFullPath();
     log.debug("creating-new-flat-flow", logPath);
     IntegrationFlow flatFlow = trackingFlowProvider
         .provideFlatFlow(logPath, request.isTailNeeded());
     IntegrationFlowRegistration trackingRegistration = flowContext
         .registration(flatFlow)
-        .autoStartup(true)
+        .autoStartup(false)   // to prevent the tail from sending messages to incomplete sending flow
         .id(composeTrackingFlowId(FLAT_PREFIX, logPath))
         .useFlowIdAsPrefix()
         .register();
@@ -115,14 +120,19 @@ public class TrackingService {
     return (StandardIntegrationFlow) trackingRegistration.getIntegrationFlow();
   }
 
-  private StandardIntegrationFlow startGroupingTrackingFlow(TrackingRequest request) {
+  /**
+   * @return the un-started flow to let the caller finish building of subsequent flow before the returned flow
+   * begins to use it. So it is caller's responsibility to invoke {@link StandardIntegrationFlow#start() start()} on
+   * the returned flow when ready.
+   */
+  private StandardIntegrationFlow createGroupingTrackingFlow(TrackingRequest request) {
     String logPath = request.getLogFullPath();
     log.debug("creating-new-grouping-flow", logPath);
     IntegrationFlow groupingFlow = trackingFlowProvider
         .provideGroupingFlow(logPath, request.isTailNeeded());
     IntegrationFlowRegistration trackingRegistration = flowContext
         .registration(groupingFlow)
-        .autoStartup(true)
+        .autoStartup(false)       // to prevent the tail from sending messages to not-built-yet sending flow
         .id(composeTrackingFlowId(GROUPING_PREFIX, logPath))
         .useFlowIdAsPrefix()
         .register();
@@ -151,7 +161,7 @@ public class TrackingService {
 
     StandardIntegrationFlow sendingFlow = IntegrationFlows
         .from(outChannel)
-        .enrichHeaders(e -> e.header(LOG_CONFIG_ENTRY_UID__HEADER, request.getUid()))
+        .enrichHeaders(e -> e.header(CLIENT_DESTINATION__HEADER, request.getClientDestination()))
         .enrichHeaders(e -> e.header(SOURCE_NODE__HEADER, request.getNodeName()))
         .handle(new RmiOutboundGateway(payloadSendingUrl))
         .get();
@@ -163,6 +173,19 @@ public class TrackingService {
         .register();
 
     log.debug("subscribed-new-watcher", logPath, sendingRegistration.getId());
+  }
+
+  private void startFlows(StandardIntegrationFlow trackingFlow, TrackingRequest request) {
+    // Now that tracking flow is created (or found) and its sending flow is established, it's time to start the
+    // tracking flow, i.e. to let it send messages:
+    trackingFlow.start();
+    // ... as well as start the tail flow underneath it
+    String tailFlowRegistrationId = TAIL_FLOW_PREFIX + request.getLogFullPath();
+    IntegrationFlowRegistration tailFlowRegistration = flowContext.getRegistrationById(tailFlowRegistrationId);
+    requireNonNull(tailFlowRegistration, "No tail flow registration found for id " + tailFlowRegistrationId);
+    tailFlowRegistration.start();
+    // In case of existing flows these actions should not have any affect as start() is an idempotent operation.
+    log.debug("started-tracking-flow", request);
   }
 
   /**
@@ -184,24 +207,45 @@ public class TrackingService {
       return;
     }
     StandardIntegrationFlow trackingFlow = (StandardIntegrationFlow) trackingRegistration.getIntegrationFlow();
-    PublishSubscribeChannel outChannel = extractOutChannel(trackingFlow);
+    PublishSubscribeChannel trackingOutChannel = extractOutChannel(trackingFlow);
 
-    // находим соответствующего получателя
+    // 1. Find SENDING FLOW as it stays at the top of the three layers within agent
     String sendingFlowId = composeSendingFlowId(request, watcherAddress);
     IntegrationFlowRegistration sendingRegistration = flowContext.getRegistrationById(sendingFlowId);
     if (sendingRegistration == null) {
       log.warn("not-found-sending-registration", sendingFlowId);
       return;
     }
-    // безопасно отписываем наблюдателя от канала
-    doSafely(getClass(), () -> flowContext.remove(sendingFlowId));   // this also unsubscribes the flow from outChannel
-    log.debug("unsubscribed-watcher", sendingFlowId, outChannel);
-//    log.debug("Watcher '{}' has been unsubscribed from channel '{}'.", registeredWatcher, outChannel);
+    // safely remove the flow to prevent exception propagation
+    doSafely(getClass(), () -> flowContext.remove(sendingFlowId));// this also unsubscribes the flow from trackingOutChannel
+    log.debug("unsubscribed-watcher", sendingFlowId, trackingOutChannel);
 
-    if (outChannel.getSubscriberCount() < 1) {
+    // 2. Then, if there is no watchers for the TRACKING FLOW, let's remove it as unnecessary
+    int trackingSubscriberCount = trackingOutChannel.getSubscriberCount();
+    if (trackingSubscriberCount < 1) {
       // wrap into safe action to prevent error propagation in case of removal failure
       doSafely(getClass(), () -> flowContext.remove(trackingFlowId));
-      log.debug("stopped-tracking", logPath);
+      log.debug("stopped-tracking", trackingFlowId);
+    } else {
+      log.debug("continued-tracking", trackingFlowId, trackingSubscriberCount);
+    }
+
+    // 3. And at the last, check if there is any tracking flow left for corresponding TAIL FLOW and, if not, remove it
+    String tailFlowId = TAIL_FLOW_PREFIX + logPath;
+    IntegrationFlowRegistration tailFlowRegistration = flowContext.getRegistrationById(tailFlowId);
+    if (tailFlowRegistration == null) {
+      log.warn("not-found-tail-registration", tailFlowId);
+      return;
+    }
+    IntegrationFlow tailFlow = tailFlowRegistration.getIntegrationFlow();
+    requireNonNull(tailFlowRegistration, "Can't stop not found tail registration " + tailFlowId);
+    PublishSubscribeChannel tailFlowOutChannel = extractOutChannel((StandardIntegrationFlow) tailFlow);
+    int tailSubscriberCount = tailFlowOutChannel.getSubscriberCount();
+    if (tailSubscriberCount < 1) {
+      doSafely(getClass(), () -> flowContext.remove(tailFlowId));
+      log.debug("stopped-tailing", tailFlowId);
+    } else {
+      log.debug("continued-tailing", tailFlowId, tailSubscriberCount);
     }
   }
 
@@ -225,7 +269,7 @@ public class TrackingService {
   @EventListener
   public void processFileTailingEvent(FileTailingEvent tailingEvent) {
     log.debug("received-tailing-event", tailingEvent.toString());
-    String logPath = convertPathToUnix(tailingEvent.getFile().getAbsolutePath());
+    String logPath = convertToUnixStyle(tailingEvent.getFile().getAbsolutePath(), false);
 
     for (String prefix : new String[]{FLAT_PREFIX, GROUPING_PREFIX}) {
       String trackingFlowId = composeTrackingFlowId(prefix, logPath);

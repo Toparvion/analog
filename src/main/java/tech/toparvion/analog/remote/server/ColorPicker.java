@@ -33,23 +33,23 @@ public class ColorPicker {
   private static final float MEAN = 0.585903f;
   private static final int RING_SIZE = Color.values().length;
 
-  private final Map<String/*:uid*/, Map<String/*:pseudoFullPath*/, Color/*:color*/>> colorsMap = new ConcurrentHashMap<>();
+  private final Map<String/*:destination*/, Map<String/*:pseudoFullPath*/, Color/*:color*/>> colorsMap = new ConcurrentHashMap<>();
 
-  public String pickColor(String path, String node, String uid) {
+  String pickColor(String path, String node, String destination) {
     String pseudoFulPath = format("%s_%s", node, path);
 
-    // first let's check if there is a color assigned to given path within given uid
-    Map<String, Color> uidColors = colorsMap.computeIfAbsent(uid, s -> new ConcurrentHashMap<>());
+    // first let's check if there is a color assigned to given path within given destination
+    Map<String, Color> uidColors = colorsMap.computeIfAbsent(destination, s -> new ConcurrentHashMap<>());
     Color cachedColor = uidColors.get(pseudoFulPath);
     if (cachedColor != null) {
       // color has been already computed; return it immediately
       return cachedColor.name().toLowerCase();
     }
 
-    // no color found for given path within given uid so let's compute it
+    // no color found for given path within given destination so let's compute it
     Color computedColor = computeColor(pseudoFulPath);
-    // and correct it if necessary in order to avoid same color usage withing single uid
-    Color correctedName = correctColorWithinUid(uid, uidColors.values(), computedColor);
+    // and correct it if necessary in order to avoid same color usage withing single destination
+    Color correctedName = correctColorWithinDestination(destination, uidColors.values(), computedColor);
     // then store the computed color (either corrected or not) in the cache to accelerate subsequent queries
     uidColors.put(pseudoFulPath, correctedName);
     return correctedName.name().toLowerCase();
@@ -85,23 +85,24 @@ public class ColorPicker {
   }
 
   /**
-   * Compares given {@code computedColor} with other colors among {@code uidColors} (for given {@code uid}) and in
-   * case of finding the same one chooses another color. Does not change {@code uidColors}.
-   * @param uid {@code uid} value to write to log
-   * @param occupiedColors colors that already occupied within given {@code uid}
+   * Compares given {@code computedColor} with other colors among {@code destinationColors} (for given
+   * {@code destination}) and in case of finding the same one chooses another color. Does not change
+   * {@code destinationColors}.
+   * @param destination {@code destination} value to write to log
+   * @param occupiedColors colors that already occupied within given {@code destination}
    * @param computedColor color that was initially {@link #computeColor(String) computed}
    * @return a color either the same as {@code computedColor} or corrected one
    */
-  private Color correctColorWithinUid(String uid, Collection<Color> occupiedColors, Color computedColor) {
-    // check for uniqueness among other colors for this uid
+  private Color correctColorWithinDestination(String destination, Collection<Color> occupiedColors, Color computedColor) {
+    // check for uniqueness among other colors for this destination
     if (!occupiedColors.contains(computedColor)) {
-      log.debug("Color '{}' hasn't yet been used for uid '{}'. No correction is needed.", computedColor, uid);
+      log.debug("Color '{}' hasn't yet been used for destination '{}'. No correction is needed.", computedColor, destination);
       return computedColor;
     }
-    // if the color is already associated with this uid...
+    // if the color is already associated with this destination...
     int startIndex = Color.indexOf(computedColor);
-    log.debug("Color '{}' is already used for uid '{}'. Starting to search for other color from " +
-            "index next to {}...", computedColor, uid, startIndex);
+    log.debug("Color '{}' is already used for destination '{}'. Starting to search for other color from " +
+            "index next to {}...", computedColor, destination, startIndex);
     Color correctedName = computedColor;
     int i;
     for (i = 1/*to start searching from the next index*/; i < RING_SIZE; i++) {
@@ -109,7 +110,7 @@ public class ColorPicker {
       Color nextSuggestedName = Color.values()[nextIndex];
       if (!occupiedColors.contains(nextSuggestedName)) {
         correctedName = nextSuggestedName;
-        log.debug("Color '{}' has been chosen as next free one for uid '{}'.", nextSuggestedName, uid);
+        log.debug("Color '{}' has been chosen as next free one for destination '{}'.", nextSuggestedName, destination);
         break;
       }
     }
@@ -118,8 +119,8 @@ public class ColorPicker {
       correctedName = randomColor;
       log.warn("No free color name found among {} available names. Chosen '{}' randomly.", RING_SIZE, randomColor);
     }
-    log.info("Computed color '{}' has been corrected to '{}' due to collision on uid '{}'.",
-        computedColor, correctedName, uid);
+    log.info("Computed color '{}' has been corrected to '{}' due to collision on destination '{}'.",
+        computedColor, correctedName, destination);
     return correctedName;
   }
 

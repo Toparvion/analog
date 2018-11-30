@@ -3,7 +3,7 @@ package tech.toparvion.analog.model.api;
 import java.util.List;
 
 import static org.springframework.util.StringUtils.hasText;
-import static tech.toparvion.analog.util.AnaLogUtils.convertPathToUnix;
+import static tech.toparvion.analog.util.AnaLogUtils.convertToUnixStyle;
 
 /**
  * Helper class aimed to simplicfy log choice instances construction
@@ -66,6 +66,6 @@ public class LogChoiceBuilder {
     assert hasText(path) : "Path must be specified";
     assert hasText(node) : "Node must be specified";
     assert hasText(title) : "Title must be specified";
-    return new LogChoice(group, convertPathToUnix(path), node, remote, title, selected, uid, includes);
+    return new LogChoice(group, convertToUnixStyle(path, true), node, remote, title, selected, uid, includes);
   }
 }

@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 import static java.lang.String.format;
 import static org.springframework.util.StringUtils.hasText;
 import static tech.toparvion.analog.remote.RemotingConstants.PLAIN_RECORD_LEVEL_NAME;
+import static tech.toparvion.analog.util.PathConstants.CUSTOM_SCHEMA_SEPARATOR;
 
 /**
  * Created with IntelliJ IDEA.
@@ -267,32 +268,77 @@ public class AnaLogUtils {
     return PLAIN_RECORD_LEVEL_NAME;
   }
 
-  public static String convertPathToUnix(String path) {
-    // in case of working on Windows the path needs to be formatted to Linux style
+  /**
+   * Converts given path to Unix style, e.g. {@code C:\lang\analog} into {@code /C:/lang/analog}. The resulting path
+   * may or may not be prepended with a slash depending on {@code prependWithSlash} parameter. Usually the slash is
+   * required for sending the path to web client and not required when handling the path on server side.
+   * @param path             path to convert
+   * @param prependWithSlash whether adding of leading slash is required or not; won't have any effect either if the
+   *                         path already has a leading slash or doesn't contain a semicolon
+   * @return                 converted path
+   */
+  public static String convertToUnixStyle(String path, boolean prependWithSlash) {
+    // in case of working on Windows the path needs to be formatted to Unix style
     String result = path.replaceAll("\\\\", "/");
-    if (result.charAt(1) == ':') {
-      result = "/" + result;
+    if (!prependWithSlash) {
+      return result;
+    }
+    if (!result.startsWith("/") && result.contains(":")) {
+      result = "/" + result;  // also prepend it with slash to make absolute paths identical on *nix and Windows systems
     }
     return result;
   }
 
-  private static String convertPathFromUnix(String path) {      // can be done public if needed
-    return (path.charAt(2) == ':')
-        ? path.substring(1)     // to omit 'artificial' leading slash
+  /**
+   * Removes given path's first character if it is forward slash '/' and the path contains a colon ':' (i.e. the path
+   * is not ordinary absolute Unix path). In case of two slashes at the very beginning of the path, removes one of
+   * them unconditionally.
+   * This usually needed for paths came from web client.
+   * @param path a path to preprocess
+   * @return the same path without leading slash
+   */
+  public static String removeLeadingSlash(String path) {
+    // if for some reason path starts with double slash it must be reduced to single slash before next check
+    if (path.startsWith("//")) {
+      path = path.substring(1 );
+    }
+    return path.startsWith("/") && path.contains(":")
+        ? path.substring(1)   // to omit 'artificial' leading slash added for correct handling on frontend
         : path;
+
   }
 
-  public static boolean isAbsoluteUri(String path) {
-    return path.startsWith("//");                      // for paths starting like //docker/ or //kubernetes/
+  /**
+   * Checks if given path points to a file located on current machine's file system, i.e. if it a usual path like
+   * {@code /home/user/app.log} or {@code C:/Users/user/app.log} AND NOT a custom schema prefixed path like
+   * {@code docker://container} or {@code /node://remote/home/user/app.log}.<p>
+   * <strong>CAUTION:</strong> This methods relies on clean paths only in a sense that there MUST NOT be any leading slash
+   * (usually came from by web client). So that any path received from the client and looking like
+   * {@code /k8s://deploy ...} must be {@linkplain #removeLeadingSlash(String) preprocessed and shorten} to form like
+   * {@code k8s://deploy...} (without leading slash).
+   * @param path path to check
+   * @return {@code false} if given path contains {@link PathConstants#CUSTOM_SCHEMA_SEPARATOR custom schema separator}
+   * and {@code true} otherwise
+   */
+  public static boolean isLocalFilePath(String path) {
+    return path.indexOf(CUSTOM_SCHEMA_SEPARATOR, 1) == -1;
   }
 
+  /**
+   * Returns a file name denoted by given {@code path}. If given a {@linkplain #isLocalFilePath(String) local file
+   * path}, detects the name as substring after the latest forward slash. Consequently, implies that the path has been
+   * already {@linkplain #convertToUnixStyle(String, boolean) converted} to Unix style. If given a local file path,
+   * relies on {@link Path} functionality to extract the name.
+   * @param path path to extract file name from
+   * @return file name denoted by given path
+   */
   public static String extractFileName(String path) {
-    if (isAbsoluteUri(path)) {
-      int thirdSlashIndex = path.indexOf('/', 3);
-      return path.substring(thirdSlashIndex+1);
+    if (!isLocalFilePath(path)) {
+      int lastSlashIndex = path.lastIndexOf('/');
+      return path.substring(lastSlashIndex+1);
 
     } else {
-      return Paths.get(convertPathFromUnix(path))
+      return Paths.get(path)
               .getFileName()
               .toString();
     }

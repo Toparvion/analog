@@ -25,7 +25,7 @@ public final class RemotingConstants {
   public static final String LOG_TIMESTAMP_VALUE__HEADER = "logTimestampValue";
   public static final String RECORD_LEVEL__HEADER = "recordLevel";
   public static final String SEQUENCE_NUMBER__HEADER = "sequenceNumberLong";
-  public static final String LOG_CONFIG_ENTRY_UID__HEADER = "uid";
+  public static final String CLIENT_DESTINATION__HEADER = "clientDestination";
   public static final String SOURCE_NODE__HEADER = "sourceNode";
   //</editor-fold>
 

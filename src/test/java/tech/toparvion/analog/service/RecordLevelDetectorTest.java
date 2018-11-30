@@ -3,6 +3,7 @@ package tech.toparvion.analog.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import tech.toparvion.analog.model.config.RecordLevelsProperties;
+import tech.toparvion.analog.util.RecordLevelDetector;
 
 import java.util.List;
 import java.util.Optional;

@@ -45,7 +45,7 @@ public class RecordSender {
   }
 
   void sendRecord(Message<?> recordMessage) {
-    String uid = recordMessage.getHeaders().get(LOG_CONFIG_ENTRY_UID__HEADER, String.class);
+    String destination = recordMessage.getHeaders().get(CLIENT_DESTINATION__HEADER, String.class);
     String sourceNode = recordMessage.getHeaders().get(SOURCE_NODE__HEADER, String.class);
     String sourcePath = requireNonNull(recordMessage.getHeaders().get(ORIGINAL_FILE, File.class)).getAbsolutePath();
     String level = recordMessage.getHeaders().get(RECORD_LEVEL__HEADER, String.class);
@@ -72,10 +72,10 @@ public class RecordSender {
       linesPart = new LinesPart(styledLines);
     } else {
       long timestampMillis = timestamp.toInstant(ZoneOffset.UTC).toEpochMilli();
-      String highlightColor = colorPicker.pickColor(sourcePath, sourceNode, uid);
+      String highlightColor = colorPicker.pickColor(sourcePath, sourceNode, destination);
       linesPart = new CompositeLinesPart(styledLines, sourceNode, sourcePath, timestampMillis, highlightColor);
     }
-    messagingTemplate.convertAndSend(WEBSOCKET_TOPIC_PREFIX + uid,
+    messagingTemplate.convertAndSend(WEBSOCKET_TOPIC_PREFIX + destination,
         linesPart, singletonMap(MESSAGE_TYPE_HEADER, MessageType.RECORD));
   }
 
