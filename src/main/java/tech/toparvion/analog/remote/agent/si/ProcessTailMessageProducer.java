@@ -21,7 +21,6 @@ import org.springframework.scheduling.SchedulingAwareRunnable;
 import org.springframework.util.Assert;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Date;
@@ -46,12 +45,6 @@ public class ProcessTailMessageProducer extends FileTailingMessageProducerSuppor
 
   private volatile String options = "--follow --tail=1";
 
-  /**
-   * The name of a pod or resource to fetch the logs from, including container name as specified by kubectl reference:<br/>
-   * {@code $ logs [-f] [-p] (POD | TYPE/NAME) [-c CONTAINER]}
-   */
-  private volatile String target;
-
   private volatile String command = "ADAPTER_NOT_INITIALIZED";
 
   private volatile boolean enableStatusReader = true;
@@ -67,17 +60,8 @@ public class ProcessTailMessageProducer extends FileTailingMessageProducerSuppor
     }
   }
 
-  public void setTarget(String target) {
-    this.target = target;
-  }
-
   public void setExecutable(String executable) {
     this.executable = executable;
-  }
-
-  @Override
-  public void setFile(File file) {
-    throw new UnsupportedOperationException("Files are not supported by " + getClass().getSimpleName());
   }
 
   /**
@@ -107,9 +91,8 @@ public class ProcessTailMessageProducer extends FileTailingMessageProducerSuppor
 
   @Override
   protected void onInit() {
-    Assert.hasText(target, "Target cannot be empty");
     Assert.hasText(executable, "Executable cannot be empty");
-    super.setFile(new File(target));  // just to prevent NullPointerException at FileTailingMessageProducerSupport.send
+    Assert.notNull(getFile(), "File cannot be null");
     super.onInit();
   }
 
@@ -118,7 +101,7 @@ public class ProcessTailMessageProducer extends FileTailingMessageProducerSuppor
     super.doStart();
     destroyProcess();
 //    this.command = "kubectl logs " + this.options + " " + target;
-    this.command = String.format("%s %s %s", executable, this.options, target);
+    this.command = String.format("%s %s %s", executable, this.options, getFile().getName());
     this.getTaskExecutor().execute(this::runExec);
   }
 

@@ -33,7 +33,7 @@ public final class ChoiceValidator {
    */
   public static void applyPathBase(List<ChoiceGroup> choices) {
     for (ChoiceGroup group : choices) {
-      String pathBase = group.getPlainLogsLocalBase();
+      String pathBase = group.getLocalPlainLogsBase();
       if (!hasText(pathBase)) {
         continue;
       }

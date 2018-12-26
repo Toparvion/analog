@@ -18,6 +18,7 @@ import org.springframework.util.Assert;
 import tech.toparvion.analog.model.config.entry.LogPath;
 import tech.toparvion.analog.remote.agent.misc.CorrelationIdHeaderEnricher;
 import tech.toparvion.analog.remote.agent.misc.SequenceNumberHeaderEnricher;
+import tech.toparvion.analog.remote.agent.si.ContainerTargetFile;
 import tech.toparvion.analog.remote.agent.si.ProcessTailAdapterSpec;
 import tech.toparvion.analog.service.RecordLevelDetector;
 import tech.toparvion.analog.service.tail.TailSpecificsProvider;
@@ -36,6 +37,7 @@ import static org.springframework.integration.file.dsl.Files.tailAdapter;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
 import static tech.toparvion.analog.remote.agent.AgentConstants.TAIL_FLOW_PREFIX;
 import static tech.toparvion.analog.remote.agent.AgentConstants.TAIL_OUTPUT_CHANNEL_PREFIX;
+import static tech.toparvion.analog.util.PathUtils.CUSTOM_SCHEMA_SEPARATOR;
 
 /**
  *
@@ -45,6 +47,7 @@ import static tech.toparvion.analog.remote.agent.AgentConstants.TAIL_OUTPUT_CHAN
 @Component
 public class TailingFlowProvider {
   private static final Logger log = LoggerFactory.getLogger(TailingFlowProvider.class);
+  private static final String TAIL_PROCESS_ADAPTER_PREFIX = "tailProcess_";
 
   private final TimestampExtractor timestampExtractor;
   private final TailSpecificsProvider tailSpecificsProvider;
@@ -174,72 +177,104 @@ public class TailingFlowProvider {
   }
 
   private MessageProducerSpec<?, ?> findAppropriateAdapter(LogPath logPath, boolean isTrackingFlat, boolean isTailNeeded) {
-    String fullPath = logPath.getFullPath();
-    String target = logPath.getTarget();
-    String adapterId = "tailProcess_" + fullPath;
-    MessageProducerSpec<?, ?> tailAdapter;
-
     switch (logPath.getType()) {
       case DOCKER:
-        tailAdapter = newTailAdapter4Docker(target, isTrackingFlat, isTailNeeded, adapterId);
-        break;
+        return newTailAdapter4Docker(logPath, isTrackingFlat, isTailNeeded);
 
       case KUBERNETES:
       case K8S:
-        tailAdapter = newTailAdapter4Kubernetes(target, isTrackingFlat, isTailNeeded, adapterId);
-        break;
+        return newTailAdapter4Kubernetes(logPath, isTrackingFlat, isTailNeeded);
 
       case NODE:
-        Assert.isTrue(thisNodeName.equals(logPath.getNode()), format("request for node '%s' has come to node '%s'",
-                                                                      logPath.getNode(), thisNodeName));
+        Assert.isTrue(thisNodeName.equals(logPath.getNode()),
+                      format("request for node '%s' has come to node '%s'", logPath.getNode(), thisNodeName));
         // no break needed
       case LOCAL_FILE:
-        tailAdapter = newTailAdapter4File(target, isTrackingFlat, isTailNeeded, adapterId);
-        break;
+        return newTailAdapter4File(logPath, isTrackingFlat, isTailNeeded);
 
       default:
         throw new IllegalArgumentException("Unsupported type of logPath: " + logPath);
     }
-
-    return tailAdapter;
   }
 
-  private MessageProducerSpec<?, ?> newTailAdapter4Docker(String target, boolean isTrackingFlat,
-                                                          boolean isTailNeeded, String adapterId) {
+  private MessageProducerSpec<?, ?> newTailAdapter4Docker(LogPath logPath, boolean isTrackingFlat, boolean isTailNeeded) {
     var tailLength = isTailNeeded
             ? isTrackingFlat ? 45 : 20
             : 0;
+    var adapterId = TAIL_PROCESS_ADAPTER_PREFIX + logPath.getFullPath();
     var dockerLogsOptions = format("--follow --tail=%d", tailLength);
+    var fullPrefix = logPath.getType().getPrefix() + CUSTOM_SCHEMA_SEPARATOR;
     return new ProcessTailAdapterSpec()
         .executable("sudo docker logs")
-        .target(target)
+        .file(new ContainerTargetFile(fullPrefix, logPath.getTarget()))
         .id(adapterId)
         .nativeOptions(dockerLogsOptions)
         .fileDelay(5000)
         .enableStatusReader(true);
   }
 
-  private MessageProducerSpec<?, ?> newTailAdapter4Kubernetes(String target, boolean isTrackingFlat,
-                                                              boolean isTailNeeded, String adapterId) {
+  private MessageProducerSpec<?, ?> newTailAdapter4Kubernetes(LogPath logPath, boolean isTrackingFlat, boolean isTailNeeded) {
     var tailLength = isTailNeeded
         ? isTrackingFlat ? 45 : 20
         : 1;                                // why 1 see in https://github.com/kubernetes/kubernetes/issues/35335
-    var k8sLogsOptions = format("--follow --tail=%d", tailLength);
+    var adapterId = TAIL_PROCESS_ADAPTER_PREFIX + logPath.getFullPath();
+    var optsBuilder = new StringBuilder();
+    optsBuilder.append(format("--follow --tail=%d", tailLength));
+    String resource;
+    String[] tokens = logPath.getTarget().split("/");
+    if (tokens.length > 1) {
+      String parsedResource = null;
+      for (int i = 0; i < tokens.length; i++) {
+        String token = tokens[i];
+        switch (token.toLowerCase()) {
+          case "namespace":
+            var namespace = tokens[i + 1];
+            optsBuilder.append(" --namespace=").append(namespace);
+            break;
+          case "po":
+          case "pod":
+            parsedResource = tokens[i + 1];
+            break;
+          case "deploy":
+          case "deployment":
+            var deployment = tokens[i + 1];
+            parsedResource = " deployment/" + deployment;
+            break;
+          case "container":
+          case "cnt":
+          case "c":
+            var container = tokens[i + 1];
+            optsBuilder.append(" --container=").append(container);
+            break;
+          default:
+            log.warn("Unknown Kubernetes target entry: {}", token);
+        }
+      }
+      Assert.notNull(parsedResource, "No resource specified in path " + logPath.getTarget());
+      resource = parsedResource;
+
+    } else {
+      resource = logPath.getTarget();
+    }
+    String k8sLogsOptions = optsBuilder.toString();
+    log.debug("Target '{}' is converted into resource '{}' and options: {}", logPath.getTarget(), resource, k8sLogsOptions);
+
+    var fullPrefix = logPath.getType().getPrefix() + CUSTOM_SCHEMA_SEPARATOR;
     return new ProcessTailAdapterSpec()
         .executable("kubectl logs")
-        .target(target)
+        .file(new ContainerTargetFile(fullPrefix, resource))
         .id(adapterId)
         .nativeOptions(k8sLogsOptions)
         .fileDelay(5000)
         .enableStatusReader(true);
   }
 
-  private MessageProducerSpec<?, ?> newTailAdapter4File(String target, boolean isTrackingFlat,
-                                                        boolean isTailNeeded, String adapterId) {
-    String tailNativeOptions = isTrackingFlat
+  private MessageProducerSpec<?, ?> newTailAdapter4File(LogPath logPath, boolean isTrackingFlat, boolean isTailNeeded) {
+    var tailNativeOptions = isTrackingFlat
         ? tailSpecificsProvider.getFlatTailNativeOptions(isTailNeeded)
         : tailSpecificsProvider.getGroupTailNativeOptions(isTailNeeded);
-    return tailAdapter(new File(target))
+    var adapterId = TAIL_PROCESS_ADAPTER_PREFIX + logPath.getFullPath();
+    return tailAdapter(new File(logPath.getFullPath()))
         .id(adapterId)
         .nativeOptions(tailNativeOptions)
         .fileDelay(tailSpecificsProvider.getAttemptsDelay())

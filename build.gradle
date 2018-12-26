@@ -55,7 +55,7 @@ task createDockerfile(type: Dockerfile) {
     description 'Генерирует Dockerfile для сборки образа микросервиса'
     group 'docker'
 
-    from 'openjdk:10-jdk-slim'
+    from 'adoptopenjdk/openjdk11:jdk-11.0.1.13-alpine-slim'
     // все дальнейшие команды будут разрешать пути внутри контейнера относительно этой:
     workingDir "/analog"
     // копируем исполняемый файл микросервиса:

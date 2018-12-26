@@ -92,8 +92,7 @@
 <!-- Console -->
 <div class="container-fluid">
     <div class="row">
-        <!-- TODO fix -->
-        <div class="col-xs-12" ng-class="{'white-space': (ctrl.textWrap ? 'pre-wrap' : 'pre')}" id="consolePanel"></div>
+        <div class="col-xs-12" ng-class="{'text-wrap': ctrl.textWrap, 'text-nowrap': !ctrl.textWrap}" id="consolePanel"></div>
     </div>
     <!-- cursor showing the active watching process -->
     <div class="row" ng-class="{'invisible-cursor': !ctrl.onAir}">

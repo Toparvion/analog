@@ -3,6 +3,7 @@ function DownloadController($scope, $element, $attrs, $log, $http) {
 
     // behavioral (non-visual) state of controller
     ctrl.isShowingDialog = false;
+    ctrl.isShowingButton = false;
     ctrl.lastError = undefined;
     ctrl.isLoading = false;
     ctrl.file2Download = undefined;
@@ -23,17 +24,20 @@ function DownloadController($scope, $element, $attrs, $log, $http) {
     };
 
     ctrl.initDialogData = function() {
-        if (!ctrl.selectedLog)
+        if (!ctrl.selectedLog) {
             return [];
-        var firstMember = {
+        }
+        let path = extractPath(ctrl.selectedLog.id);
+        let firstMember = {
             node: ctrl.selectedLog.node,
-            path: ctrl.selectedLog.path,
-            file: extractFileName(ctrl.selectedLog.path)
+            path: path,
+            file: extractFileName(path)
         };
         // By default currently chosen file aimed for downloading is the first member (which is not among includes).
         // NOTE: This will trigger fetchDataFromServer() via corresponding $watch!
         ctrl.file2Download = firstMember;
         ctrl.allMembers = new Array(firstMember);
+/* TODO fix inclusion choice for composite logs
         if (ctrl.selectedLog.includes) {
             var otherMembers = ctrl.selectedLog.includes.map(function (member) {
                 return {
@@ -44,6 +48,7 @@ function DownloadController($scope, $element, $attrs, $log, $http) {
             });
             ctrl.allMembers = ctrl.allMembers.concat(otherMembers);
         }
+*/
     };
 
     ctrl.fetchDataFromServer = function () {
@@ -93,8 +98,12 @@ function DownloadController($scope, $element, $attrs, $log, $http) {
     $scope.$watch(function () {
         return ctrl.selectedLog;
     }, function () {
-        if (ctrl.isShowingDialog)
+        if (ctrl.isShowingDialog) {
             ctrl.initDialogData();
+        }
+        if (ctrl.selectedLog) {
+            ctrl.isShowingButton = (ctrl.selectedLog.type === "LOCAL_FILE") || (ctrl.selectedLog.type === "NODE");
+        }
     });
 
     // the following watch allows to react instantly on changes of selected file among composite log's file list

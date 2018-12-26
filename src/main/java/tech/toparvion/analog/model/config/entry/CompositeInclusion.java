@@ -31,13 +31,12 @@ public class CompositeInclusion {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     CompositeInclusion that = (CompositeInclusion) o;
-    return path.equals(that.path) &&
-        timestamp.equals(that.timestamp);
+    return path.equals(that.path);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(path, timestamp);
+    return Objects.hash(path);
   }
 
   @Override

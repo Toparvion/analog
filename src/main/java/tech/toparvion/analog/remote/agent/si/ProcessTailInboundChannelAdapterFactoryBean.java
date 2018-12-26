@@ -26,6 +26,8 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.util.StringUtils;
 
+import java.io.File;
+
 /**
  * @author Gary Russell
  * @author Artem Bilan
@@ -44,7 +46,7 @@ public class ProcessTailInboundChannelAdapterFactoryBean extends AbstractFactory
 
   private volatile String executbale;
 
-  private volatile String target;
+  private volatile File file;
 
   private volatile TaskExecutor taskExecutor;
 
@@ -104,6 +106,10 @@ public class ProcessTailInboundChannelAdapterFactoryBean extends AbstractFactory
   public void setFileDelay(Long fileDelay) {
     this.fileDelay = fileDelay;
   }
+
+  public void setFile(File file) {
+ 		this.file = file;
+ 	}
 
   @Override
   public void setBeanName(String name) {
@@ -182,7 +188,7 @@ public class ProcessTailInboundChannelAdapterFactoryBean extends AbstractFactory
     ProcessTailMessageProducer adapter = new ProcessTailMessageProducer();
     adapter.setOptions(this.nativeOptions);
     adapter.setEnableStatusReader(this.enableStatusReader);
-    adapter.setTarget(this.target);
+    adapter.setFile(this.file);
     adapter.setExecutable(this.executbale);
     if (this.taskExecutor != null) {
       adapter.setTaskExecutor(this.taskExecutor);
@@ -214,10 +220,6 @@ public class ProcessTailInboundChannelAdapterFactoryBean extends AbstractFactory
     adapter.afterPropertiesSet();
     this.adapter = adapter;
     return adapter;
-  }
-
-  public void setTarget(String target) {
-    this.target = target;
   }
 
   public void setExecutbale(String executbale) {

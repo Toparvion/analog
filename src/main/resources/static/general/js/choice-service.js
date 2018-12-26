@@ -24,11 +24,16 @@ function ChoicesService($http, $location, $log, $rootScope) {
                 // если указанный лог неизвестен, создадим для него отдельный вариант выбора и добавим его в список
                 if (!selectedChoice) {
                     $log.log("Proposed log is unknown among server choices and hence will be added as separate group.");
+                    let logType = detectLogType(proposedLogId);
                     selectedChoice = {
                         group: "Указан через URL",
                         title: extractFileName(proposedLogId),
+                        type: logType,
                         id: proposedLogId
                     };
+                    if (logType === "NODE") {
+                        selectedChoice.node = extractNode(proposedLogId);
+                    }
                     choices.push(selectedChoice);
                 }
 

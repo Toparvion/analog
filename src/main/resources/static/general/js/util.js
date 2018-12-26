@@ -34,21 +34,39 @@ function arePathsEqual(path1, path2) {
     return (normalizedPath1 === normalizedPath2);
 }
 
-function quantifier(count) {
-    let result;
-    switch (count % 10) {
-        case 1:
-            result = 'лог';
-            break;
-        case 2:
-        case 3:
-        case 4:
-            result = 'лога';
-            break;
-        default:
-            result = 'логов';
+function quantify(count) {
+    if (count > 1) {
+        return 'логов';
+    } else {
+        return 'лога';
     }
-    return result;
+}
+
+function detectLogType(logId) {
+    let tokens = logId.split("://");
+    if (tokens.length > 1) {
+        return tokens[0].toUpperCase();
+    } else {
+        return "LOCAL_FILE";
+    }
+}
+
+function extractNode(logId) {
+    let matchResult = logId.match(/^node:\/\/(\w+).*/i);
+    if (matchResult) {
+        return matchResult[1];
+    } else {
+        return "(n/a)";
+    }
+}
+
+function extractPath(logId) {
+    let matchResult = logId.match(/^node:\/\/\w+(.*)/i);
+    if (!matchResult) {
+        return logId;
+    } else {
+        return removeSlashIfNeeded(matchResult[1]);
+    }
 }
 
 // TODO move to Angular app initialization

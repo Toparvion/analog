@@ -24,6 +24,8 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.util.Assert;
 
+import java.io.File;
+
 /**
  * A {@link MessageProducerSpec} for file tailing adapters.
  *
@@ -50,11 +52,11 @@ public class ProcessTailAdapterSpec extends MessageProducerSpec<ProcessTailAdapt
     return _this();
   }
 
-  public ProcessTailAdapterSpec target(String target) {
-    Assert.hasText(target, "Target must not be empty");
-    this.factoryBean.setTarget(target);
-    return _this();
-  }
+  public ProcessTailAdapterSpec file(File file) {
+ 		Assert.notNull(file, "'file' cannot be null");
+ 		this.factoryBean.setFile(file);
+ 		return _this();
+ 	}
 
   /**
    * Specify the options string for native {@code tail} command.

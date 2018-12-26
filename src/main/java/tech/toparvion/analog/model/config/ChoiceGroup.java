@@ -14,7 +14,7 @@ import java.util.List;
 public class ChoiceGroup {
 
   private String group                                    = "(non-grouped)";
-  private String plainLogsLocalBase                       = "";
+  private String localPlainLogsBase                       = "";
   private ScanLocations scanLocations                     = null;
   private List<CompositeLogConfigEntry> compositeLogs     = new ArrayList<>();
   private List<PlainLogConfigEntry> plainLogs             = new ArrayList<>();
@@ -29,12 +29,12 @@ public class ChoiceGroup {
     this.group = group;
   }
 
-  public String getPlainLogsLocalBase() {
-    return plainLogsLocalBase;
+  public String getLocalPlainLogsBase() {
+    return localPlainLogsBase;
   }
 
-  public void setPlainLogsLocalBase(String plainLogsLocalBase) {
-    this.plainLogsLocalBase = plainLogsLocalBase;
+  public void setLocalPlainLogsBase(String localPlainLogsBase) {
+    this.localPlainLogsBase = localPlainLogsBase;
   }
 
   public ScanLocations getScanLocations() {
@@ -65,7 +65,7 @@ public class ChoiceGroup {
   public String toString() {
     return "ChoiceGroup{" +
         "group='" + group + '\'' +
-        ", plainLogsLocalBase='" + plainLogsLocalBase + '\'' +
+        ", plainLogsLocalBase='" + localPlainLogsBase + '\'' +
         ", scanLocations=" + scanLocations +
         ", compositeLogsSize=" + compositeLogs.size() +
         ", plainLogsSize=" + plainLogs.size() +

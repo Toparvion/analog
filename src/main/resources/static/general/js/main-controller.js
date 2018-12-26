@@ -106,8 +106,8 @@ app.filter('logTypeDetector', function () {
             case 'NODE':
                 return 'удалённый файл на узле {node}'.format(logChoice);
             case 'COMPOSITE':
-                return 'композитный: {size} {logs}'.format({size: logChoice.includes.length,
-                                                            logs: quantifier(logChoice.includes.length)});
+                return 'композит из {size} {logs}'.format({size: logChoice.includes.length,
+                                                            logs: quantify(logChoice.includes.length)});
             case 'DOCKER':
                 return 'контейнер в Docker';
             case 'KUBERNETES':
