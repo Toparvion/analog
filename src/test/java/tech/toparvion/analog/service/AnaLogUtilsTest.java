@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.toparvion.analog.util.AnaLogUtils;
+import tech.toparvion.analog.util.PathUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,7 @@ class AnaLogUtilsTest {
     log.info("Original record:\n{}", originalRecord);
     String[] originalTokens = originalRecord.split("\n");
     List<String> lines = new ArrayList<>(asList(originalTokens));
-    String startingLine = AnaLogUtils.distinguishXmlComposite(lines, 0);
+    String startingLine = AnaLogUtils.distinguishXml4Group(lines, 0);
     log.info("Starting line: '{}'", startingLine);
     String processedRecord = String.join("\n", lines);
     log.info("Processed record:\n{}", processedRecord);
@@ -49,7 +50,7 @@ class AnaLogUtilsTest {
     log.info("Original record:\n{}", originalRecord);
     String[] originalTokens = originalRecord.split("\n");
     List<String> lines = new ArrayList<>(asList(originalTokens));
-    String startingLine = AnaLogUtils.distinguishXmlComposite(lines, 0);
+    String startingLine = AnaLogUtils.distinguishXml4Group(lines, 0);
     log.info("Starting line: '{}'", startingLine);
     String processedRecord = String.join("\n", lines);
     log.info("Processed record:\n{}", processedRecord);
@@ -69,7 +70,7 @@ class AnaLogUtilsTest {
     log.info("Original record:\n{}", originalRecord);
     String[] originalTokens = originalRecord.split("\n");
     List<String> lines = new ArrayList<>(asList(originalTokens));
-    String startingLine = AnaLogUtils.distinguishXmlComposite(lines, 0);
+    String startingLine = AnaLogUtils.distinguishXml4Group(lines, 0);
     log.info("Starting line: '{}'", startingLine);
     String processedRecord = String.join("\n", lines);
     log.info("Processed record:\n{}", processedRecord);
@@ -82,18 +83,18 @@ class AnaLogUtilsTest {
   @Test
   void customPathDetection_1() {
     var path = "kubernetes://deploy/pod_a";
-    assertFalse(AnaLogUtils.isLocalFilePath(path));
+    assertFalse(PathUtils.isLocalFilePath(path));
   }
 
   @Test
   void customPathDetection_2() {
     var path = "C:/Users/Anonymous/app.log";
-    assertTrue(AnaLogUtils.isLocalFilePath(path));
+    assertTrue(PathUtils.isLocalFilePath(path));
   }
 
   @Test
   void customPathDetection_3() {
     var path = "docker:app.log";
-    assertTrue(AnaLogUtils.isLocalFilePath(path));
+    assertTrue(PathUtils.isLocalFilePath(path));
   }
 }

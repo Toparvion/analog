@@ -1,4 +1,4 @@
-clusterNodes:
-  - name: localhost
-    address: localhost:23456
-    myself: true
+nodes:
+  this:
+    name: angara
+    agentPort: ${random.int[10000,65536]}

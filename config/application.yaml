@@ -3,12 +3,12 @@ server:
     address: 0.0.0.0
 
 nodes:
-  - name: myself
-    host: localhost
-    agentPort: 8085
-    myself: true
+  this:
+    name: myself
+    agentPort: 7801
 
 choices:
   - group: АнаЛог
     plainLogs:
-      - ${user.dir}/log/${spring.application.name}.log as "Логи АнаЛога :-)" (selected)
+      - path: ${user.dir}/log/${spring.application.name}.log
+        title: 'Логи АнаЛога :-)'

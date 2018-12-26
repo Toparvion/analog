@@ -1,10 +1,10 @@
 app.directive('hideUponAutoScroll', function ($window, $rootScope, $log) {
-    var previousScrollTop = 0;       // needed to distinguish user scroll (up only) from programmatic scroll (anywhere)
-    var isAutoScroll = true;
+    let previousScrollTop = 0;       // needed to distinguish user scroll (up only) from programmatic scroll (anywhere)
+    let isAutoScroll = true;
 
     function link(scope, element) {
         angular.element($window).bind("scroll", function () {
-            var currentScrollTop = $(window).scrollTop();
+            const currentScrollTop = $(window).scrollTop();
             if (!isAutoScroll && (currentScrollTop === ($(document).height() - $(window).height()))) {
                 isAutoScroll = true;
                 element.addClass('ng-hide');

@@ -8,7 +8,7 @@ import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.rmi.RmiInboundGateway;
 import tech.toparvion.analog.model.TrackingRequest;
-import tech.toparvion.analog.model.config.ClusterProperties;
+import tech.toparvion.analog.model.config.nodes.NodesProperties;
 
 import java.net.InetSocketAddress;
 
@@ -16,7 +16,7 @@ import static org.springframework.integration.dsl.MessageChannels.direct;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
 
 /**
- * Spring configuration bean that compose tracking flow on the agent side.
+ * Spring configuration bean from which the tracking logic originates (agent side).
  * @author Toparvion
  * @since v0.7
  */
@@ -25,13 +25,13 @@ import static tech.toparvion.analog.remote.RemotingConstants.*;
 public class AgentConfig {
 
   @Bean
-  public IntegrationFlow agentRmiRegisteringFlow(TrackingService trackingService, ClusterProperties clusterProperties) {
+  public IntegrationFlow agentRmiRegisteringFlow(TrackingService trackingService, NodesProperties nodesProperties) {
     DirectChannel registerRmiInChannel = direct(AGENT_REGISTRATION_RMI_IN__CHANNEL).get();
 
     RmiInboundGateway inboundRmiGateway = new RmiInboundGateway();
     inboundRmiGateway.setRequestChannel(registerRmiInChannel);
     // inboundRmiGateway.setRegistryHost(host);// this causes application failure at startup due to 'connection refused'
-    inboundRmiGateway.setRegistryPort(clusterProperties.getMyselfNode().getAgentPort());
+    inboundRmiGateway.setRegistryPort(nodesProperties.getThis().getAgentPort());
 
     return IntegrationFlows
         .from(inboundRmiGateway)

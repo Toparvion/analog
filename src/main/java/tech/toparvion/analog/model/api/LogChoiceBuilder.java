@@ -1,43 +1,39 @@
 package tech.toparvion.analog.model.api;
 
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+import tech.toparvion.analog.model.config.entry.LogType;
+
 import java.util.List;
 
-import static org.springframework.util.StringUtils.hasText;
-import static tech.toparvion.analog.util.AnaLogUtils.convertToUnixStyle;
-
 /**
- * Helper class aimed to simplicfy log choice instances construction
+ * Helper class aimed to simplify log choice instances construction
  *
  * @author Toparvion
  * @since v0.10
  */
 public class LogChoiceBuilder {
   private String group;
-  private String path;
-  private String node;
-  private boolean remote = false;
+  private String id;
+  private String type;        // corresponds to LogType#name()
   private String title;
   private boolean selected = false;
-  private String uid = null;
-  private List<CompositeInclusion> includes = List.of();
+
+  private String node;
+  private List<String> includes = List.of();
 
   public LogChoiceBuilder setGroup(String group) {
     this.group = group;
     return this;
   }
 
-  public LogChoiceBuilder setPath(String path) {
-    this.path = path;
+  public LogChoiceBuilder setId(String id) {
+    this.id = id;
     return this;
   }
 
-  public LogChoiceBuilder setNode(String node) {
-    this.node = node;
-    return this;
-  }
-
-  public LogChoiceBuilder setRemote(boolean remote) {
-    this.remote = remote;
+  public LogChoiceBuilder setType(String type) {
+    this.type = type;
     return this;
   }
 
@@ -51,21 +47,29 @@ public class LogChoiceBuilder {
     return this;
   }
 
-  public LogChoiceBuilder setUid(String uid) {
-    this.uid = uid;
+  public LogChoiceBuilder setNode(String node) {
+    this.node = node;
     return this;
   }
 
-  public LogChoiceBuilder setIncludes(List<CompositeInclusion> includes) {
+  public LogChoiceBuilder setIncludes(List<String> includes) {
     this.includes = includes;
     return this;
   }
 
   public LogChoice createLogChoice() {
-    assert hasText(group) : "Group must be specified";
-    assert hasText(path) : "Path must be specified";
-    assert hasText(node) : "Node must be specified";
-    assert hasText(title) : "Title must be specified";
-    return new LogChoice(group, convertToUnixStyle(path, true), node, remote, title, selected, uid, includes);
+    Assert.hasText(group, "Group must be specified");
+    Assert.hasText(id, "Log ID must be specified");
+    Assert.hasText(type, "Type must be specified");
+    Assert.hasText(title, "Title must be specified");
+    if (type.equals(LogType.NODE.getPrefix())) {
+      Assert.state(StringUtils.hasText(node),
+          "Node must be specified for 'node://' type log, id="+id);
+    }
+    if (type.equals(LogType.COMPOSITE.getPrefix())) {
+      Assert.state(!includes.isEmpty(),
+          "Inclusions must be specified for 'composite://' type log, id="+id);
+    }
+    return new LogChoice(group, id, type, title, selected, node, includes);
   }
 }

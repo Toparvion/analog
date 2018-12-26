@@ -12,7 +12,7 @@ import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.file.tail.FileTailingMessageProducerSupport.FileTailingEvent;
 import org.springframework.integration.rmi.RmiInboundGateway;
-import tech.toparvion.analog.model.config.ClusterProperties;
+import tech.toparvion.analog.model.config.nodes.NodesProperties;
 import tech.toparvion.analog.service.tail.GnuCoreUtilsTailSpecificsProvider;
 import tech.toparvion.analog.service.tail.MacOsTailSpecificsProvider;
 import tech.toparvion.analog.service.tail.SolarisTailSpecificsProvider;
@@ -49,16 +49,16 @@ public class ServerConfig {
     SpEL to extract the field value, combine it with the constant value and thus define the channel name to redirect
     the message to. */
     return IntegrationFlows.from(direct(SERVER_REGISTRATION_ROUTER__CHANNEL))
-        .route(format("'%s'.concat(payload.nodeName)", SERVER_REGISTRATION_RMI_OUT__CHANNEL_PREFIX))
+        .route(format("'%s'.concat(payload.logPath.node)", SERVER_REGISTRATION_RMI_OUT__CHANNEL_PREFIX))
         .get();
   }
 
   @Bean
-  public IntegrationFlow serverRmiPayloadFlow(ClusterProperties clusterProperties,
+  public IntegrationFlow serverRmiPayloadFlow(NodesProperties nodesProperties,
                                               RecordSender recordSender,
                                               MetaDataSender metaDataSender) {
     DirectChannel payloadRmiInChannel = direct(SERVER_RMI_PAYLOAD_IN__CHANNEL).get();
-    int myPort = clusterProperties.getMyselfNode().getAgentPort();
+    int myPort = nodesProperties.getThis().getAgentPort();
 
     RmiInboundGateway inboundRmiGateway = new RmiInboundGateway();
     inboundRmiGateway.setRequestChannel(payloadRmiInChannel);

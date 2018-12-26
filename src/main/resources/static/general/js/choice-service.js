@@ -4,18 +4,18 @@
 function ChoicesService($http, $location, $log, $rootScope) {
     return function () {
 
-        var onSuccess = function success(response) {
-            var choices = response.data;
-            var selectedChoice = undefined;
+        let onSuccess = function success(response) {
+            let choices = response.data;
+            let selectedChoice = null;
 
             // сначала проверим, был ли указан путь к логу в URL
             if ($location.path()) {
-                var proposedLogPath = $location.path();
-                $log.log("Proposed log path found in URL: " + proposedLogPath);
+                let proposedLogId = removeSlashIfNeeded($location.path());
+                $log.log("Proposed log ID found in URL: " + proposedLogId);
                 // теперь попытаемся выяснить, есть ли указанный лог среди известных на сервере
-                for (var i in choices) {
-                    var knownChoice = choices[i];
-                    if (arePathsEqual(knownChoice.path, proposedLogPath)) {
+                for (let i in choices) {
+                    let knownChoice = choices[i];
+                    if (arePathsEqual(knownChoice.id, proposedLogId)) {
                         $log.log("Proposed log is known within group: " + knownChoice.group);
                         selectedChoice = knownChoice;       // такой лог известен; просто выбираем его
                         break;
@@ -26,20 +26,19 @@ function ChoicesService($http, $location, $log, $rootScope) {
                     $log.log("Proposed log is unknown among server choices and hence will be added as separate group.");
                     selectedChoice = {
                         group: "Указан через URL",
-                        title: extractFileName(proposedLogPath),
-                        path: proposedLogPath,
-                        uid: null   // to explicitly denote the absence of logConfigEntry on the server side
+                        title: extractFileName(proposedLogId),
+                        id: proposedLogId
                     };
                     choices.push(selectedChoice);
                 }
 
             } else {        // никакого лога в URL указано не было; полагаемся только на варианты от сервера
                 $log.log("No proposed log path was given in URL; basing on choices from server only.");
-                for (var j in choices) {
-                    var choice = choices[j];
+                for (let j in choices) {
+                    let choice = choices[j];
                     if (choice.selected) {
                         selectedChoice = choice;
-                        $location.path(choice.path);
+                        $location.path(addSlashIfNeeded(choice.id));
                         break;
                     }
                 }
@@ -49,8 +48,8 @@ function ChoicesService($http, $location, $log, $rootScope) {
             $rootScope.$broadcast('choicesReady', {choices: choices, selectedChoice: selectedChoice});
         };
 
-        var onFail = function fail(response) {
-            var message = '';
+        let onFail = function fail(response) {
+            let message = '';
             if (response.status) {
                 message += ('HTTP ' + response.status);
             }

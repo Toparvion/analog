@@ -26,5 +26,16 @@ app.constant('config', {
         topicPrefix: "/topic/",
         watchEndpoint: '/watch-endpoint',
         reconnectDelayMs: 10000
+    },
+
+    mappings: {
+        type2class: new Map([
+            ['LOCAL_FILE', 'primary'],
+            ['NODE', 'info'],
+            ['DOCKER', 'success'],
+            ['KUBERNETES', 'danger'],
+            ['K8S', 'danger'],
+            ['COMPOSITE', 'warning']
+        ])
     }
 });

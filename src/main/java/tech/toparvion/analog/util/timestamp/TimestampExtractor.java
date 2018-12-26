@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 import static org.springframework.integration.file.FileHeaders.ORIGINAL_FILE;
-import static tech.toparvion.analog.util.AnaLogUtils.convertToUnixStyle;
+import static tech.toparvion.analog.util.PathUtils.convertToUnixStyle;
 
 /**
  * An internal tool to extract parsed timestamps from log lines.
@@ -34,7 +34,7 @@ public class TimestampExtractor {
   /**
    * Registry of compiled regex patterns and pre-built dateTime formatters for known logs. Registry records aren't
    * deleted upon unregistration of corresponding watchers.
-   * Keys are log paths and values are tuples of prepared objects.
+   * Keys are log paths and values are {@linkplain PatternAndFormatter tuples} of prepared objects.
    */
   private final Map<String, PatternAndFormatter> registry = new HashMap<>();
 
@@ -49,7 +49,7 @@ public class TimestampExtractor {
    * Java regular expression. The formatter is just
    * {@linkplain DateTimeFormatter#ofPattern(java.lang.String) constructed} from the {@code format} directly.
    * @param format log timestamp format in the {@link DateTimeFormatter} syntax
-   * @param logPath file system path to associate created objects with
+   * @param logPath target log path to associate created objects with
    */
   public void registerNewTimestampFormat(String format, String logPath) {
     if (registry.containsKey(logPath)) {
@@ -82,7 +82,7 @@ public class TimestampExtractor {
     File logFile = lineMessage.getHeaders().get(ORIGINAL_FILE, File.class);
     assert (logFile != null) : "lineMessage doesn't contain 'file_originalFile' header; check tailAdapter.";
 
-    String logPath = convertToUnixStyle(logFile.getAbsolutePath(), false);
+    String logPath = convertToUnixStyle(logFile.getAbsolutePath());
     PatternAndFormatter paf = registry.get(logPath);
     assert (paf != null) : format("Log path '%s' is not registered but its line message was received.", logPath);
 
@@ -100,7 +100,7 @@ public class TimestampExtractor {
     try {
       parsedTimestamp = formatter.parse(tsString, LocalDateTime::from);
     } catch (DateTimeException e) {
-      // in case no date specified in timestamp format AnaLog supposes the date to be equal today
+      // in case no date specified in timestamp format, AnaLog supposes the date to be equal today
       LocalTime parsedTime = formatter.parse(tsString, LocalTime::from);
       parsedTimestamp = LocalDateTime.of(LocalDate.now(Clock.systemDefaultZone()), parsedTime);
     }

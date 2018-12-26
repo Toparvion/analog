@@ -1,13 +1,14 @@
 package tech.toparvion.analog.remote.websocket;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
@@ -15,11 +16,11 @@ import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 import tech.toparvion.analog.model.ServerFailure;
 import tech.toparvion.analog.model.TrackingRequest;
 import tech.toparvion.analog.model.config.ChoiceProperties;
-import tech.toparvion.analog.model.config.ClusterNode;
-import tech.toparvion.analog.model.config.ClusterProperties;
-import tech.toparvion.analog.model.config.LogConfigEntry;
+import tech.toparvion.analog.model.config.entry.*;
 import tech.toparvion.analog.remote.server.RegistrationChannelCreator;
 import tech.toparvion.analog.remote.server.RemoteGateway;
+import tech.toparvion.analog.util.LocalizedLogger;
+import tech.toparvion.analog.util.PathUtils;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
@@ -30,8 +31,8 @@ import static java.time.ZonedDateTime.now;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.toList;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
-import static tech.toparvion.analog.util.AnaLogUtils.*;
-import static tech.toparvion.analog.util.PathConstants.*;
+import static tech.toparvion.analog.util.AnaLogUtils.doSafely;
+import static tech.toparvion.analog.util.PathUtils.extractFileName;
 
 /**
  * A component responsible for supporting lifecycle of websocket sessions and watching subscriptions.
@@ -42,29 +43,32 @@ import static tech.toparvion.analog.util.PathConstants.*;
  */
 @Component
 public class WebSocketEventListener {
-  private static final Logger log = LoggerFactory.getLogger(WebSocketEventListener.class);
-
   private final ChoiceProperties choiceProperties;
   private final WatchRegistry registry;
   private final RegistrationChannelCreator registrationChannelCreator;
-  private final ClusterProperties clusterProperties;
   private final RemoteGateway remoteGateway;
   private final SimpMessagingTemplate messagingTemplate;
+  private final Converter<String, LogPath> converter;
+
+  private final LocalizedLogger log;
 
   @Autowired
   @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")    // IDEA doesn't see remoteGateway
   public WebSocketEventListener(ChoiceProperties choiceProperties,
                                 WatchRegistry registry,
                                 RegistrationChannelCreator registrationChannelCreator,
-                                ClusterProperties clusterProperties,
                                 RemoteGateway remoteGateway,
-                                SimpMessagingTemplate messagingTemplate) {
+                                SimpMessagingTemplate messagingTemplate,
+                                Converter<String, LogPath> converter,
+                                MessageSource messageSource) {
     this.choiceProperties = choiceProperties;
     this.registry = registry;
     this.registrationChannelCreator = registrationChannelCreator;
-    this.clusterProperties = clusterProperties;
     this.remoteGateway = remoteGateway;
     this.messagingTemplate = messagingTemplate;
+    this.converter = converter;
+
+    log = new LocalizedLogger(this, messageSource);
   }
 
   @EventListener
@@ -77,52 +81,53 @@ public class WebSocketEventListener {
   public void onSubscribe(SessionSubscribeEvent event) {
     // First let's extract all the necessary info about new watching from the subscribe request
     StompHeaderAccessor headers = StompHeaderAccessor.wrap(event.getMessage());
-    boolean isPlain = getBooleanNativeHeader(headers, "isPlain");
-    boolean isTailNeeded = getBooleanNativeHeader(headers, "isTailNeeded");
+    boolean isTailNeeded = isTailNeeded(headers);
     String sessionId = headers.getSessionId();
     String destination = headers.getDestination();
     assert (destination != null) && destination.startsWith(WEBSOCKET_TOPIC_PREFIX)
         : "Subscriber's 'destination' header is absent or malformed: " + destination;
-    log.debug("Received start watching (SUBSCRIBE) command for {} destination '{}' within session id={}.",
-        (isPlain ? "plain" : "composite"), destination, sessionId);
+    // Remove '/topic/' prefix as it plays a role for websocket communication only and has no effect for the watching
+    String path = destination.replace(WEBSOCKET_TOPIC_PREFIX, "");
+    // It's important to distinguish plain logs from composite ones because they are different in the config logic
+    boolean isComposite = LogType.COMPOSITE.matches(path);
+    log.debug("Received start watching (SUBSCRIBE) command for {} log '{}' within session id={}.",
+        (isComposite ? "composite" : "plain"), path, sessionId);
 
-    // Then create or find corresponding log config entry
-    destination = destination.replace(WEBSOCKET_TOPIC_PREFIX, "");
-    LogConfigEntry logConfig = isPlain
-        ? createPlainLogConfigEntry(destination)
-        : findCompositeLogConfigEntry(destination);
+    // Then find or create corresponding log config entry
+    AbstractLogConfigEntry logConfig = isComposite
+        ? findCompositeLogConfigEntry(path)
+        : createPlainLogConfigEntry(path);
 
     // Find out whether this log is already being watched by any client(s)
     List<String> watchingSessionIds = registry.findWatchingSessionsFor(logConfig);
     if (watchingSessionIds == null) {
       try {
-        log.debug("No watching existed for {} log '{}' before. Starting new one...", (isPlain ? "plain" : "composite"),
-            logConfig.getUid());
+        log.debug("No watching existed for {} log '{}' before. Starting new one...",
+            (isComposite ? "composite" : "plain"), logConfig.getId());
         // 1. Ensure that all RMI registration channels are created
         ensureRegistrationChannelsCreated(logConfig);
         // 2. Register the tracking on specified nodes
-        startTrackingOnServer(logConfig, destination, isTailNeeded);
+        startTrackingOnServer(logConfig, path, isTailNeeded);
         // 3. Remember the tracking in the registry
         registry.addEntry(logConfig, sessionId);
-        log.info("New tracking for log '{}' has started within session id={}.", logConfig.getUid(), sessionId);
+        log.info("New tracking for log '{}' has started within session id={}.", logConfig.getId(), sessionId);
 
       } catch (Exception e) {
-        log.error(format("Failed to start watching of log '%s'.", logConfig.getUid()), e);
+        log.error(format("Failed to start watching of log '%s'.", logConfig.getId()), e);
         ServerFailure failure = new ServerFailure(e.getMessage(), now());
-        messagingTemplate.convertAndSend(WEBSOCKET_TOPIC_PREFIX + logConfig.getUid(),
-            failure, singletonMap(MESSAGE_TYPE_HEADER, MessageType.FAILURE));
+        messagingTemplate.convertAndSend(destination, failure, singletonMap(MESSAGE_TYPE_HEADER, MessageType.FAILURE));
         // TODO Научиться по аналогии с этим отправлять сообщение об успешной настройке подписки, для чего превратить
-        // serverFailure в более общий тип сообщения. При получении этого типа убирать на клиенте прелоадер,
-        // выставленный перед отправкой запроса на подписку.
+        //  serverFailure в более общий тип сообщения. При получении этого типа убирать на клиенте прелоадер,
+        //  выставленный перед отправкой запроса на подписку.
       }
 
     } else {    // i.e. if there are watching sessions already in registry
-      assert !watchingSessionIds.contains(sessionId)
-          : format("Session id=%s is already watching log '%s'. Double subscription is prohibited.",
-          sessionId, logConfig.getUid());
+      Assert.state(!watchingSessionIds.contains(sessionId),
+          format("Session id=%s is already watching log '%s'. Double subscription is prohibited.", sessionId,
+              logConfig.getId()));
       watchingSessionIds.add(sessionId);
       log.info("There were {} session(s) already watching log '{}'. New session {} has been added to them.",
-          watchingSessionIds.size()-1, logConfig.getUid(), sessionId);
+          watchingSessionIds.size()-1, logConfig.getId(), sessionId);
     }
   }
 
@@ -138,6 +143,11 @@ public class WebSocketEventListener {
     stopTrackingIfNeeded(event.getMessage(), false);
   }
 
+  /**
+   * @param message a message received from client upon unsubscription or disconnecting
+   * @param isUnsubscribing {@code true} if client is stopping current subscription and {@code false} if client is
+   *                                    disconnecting from the server
+   */
   private void stopTrackingIfNeeded(Message<byte[]> message, boolean isUnsubscribing) {
     StompHeaderAccessor headers = StompHeaderAccessor.wrap(message);
     String sessionId = headers.getSessionId();
@@ -147,9 +157,9 @@ public class WebSocketEventListener {
     // check if there is no such session(s)
     if (fellows == null) {
       if (isUnsubscribing) {      // in case of unsubscribing it is incorrect situation
-        log.warn("No registered session(s) found for sessionId={}", sessionId);
+        log.warn("No fellow session(s) found for sessionId={}", sessionId);
       } else {                    // but in case of disconnecting it is quite right
-        log.info("No registered session found for sessionId={}.", sessionId);
+        log.info("No fellow session found for sessionId={}.", sessionId);
       }
       return;
     }
@@ -160,145 +170,122 @@ public class WebSocketEventListener {
           "Will keep the tracking active.", fellows.size(), sessionId);
       return;
     }
-    // in case it was the latest session watching that log we should stop the tracking
-    LogConfigEntry watchingLog = registry.findLogConfigEntryBy(sessionId);
-    log.debug("No sessions left watching log '{}'. Will deactivate the tracking...", watchingLog.getUid());
+    // in case it was the latest session watching that log we should unsubscribe current node from the agent
+    AbstractLogConfigEntry watchingLog = registry.findLogConfigEntryBy(sessionId);
+    log.debug("No sessions left watching log '{}'. Will unsubscribe current node...", watchingLog.getId());
     doSafely(getClass(), () -> stopTrackingOnServer(watchingLog));
-    // now that the log is not tracked anymore we need to remove it from the registry
+    // now that the log is not watched anymore on current node we need to remove it from the registry
     registry.removeEntry(watchingLog);
     log.info("Current node has unregistered itself from tracking log '{}' as there is no watching sessions anymore.",
-            watchingLog.getUid());
+            watchingLog.getId());
   }
 
-  private boolean getBooleanNativeHeader(StompHeaderAccessor headers, String name) {
-    List<String> rawHeaderValue = headers.getNativeHeader(name);
-    assert (rawHeaderValue != null) && (rawHeaderValue.size() == 1)
-        : format("'%s' header of SUBSCRIBE command is absent or malformed", name);
+  private boolean isTailNeeded(StompHeaderAccessor headers) {
+    final String IS_TAIL_NEEDED_HEADER = "isTailNeeded";
+    List<String> rawHeaderValue = headers.getNativeHeader(IS_TAIL_NEEDED_HEADER);
+    Assert.isTrue((rawHeaderValue != null) && (rawHeaderValue.size() == 1),
+        format("'%s' header of SUBSCRIBE command is absent or malformed", IS_TAIL_NEEDED_HEADER));
     return Boolean.valueOf(rawHeaderValue.get(0));
   }
 
   /**
-   * When watching request of web client comes for a plain log, AnaLog doesn't search for corresponding log config entry.
-   * Instead it just creates new ('artificial') entry and then works with it only. This approach allows AnaLog to
-   * watch arbitrary plain logs independently of its configuration. Particularly, it means that a user can set any
+   * When web client sends SUBSCRIBE command for a plain log, AnaLog doesn't search for corresponding log config
+   * entry. Instead it just creates new ('artificial') entry and then works with it only. This approach allows AnaLog
+   * to watch arbitrary plain logs independently of its configuration. Particularly, it means that a user can set any
    * path into AnaLog's address line and start to watch it the same way as if it was pre-configured as a choice
    * variant in configuration file.
+   * <p>This logic doesn't apply to composite logs (yet), but it would be great to implement it.
    *
    * @param path full path of log file to watch for
    * @return newly created log config entry for the specified path
    */
   @NotNull
-  /*private*/ LogConfigEntry createPlainLogConfigEntry(String path) {
-    // first, let's remove the leading 'artificial' slash (added by frontend) from the path
-    String unleadedPath = removeLeadingSlash(path);
-    String cleanPath, detectedNode;
-    if (isLocalFilePath(unleadedPath)) {
-      cleanPath = unleadedPath;
-      detectedNode = clusterProperties.getMyselfNode().getName();
-
-    } else if (unleadedPath.startsWith(NODE_PATH_PREFIX)) {
-      int prefixIndex = unleadedPath.indexOf(CUSTOM_SCHEMA_SEPARATOR);
-      var nodefulPath = unleadedPath.substring(prefixIndex + CUSTOM_SCHEMA_SEPARATOR.length());
-      int nodeSeparatorIndex = nodefulPath.indexOf('/');
-      detectedNode = nodefulPath.substring(0, nodeSeparatorIndex);
-      cleanPath = nodefulPath.substring(nodeSeparatorIndex + 1);
-
-    } else if (unleadedPath.startsWith(COMPOSITE_PATH_PREFIX)) {
-      throw new IllegalArgumentException(format("Composite log path '%s' must not be passed " +
-          "to plain log path processing.", unleadedPath));
-
-    } else {
-      cleanPath = unleadedPath;
-      detectedNode = clusterProperties.getMyselfNode().getName();
-
-    }
-    String title = extractFileName(cleanPath);
-
-    LogConfigEntry artificialEntry = new LogConfigEntry();
-    artificialEntry.setPath(cleanPath);
-    artificialEntry.setNode(detectedNode);
-    artificialEntry.setTitle(title);
-    log.debug("For path  '{}' new plain log config entry created with cleanPath='{}', node='{}' and title='{}'",
-        path, cleanPath, detectedNode, title);
-    return artificialEntry;
+  private AbstractLogConfigEntry createPlainLogConfigEntry(String path) {
+    LogPath logPath = converter.convert(path);
+    Assert.notNull(logPath,"Path '%s' was converted into 'null' LogPath");
+    PlainLogConfigEntry entry = new PlainLogConfigEntry();
+    entry.setPath(logPath);
+    entry.setTitle(extractFileName(logPath.getFullPath()));
+    entry.setSelected(false);
+    log.debug("For path '{}' new plain log config entry created: {}", path, entry);
+    return entry;
   }
 
   @NotNull
-  private LogConfigEntry findCompositeLogConfigEntry(String uid) {
-    List<LogConfigEntry> matchingEntries = choiceProperties.getChoices().stream()
+  private AbstractLogConfigEntry findCompositeLogConfigEntry(String destination) {
+    Assert.isTrue(LogType.COMPOSITE.matches(destination),
+        "destination for a composite log must start with 'composite://' prefix");
+    String typePrefix = LogType.COMPOSITE.getPrefix() + PathUtils.CUSTOM_SCHEMA_SEPARATOR;
+    String unprefixedDestination = destination.replace(typePrefix, "");
+    List<CompositeLogConfigEntry> matchingEntries = choiceProperties.getChoices().stream()
             .flatMap(choiceGroup -> choiceGroup.getCompositeLogs().stream())
-            .filter(entry -> entry.getUid().equals(uid))
+            .filter(entry -> entry.matches(unprefixedDestination))
             .collect(toList());
     if (matchingEntries.isEmpty()) {
-      throw new IllegalArgumentException(format("No log configuration entry found for uid=%s", uid));
+      throw new IllegalArgumentException(format("No log configuration entry found for destination=%s", destination));
     }
-    LogConfigEntry matchingEntry;
     if (matchingEntries.size() > 1) {
-      log.warn("Multiple matching entries found for uid={}. Will pick the first one.\n{}", uid, matchingEntries);
+      log.warn("Multiple matching entries found for destination={}. Will pick the first one.\n{}", destination, matchingEntries);
     }
-    matchingEntry = matchingEntries.get(0);
+    CompositeLogConfigEntry matchingEntry = matchingEntries.get(0);
     log.debug("Found matching composite log config entry: {}", matchingEntry);
     return matchingEntry;
   }
 
-  private void ensureRegistrationChannelsCreated(LogConfigEntry matchingEntry) {
-    ClusterNode myselfNode = clusterProperties.getMyselfNode();
-    // if main log entry points to a node other than current one then we need to create registration channel to it
-    if ((matchingEntry.getNode() != null) && !myselfNode.getName().equals(matchingEntry.getNode())) {
-      registrationChannelCreator.createRegistrationChannelIfNeeded(matchingEntry.getNode());
+  private void ensureRegistrationChannelsCreated(AbstractLogConfigEntry matchingEntry) {
+    if (matchingEntry.getType() == LogType.COMPOSITE) {
+      CompositeLogConfigEntry compositeEntry = (CompositeLogConfigEntry) matchingEntry;
+      compositeEntry.getIncludes().stream()
+          .map(CompositeInclusion::getPath)
+          .map(LogPath::getNode)
+          .forEach(registrationChannelCreator::createRegistrationChannelIfNeeded);
+
+    } else {
+      PlainLogConfigEntry plainEntry = (PlainLogConfigEntry) matchingEntry;
+      String entryNodeName = plainEntry.getPath().getNode();
+      registrationChannelCreator.createRegistrationChannelIfNeeded(entryNodeName);
     }
-    matchingEntry.getIncludes().stream()
-        .filter(entry -> entry.getNode() != null)
-        .forEach(entry -> {
-          registrationChannelCreator.createRegistrationChannelIfNeeded(entry.getNode());
-          // additionally warn the administrator if this entry contains other includes
-          if (!entry.getIncludes().isEmpty()) {
-            log.warn("Encountered included log config entry that itself contains other included entries. Nested " +
-                "inclusion levels deeper than 2 are not supported and will be ignored. Invalid entry: {}", entry);
-          }
-        });
   }
 
-  private void startTrackingOnServer(LogConfigEntry logConfigEntry, String destination, boolean isTailNeeded) {
+  private void startTrackingOnServer(AbstractLogConfigEntry logConfigEntry, String destination, boolean isTailNeeded) {
     switchTrackingOnServer(logConfigEntry, destination, true, isTailNeeded);
   }
 
-  private void stopTrackingOnServer(LogConfigEntry logConfigEntry) {
+  private void stopTrackingOnServer(AbstractLogConfigEntry logConfigEntry) {
     switchTrackingOnServer(logConfigEntry, null, false, false);
   }
 
-  private void switchTrackingOnServer(LogConfigEntry logConfigEntry, @Nullable String destination, boolean isOn,
+  private void switchTrackingOnServer(AbstractLogConfigEntry logConfigEntry,
+                                      @Nullable String destination /*can be null when switching OFF*/,
+                                      boolean isOn,
                                       boolean isTailNeeded) {
-    assert !(isTailNeeded && !isOn) : "isTailNeeded flag should not be raised when switching the tracking off";
-    ClusterNode myselfNode = clusterProperties.getMyselfNode();
-    String nodeName = nvls(logConfigEntry.getNode(), myselfNode.getName());
+    Assert.isTrue(!(isTailNeeded && !isOn), "isTailNeeded flag shouldn't be raised when switching tracking off");
 
-    // send registration request for the main entry
-    TrackingRequest primaryRequest = new TrackingRequest(
-        convertToUnixStyle(logConfigEntry.getPath(), false),
-        logConfigEntry.getTimestamp(),
-        nodeName,
-        destination,
-        isTailNeeded);
-    log.debug("Switching {} the registration by PRIMARY request: {}", isOn ? "ON":"OFF", primaryRequest);
-    remoteGateway.switchRegistration(primaryRequest, isOn);
+    // handling plain entries is quite simple so let's do it first
+    if (logConfigEntry instanceof PlainLogConfigEntry) {
+      PlainLogConfigEntry plainEntry = (PlainLogConfigEntry) logConfigEntry;
+      TrackingRequest request = new TrackingRequest(plainEntry.getPath(), null, destination, isTailNeeded);
+      log.debug("sending-plain-tracking-request", (isOn ? "ON" : "OFF"), request);
+      remoteGateway.switchRegistration(request, isOn);
+      return;
+    }
 
-    // send registration requests for included entries
-    for (LogConfigEntry included : logConfigEntry.getIncludes()) {
-      TrackingRequest includedRequest = null;
+    // handling composite entries involves iteration over all included paths
+    CompositeLogConfigEntry compositeEntry = (CompositeLogConfigEntry) logConfigEntry;
+    for (CompositeInclusion inclusion : compositeEntry.getIncludes()) {
+      TrackingRequest request = null;
       try {
-        includedRequest = new TrackingRequest(
-            convertToUnixStyle(included.getPath(), false),
-            included.getTimestamp(),
-            nvls(included.getNode(), myselfNode.getName()),
+        request = new TrackingRequest(
+            inclusion.getPath(),
+            inclusion.getTimestamp(),
             destination,
             isTailNeeded);
-        log.debug("Switching {} the registration by INCLUDED request: {}", isOn ? "ON":"OFF", includedRequest);
-        remoteGateway.switchRegistration(includedRequest, isOn);
+        log.debug("sending-composite-tracking-request", isOn ? "ON" : "OFF", request);
+        remoteGateway.switchRegistration(request, isOn);
 
       } catch (Exception e) {
         log.error(format("Failed to switch %s the registration by included request: %s",
-            isOn ? "ON":"OFF", (includedRequest==null) ? "n/a" : includedRequest), e);
+            isOn ? "ON":"OFF", (request==null) ? "n/a" : request), e);
         // TODO inform the user about this partial failure by sending ServerFault notification
       }
     }

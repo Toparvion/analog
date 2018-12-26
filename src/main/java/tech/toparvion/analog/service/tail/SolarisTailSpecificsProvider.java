@@ -20,12 +20,12 @@ public class SolarisTailSpecificsProvider implements TailSpecificsProvider {
   }
 
   @Override
-  public String getCompositeTailNativeOptions(boolean includePreviousLines) {
+  public String getGroupTailNativeOptions(boolean includePreviousLines) {
     return format("-%sf", includePreviousLines ? "20" : "0");     // -F option is not supported on SunOS
   }
 
   @Override
-  public String getPlainTailNativeOptions(boolean includePreviousLines) {
+  public String getFlatTailNativeOptions(boolean includePreviousLines) {
     return format("-%sf", includePreviousLines ? "45" : "0");     // -F option is not supported on SunOS
   }
 

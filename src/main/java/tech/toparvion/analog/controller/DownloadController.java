@@ -14,8 +14,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import tech.toparvion.analog.model.config.ClusterNode;
-import tech.toparvion.analog.model.config.ClusterProperties;
+import tech.toparvion.analog.model.config.nodes.Node;
+import tech.toparvion.analog.model.config.nodes.NodesProperties;
 import tech.toparvion.analog.service.DownloadRestTemplate;
 
 import javax.annotation.Nullable;
@@ -58,21 +58,21 @@ public class DownloadController {
    */
   private static final Charset DEFAULT_CHARSET = UTF_8;
 
-  private final ClusterProperties clusterProperties;
+  private final NodesProperties nodesProperties;
   private final DownloadRestTemplate downloadRestTemplate;
 
   @Autowired
-  public DownloadController(ClusterProperties clusterProperties) {
-    this.clusterProperties = clusterProperties;
+  public DownloadController(NodesProperties nodesProperties) {
+    this.nodesProperties = nodesProperties;
     this.downloadRestTemplate = new DownloadRestTemplate();
   }
 
   @RequestMapping(value = DOWNLOAD_URI_PATH, method = HEAD)
   public HttpHeaders getLogInfo(@RequestParam("path") String pathParam,
                                 @RequestParam(value = "node", required = false) String nodeName)
-      throws IOException, InterruptedException {
-    ClusterNode node = getNodeByName(nodeName);
-    boolean isRemote = !node.equals(clusterProperties.getMyselfNode());
+      throws IOException {
+    Node node = getNodeByName(nodeName);
+    boolean isRemote = !node.equals(nodesProperties.getThis());
     long size, lastModified;
     String extendedPath;
     if (!isRemote) {
@@ -89,7 +89,7 @@ public class DownloadController {
       URI uri = UriComponentsBuilder.newInstance()
           .scheme("http")
           .host(node.getHost())
-          .port(clusterProperties.resolveServerPortFor(node))
+          .port(node.getServerPort())
           .path(DOWNLOAD_URI_PATH)
           .queryParam("path", pathParam)
           .build()
@@ -118,8 +118,8 @@ public class DownloadController {
       @RequestParam(value = "last-kbytes", required = false, defaultValue = "0") int lastKBytes,
       HttpServletResponse response) throws IOException
   {
-    ClusterNode node = getNodeByName(nodeName);
-    boolean isRemote = !node.equals(clusterProperties.getMyselfNode());
+    Node node = getNodeByName(nodeName);
+    boolean isRemote = !node.equals(nodesProperties.getThis());
     if (!isRemote) {
       Path path = Paths.get(denormalize(pathParam));
       log.debug("Local file requested. Retrieving it from path: {}", path);
@@ -157,7 +157,7 @@ public class DownloadController {
     URI uri = UriComponentsBuilder.newInstance()
         .scheme("http")
         .host(node.getHost())
-        .port(clusterProperties.resolveServerPortFor(node))
+        .port(node.getServerPort())
         .path(DOWNLOAD_URI_PATH)
         .queryParam("path", pathParam)
         .queryParam("last-kbytes", lastKBytes)
@@ -194,10 +194,10 @@ public class DownloadController {
     log.error("Failed to retrieve size of remote file due to unexpected exception.", remoteCallException);
   }
 
-  private ClusterNode getNodeByName(@Nullable String nodeName) {
+  private Node getNodeByName(@Nullable String nodeName) {
     return hasText(nodeName)
-        ? clusterProperties.findNodeByName(nodeName)
-        : clusterProperties.getMyselfNode();
+        ? nodesProperties.findNodeByName(nodeName)
+        : nodesProperties.getThis();
   }
 
   private String denormalize(String pathParam) {

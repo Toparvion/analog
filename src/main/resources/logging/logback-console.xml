@@ -21,7 +21,7 @@
     <!-- =============================== Application loggers (from business logic) ============================== -->
     <logger name="tech.toparvion.analog" level="TRACE"/>
     <logger name="tech.toparvion.analog.remote.server.RecordSender" level="DEBUG"/>
-    <logger name="tech.toparvion.analog.util.dev.LogFileGenerator" level="DEBUG"/>
+    <logger name="tech.toparvion.analog.util.dev.LogFileGenerator" level="INFO"/>
     <!-- ===================================== System loggers (from libraries) ================================== -->
     <logger name="org.springframework.integration.file.tail.OSDelegatingFileTailingMessageProducer" level="DEBUG"/>
 

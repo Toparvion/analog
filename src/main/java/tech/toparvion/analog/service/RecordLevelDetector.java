@@ -1,4 +1,4 @@
-package tech.toparvion.analog.util;
+package tech.toparvion.analog.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

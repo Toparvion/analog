@@ -23,14 +23,14 @@ import static org.springframework.messaging.support.MessageBuilder.withPayload;
  * @author Toparvion
  * @since v0.7
  */
-class GroupingAggregatorConfigurer {
-  private static final Logger log = LoggerFactory.getLogger(GroupingAggregatorConfigurer.class);
+class GroupAggregatorConfigurer {
+  private static final Logger log = LoggerFactory.getLogger(GroupAggregatorConfigurer.class);
 
   private final MessagingTemplate preAggregatorQueueSender;
   private final int groupSizeThreshold;
   private final long groupTimeout;
 
-  GroupingAggregatorConfigurer(MessageChannel preAggregatorQueueChannel, int groupSizeThreshold, long groupTimeout) {
+  GroupAggregatorConfigurer(MessageChannel preAggregatorQueueChannel, int groupSizeThreshold, long groupTimeout) {
     this.preAggregatorQueueSender = new MessagingTemplate(preAggregatorQueueChannel);
     this.groupSizeThreshold = groupSizeThreshold;
     this.groupTimeout = groupTimeout;

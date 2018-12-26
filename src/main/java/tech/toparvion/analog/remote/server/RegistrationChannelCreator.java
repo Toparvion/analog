@@ -13,8 +13,8 @@ import org.springframework.integration.dsl.StandardIntegrationFlow;
 import org.springframework.integration.dsl.context.IntegrationFlowContext;
 import org.springframework.integration.rmi.RmiOutboundGateway;
 import org.springframework.stereotype.Component;
-import tech.toparvion.analog.model.config.ClusterNode;
-import tech.toparvion.analog.model.config.ClusterProperties;
+import tech.toparvion.analog.model.config.nodes.Node;
+import tech.toparvion.analog.model.config.nodes.NodesProperties;
 
 import static java.lang.String.format;
 import static org.springframework.integration.dsl.MessageChannels.direct;
@@ -33,20 +33,20 @@ import static tech.toparvion.analog.remote.RemotingConstants.*;
 public class RegistrationChannelCreator implements BeanFactoryAware, InitializingBean {
   private static final Logger log = LoggerFactory.getLogger(RegistrationChannelCreator.class);
 
-  private final ClusterProperties clusterProperties;
+  private final NodesProperties nodesProperties;
   private final IntegrationFlowContext dynamicRegistrar;
   private BeanFactory beanFactory;
 
   @Autowired
   public RegistrationChannelCreator(
-      ClusterProperties clusterProperties,
-      @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-          IntegrationFlowContext dynamicRegistrar) {
-    this.clusterProperties = clusterProperties;
+      NodesProperties nodesProperties,
+      IntegrationFlowContext dynamicRegistrar) {
+    this.nodesProperties = nodesProperties;
     this.dynamicRegistrar = dynamicRegistrar;
   }
 
   @Override
+  @SuppressWarnings("NullableProblems")
   public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
     this.beanFactory = beanFactory;
   }
@@ -60,12 +60,12 @@ public class RegistrationChannelCreator implements BeanFactoryAware, Initializin
       beanFactory.getBean(SERVER_REGISTRATION_RMI_OUT__CHANNEL_PREFIX + nodeName);
 
     } catch (NoSuchBeanDefinitionException e) {
-      ClusterNode targetNode = clusterProperties.findNodeByName(nodeName);
+      Node targetNode = nodesProperties.findNodeByName(nodeName);
       createChannelTo(targetNode);
     }
   }
 
-  private void createChannelTo(ClusterNode node) {
+  private void createChannelTo(Node node) {
     String rmiUrl = format("rmi://%s:%d/%s%s",
         node.getHost(),
         node.getAgentPort(),
@@ -75,7 +75,7 @@ public class RegistrationChannelCreator implements BeanFactoryAware, Initializin
     StandardIntegrationFlow serverRmiRegisteringFlow =
         IntegrationFlows
             .from(direct(SERVER_REGISTRATION_RMI_OUT__CHANNEL_PREFIX + node.getName()))
-            .enrichHeaders(e -> e.header(REPLY_ADDRESS__HEADER, clusterProperties.getMyselfNode().getAgentInetSocketAddress()))
+            .enrichHeaders(e -> e.header(REPLY_ADDRESS__HEADER, nodesProperties.getThis().getAgentInetSocketAddress()))
             .handle(new RmiOutboundGateway(rmiUrl))
             .get();
 
@@ -87,7 +87,7 @@ public class RegistrationChannelCreator implements BeanFactoryAware, Initializin
 
   @Override
   public void afterPropertiesSet() {
-    ClusterNode myselfNode = clusterProperties.getMyselfNode();
-    createChannelTo(myselfNode);
+    Node thisNode = nodesProperties.getThis();
+    createChannelTo(thisNode);
   }
 }
