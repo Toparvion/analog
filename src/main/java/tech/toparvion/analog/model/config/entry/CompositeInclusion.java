@@ -36,7 +36,7 @@ public class CompositeInclusion {
 
   @Override
   public int hashCode() {
-    return Objects.hash(path);
+    return Objects.hash(path);      // don't take timestamp into account to avoid excess hashCode changes
   }
 
   @Override

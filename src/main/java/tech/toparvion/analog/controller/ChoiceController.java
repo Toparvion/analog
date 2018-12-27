@@ -20,16 +20,6 @@ public class ChoiceController {
 
   @GetMapping("/choices")
   public List<LogChoice> choices() {
-/*
-    Logger logger = LoggerFactory.getLogger(getClass());
-    try {
-      logger.info("I've come for Dnepr...");
-      RestTemplate restTemplate = new RestTemplate();
-      restTemplate.getForObject("http://analog.dnepr.ftc.ru:8085", String.class);
-    } catch (RestClientException e) {
-      logger.error("", e);
-    }
-*/
     return logChoicesProvider.provideLogChoices();
   }
 

@@ -81,6 +81,15 @@ public class LogChoicesProvider {
     Set<LogChoice> choices = new LinkedHashSet<>();
     String groupName = group.getGroup();
     for (PlainLogConfigEntry plainEntry : group.getPlainLogs()) {
+      // first involve graceful check for non-absolute paths
+      if (plainEntry.getType() == LogType.LOCAL_FILE) {
+        Path fullPath = Paths.get(plainEntry.getPath().getFullPath());
+        if (!fullPath.isAbsolute()) {
+          log.warn("Plain log path '{}' in group '{}' is not absolute and thus will be excluded from choices " +
+              "on the client.", fullPath, groupName);
+          continue;
+        }
+      }
       String title = nvls(plainEntry.getTitle(), "$f ($g)");
       String expandedTitle = expandTitle(title, plainEntry.getPath().getFullPath(), groupName);
       // here we're processing paths coming from config file so there is no need to clean them out from leading slash

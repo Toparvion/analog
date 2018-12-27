@@ -3,9 +3,12 @@ package tech.toparvion.analog.model.config.entry;
 import tech.toparvion.analog.util.PathUtils;
 
 import javax.annotation.Nullable;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.joining;
 import static org.springframework.util.StringUtils.hasText;
@@ -41,7 +44,7 @@ public class CompositeLogConfigEntry extends AbstractLogConfigEntry {
   public String getHKey() {
     String idSuffix;
     if (hasText(uriName)) {
-      idSuffix = uriName;
+      idSuffix = URLEncoder.encode(uriName, UTF_8);
     } else {
       idSuffix = overallHashCode();
     }
@@ -57,8 +60,11 @@ public class CompositeLogConfigEntry extends AbstractLogConfigEntry {
    * @return {@code true} if this entry is identified with given string
    */
   public boolean matches(String idOrCode) {
-    if (hasText(uriName) && uriName.equalsIgnoreCase(idOrCode)) {
-      return true;
+    if (hasText(uriName)) {
+      var decodedIdOrCode = URLDecoder.decode(idOrCode, UTF_8);
+      if (uriName.equalsIgnoreCase(decodedIdOrCode)) {
+        return true;
+      }
     }
     return overallHashCode().equalsIgnoreCase(idOrCode);
   }

@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.config.EnableIntegrationManagement;
@@ -89,7 +88,6 @@ public class ServerConfig {
   }
 
   @Bean
-  @Lazy(false)      // to reveal problems with tail ASAP
   public TailSpecificsProvider tailSpecificsProvider() throws Exception {
     String idfString = obtainTailIdfString();
     TailSpecificsProvider specificsProvider;
@@ -128,10 +126,12 @@ public class ServerConfig {
       process = Runtime.getRuntime().exec("tail --version");
     } catch (IOException e) {
       if (e.getMessage().startsWith("Cannot run program")) {
-        log.error("Failed to find 'tail' program on this server. Please check if it is correctly installed, accessible " +
-            "for AnaLog and its path is included into PATH environment variable. Root cause: {}", e.getMessage());
+        String explanationMessage = "Failed to find 'tail' program on this server. Please check if it is correctly " +
+            "installed, accessible for AnaLog and its path is included into PATH environment variable.";
+        throw new IllegalStateException(explanationMessage, e);
+      } else {
+        throw e;
       }
-      throw e;
     }
 
     // then read the first string it has printed

@@ -17,7 +17,7 @@ public class LogPath implements Serializable {
    */
   private String target;
   /**
-   * The path as it was when constructing this object
+   * The path as it was specified when constructing this object
    */
   private String fullPath;
 
