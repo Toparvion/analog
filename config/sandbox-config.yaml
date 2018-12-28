@@ -3,7 +3,7 @@ choices:
     localPlainLogsBase: E:\Issues\Testing\incubator\analog\log-samples
     plainLogs:
       - path: generated\core.log
-        title: $f (генерируемый)
+        title: $f [генерируемый]
       - path: generated\micro.log
       - path: source\core-source.log
       - path: source\micro-source.log

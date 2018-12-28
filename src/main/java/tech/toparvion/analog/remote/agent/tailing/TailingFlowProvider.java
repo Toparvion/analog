@@ -1,4 +1,4 @@
-package tech.toparvion.analog.remote.agent;
+package tech.toparvion.analog.remote.agent.tailing;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +34,7 @@ import static org.springframework.integration.IntegrationMessageHeaderAccessor.C
 import static org.springframework.integration.dsl.MessageChannels.publishSubscribe;
 import static org.springframework.integration.dsl.MessageChannels.queue;
 import static org.springframework.integration.file.dsl.Files.tailAdapter;
+import static org.springframework.util.StringUtils.hasText;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
 import static tech.toparvion.analog.remote.agent.AgentConstants.TAIL_FLOW_PREFIX;
 import static tech.toparvion.analog.remote.agent.AgentConstants.TAIL_OUTPUT_CHANNEL_PREFIX;
@@ -81,7 +82,7 @@ public class TailingFlowProvider {
    * @param isTailNeeded should 'tail' include last several lines of the log?
    * @return a new tailing flow
    */
-  IntegrationFlow provideGroupFlow(LogPath logPath, boolean isTailNeeded) {
+  public IntegrationFlow provideGroupFlow(LogPath logPath, boolean isTailNeeded) {
     // each group flow must have its own instance of correlationProvider as it is stateful and not thread-safe
     CorrelationIdHeaderEnricher correlationProvider = new CorrelationIdHeaderEnricher();
     // each group flow must have its own instance of sequenceProvider as it is stateful and not thread-safe
@@ -123,7 +124,7 @@ public class TailingFlowProvider {
    * @param isTailNeeded should 'tail' include last several lines of the log?
    * @return a new tailing flow
    */
-  IntegrationFlow provideFlatFlow(LogPath logPath, boolean isTailNeeded) {
+  public IntegrationFlow provideFlatFlow(LogPath logPath, boolean isTailNeeded) {
     String tailFlowOutChannelName = findOrCreateTailFlow(logPath, true, isTailNeeded);
     return IntegrationFlows
         .from(tailFlowOutChannelName)
@@ -220,42 +221,31 @@ public class TailingFlowProvider {
     var adapterId = TAIL_PROCESS_ADAPTER_PREFIX + logPath.getFullPath();
     var optsBuilder = new StringBuilder();
     optsBuilder.append(format("--follow --tail=%d", tailLength));
-    String resource;
+    String resource = null;
     String[] tokens = logPath.getTarget().split("/");
-    if (tokens.length > 1) {
-      String parsedResource = null;
-      for (int i = 0; i < tokens.length; i++) {
-        String token = tokens[i];
-        switch (token.toLowerCase()) {
-          case "namespace":
-            var namespace = tokens[i + 1];
-            optsBuilder.append(" --namespace=").append(namespace);
-            break;
-          case "po":
-          case "pod":
-            parsedResource = tokens[i + 1];
-            break;
-          case "deploy":
-          case "deployment":
-            var deployment = tokens[i + 1];
-            parsedResource = " deployment/" + deployment;
-            break;
-          case "container":
-          case "cnt":
-          case "c":
-            var container = tokens[i + 1];
-            optsBuilder.append(" --container=").append(container);
-            break;
-          default:
-            log.warn("Unknown Kubernetes target entry: {}", token);
-        }
+    for (int i = 0; i < tokens.length; i++) {
+      String token = tokens[i];
+      switch (token.toLowerCase()) {
+        case "namespace":
+          var namespace = tokens[i + 1];
+          optsBuilder.append(" --namespace=").append(namespace);
+          break;
+        case "container":
+        case "c":
+          var container = tokens[i + 1];
+          optsBuilder.append(" --container=").append(container);
+          break;
+        default:
+          String newResource = (i + 1) <= (tokens.length - 1)       // i.e. if index (i+1) exists in tokens array
+              ? String.format("%s/%s", tokens[i], tokens[i + 1])
+              : tokens[i];
+          if (hasText(resource)) {
+            log.warn("Parsed resource '{}' will be overwritten with '{}'.", resource, newResource);
+          }
+          resource = newResource;
       }
-      Assert.notNull(parsedResource, "No resource specified in path " + logPath.getTarget());
-      resource = parsedResource;
-
-    } else {
-      resource = logPath.getTarget();
     }
+    Assert.hasText(resource, "No resource specified in path " + logPath.getTarget());
     String k8sLogsOptions = optsBuilder.toString();
     log.debug("Target '{}' is converted into resource '{}' and options: {}", logPath.getTarget(), resource, k8sLogsOptions);
 

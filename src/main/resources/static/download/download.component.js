@@ -1,5 +1,5 @@
 function DownloadController($scope, $element, $attrs, $log, $http) {
-    var ctrl = this;
+    let ctrl = this;
 
     // behavioral (non-visual) state of controller
     ctrl.isShowingDialog = false;
@@ -33,8 +33,7 @@ function DownloadController($scope, $element, $attrs, $log, $http) {
             path: path,
             file: extractFileName(path)
         };
-        // By default currently chosen file aimed for downloading is the first member (which is not among includes).
-        // NOTE: This will trigger fetchDataFromServer() via corresponding $watch!
+        // NOTE: The following assignment will trigger fetchDataFromServer() via corresponding $watch!
         ctrl.file2Download = firstMember;
         ctrl.allMembers = new Array(firstMember);
 /* TODO fix inclusion choice for composite logs
@@ -52,9 +51,11 @@ function DownloadController($scope, $element, $attrs, $log, $http) {
     };
 
     ctrl.fetchDataFromServer = function () {
-        var uriPath = '/download?path=' + ctrl.file2Download.path;
+        let uriPath = '/download?path=' + ctrl.file2Download.path;
         // it doesn't matter whether specified node is remote or local; server will handle it itself
-        uriPath += ("&node=" + ctrl.file2Download.node);
+        if (angular.isDefined(ctrl.file2Download.node)) {
+            uriPath += ("&node=" + ctrl.file2Download.node);
+        }
         ctrl.isLoading = true;
         $http.head(uriPath)
             .then(

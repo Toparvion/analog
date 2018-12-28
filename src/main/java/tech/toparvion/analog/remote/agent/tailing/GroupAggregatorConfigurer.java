@@ -1,4 +1,4 @@
-package tech.toparvion.analog.remote.agent;
+package tech.toparvion.analog.remote.agent.tailing;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
