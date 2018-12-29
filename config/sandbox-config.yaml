@@ -11,7 +11,7 @@ choices:
       - title: 'Пробный композит'
         uriName: 'test-composite'
         includes:
-          - path: E:\Issues\Testing\incubator\analog\log-samples\generated\core.log
-            timestamp: yyyy-MM-dd HH:mm:ss.SSS
-          - path: E:\Issues\Testing\incubator\analog\log-samples\generated\micro.log
+          - path: k8s://deploy/restorun-test-deployment
             timestamp: yyyy-MM-dd HH:mm:ss,SSS
+          - path: k8s://deploy/alcatraz-test-deployment
+            timestamp: HH:mm:ss,SSS

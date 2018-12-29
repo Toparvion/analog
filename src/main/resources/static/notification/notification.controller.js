@@ -4,7 +4,7 @@
 app.controller('notificationController', ['$scope', '$log', '$interval', 'notifications',
     function ($scope, $log, $interval, notifications) {
         let vm = this;
-        const SHOW_DELAY = 12000;       // it's better to set it higher than websocket.reconnectDelayMs config value
+        const SHOW_DELAY = 13000;       // it's better to set it higher than websocket.reconnectDelayMs config value
         vm.message = undefined;
         vm.showing = false;
         vm.onceDisconnected = false;

@@ -73,7 +73,7 @@ app.controller('mainController', function ($scope, $rootScope, $window,
 
         if (!vm.onAir) {
             if (vm.launching) {         // if AnaLog's page is just loading let's start watching automatically
-                // vm.onAir = true;     // TODO включить обратно
+                vm.onAir = true;
                 vm.launching = false;
             } // nothing should be done in this case as it is user's decision not to watch any log
 
@@ -107,7 +107,7 @@ app.filter('logTypeDetector', function () {
                 return 'удалённый файл на узле {node}'.format(logChoice);
             case 'COMPOSITE':
                 return 'композит из {size} {logs}'.format({size: logChoice.includes.length,
-                                                            logs: quantify(logChoice.includes.length)});
+                                                           logs: quantify(logChoice.includes.length)});
             case 'DOCKER':
                 return 'контейнер в Docker';
             case 'KUBERNETES':

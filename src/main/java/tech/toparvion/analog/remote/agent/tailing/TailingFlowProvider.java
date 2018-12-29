@@ -229,16 +229,22 @@ public class TailingFlowProvider {
         case "namespace":
           var namespace = tokens[i + 1];
           optsBuilder.append(" --namespace=").append(namespace);
+          i++;
           break;
         case "container":
         case "c":
           var container = tokens[i + 1];
           optsBuilder.append(" --container=").append(container);
+          i++;
           break;
         default:
-          String newResource = (i + 1) <= (tokens.length - 1)       // i.e. if index (i+1) exists in tokens array
-              ? String.format("%s/%s", tokens[i], tokens[i + 1])
-              : tokens[i];
+          String newResource;// i.e. if index (i+1) exists in tokens array
+          if ((i + 1) <= (tokens.length - 1)) {
+            newResource = String.format("%s/%s", tokens[i], tokens[i + 1]);
+            i++;
+          } else {
+            newResource = tokens[i];
+          }
           if (hasText(resource)) {
             log.warn("Parsed resource '{}' will be overwritten with '{}'.", resource, newResource);
           }

@@ -109,4 +109,30 @@ class DateFormat2RegexConverterTest {
     Matcher matcher = convertedPattern.matcher(sampleLogTimestamp);
     assertTrue(matcher.find());
   }
+
+  @Test
+  void tripleLetterMonthSearch() {
+    String format = "dd/LLL/yyyy:HH:mm:ss";
+    String sampleLogTimestamp = "192.168.95.59 - - [29/Dec/2018:03:00:40 +0700] \"GET";
+
+    Pattern convertedPattern = converter.convertToRegex(format);
+    log.info("Converted pattern: {}", convertedPattern);
+//    assertEquals("\\d{2}\\.\\d{2}\\.\\d{2} \\d{2}:\\d{2}:\\d{2}", convertedPattern.toString());
+
+    Matcher matcher = convertedPattern.matcher(sampleLogTimestamp);
+    assertTrue(matcher.find());
+  }
+
+  @Test
+  void letterSeparatedSearch() {
+    String format = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+    String sampleLogTimestamp = "{\"timestamp\":\"2018-12-29T12:05:18.021+0700\"";
+
+    Pattern convertedPattern = converter.convertToRegex(format);
+    log.info("Converted pattern: {}", convertedPattern);
+//    assertEquals("\\d{2}\\.\\d{2}\\.\\d{2} \\d{2}:\\d{2}:\\d{2}", convertedPattern.toString());
+
+    Matcher matcher = convertedPattern.matcher(sampleLogTimestamp);
+    assertTrue(matcher.find());
+  }
 }
