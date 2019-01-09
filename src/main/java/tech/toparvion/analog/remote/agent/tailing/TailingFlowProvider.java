@@ -57,6 +57,7 @@ public class TailingFlowProvider {
   private final int groupSizeThreshold;
   private final int groupTimeoutMs;
   private final String thisNodeName;
+  private final boolean useDockerSudo;
 
   @Autowired
   public TailingFlowProvider(TimestampExtractor timestampExtractor,
@@ -65,7 +66,8 @@ public class TailingFlowProvider {
                              IntegrationFlowContext flowContext,
                              @Value("${tracking.group.sizeThreshold:500}") int groupSizeThreshold,
                              @Value("${tracking.group.timeoutMs:500}") int groupTimeoutMs,
-                             @Value("${nodes.this.name}") String thisNodeName) {
+                             @Value("${nodes.this.name}") String thisNodeName,
+                             @Value("${adapters.docker.useSudo:true}") boolean useDockerSudo) {
     this.timestampExtractor = timestampExtractor;
     this.tailSpecificsProvider = tailSpecificsProvider;
     this.recordLevelDetector = recordLevelDetector;
@@ -73,6 +75,7 @@ public class TailingFlowProvider {
     this.groupSizeThreshold = groupSizeThreshold;
     this.groupTimeoutMs = groupTimeoutMs;
     this.thisNodeName = thisNodeName;
+    this.useDockerSudo = useDockerSudo;
   }
 
   /**
@@ -205,8 +208,10 @@ public class TailingFlowProvider {
     var adapterId = TAIL_PROCESS_ADAPTER_PREFIX + logPath.getFullPath();
     var dockerLogsOptions = format("--follow --tail=%d", tailLength);
     var fullPrefix = logPath.getType().getPrefix() + CUSTOM_SCHEMA_SEPARATOR;
+    var command = (useDockerSudo ? "sudo " : "")
+                + "docker logs";
     return new ProcessTailAdapterSpec()
-        .executable("sudo docker logs")
+        .executable(command)
         .file(new ContainerTargetFile(fullPrefix, logPath.getTarget()))
         .id(adapterId)
         .nativeOptions(dockerLogsOptions)

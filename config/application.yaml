@@ -7,6 +7,10 @@ nodes:
     name: myself
     agentPort: 7801
 
+adapters:
+  docker:
+    useSudo: true
+
 choices:
   - group: АнаЛог
     plainLogs:
