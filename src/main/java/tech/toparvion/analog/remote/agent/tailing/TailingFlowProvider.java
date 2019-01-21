@@ -202,13 +202,13 @@ public class TailingFlowProvider {
   }
 
   private MessageProducerSpec<?, ?> newTailAdapter4Docker(LogPath logPath, boolean isTrackingFlat, boolean isTailNeeded) {
-    var tailLength = isTailNeeded
+    int tailLength = isTailNeeded
             ? isTrackingFlat ? 45 : 20
             : 0;
-    var adapterId = TAIL_PROCESS_ADAPTER_PREFIX + logPath.getFullPath();
-    var dockerLogsOptions = format("--follow --tail=%d", tailLength);
-    var fullPrefix = logPath.getType().getPrefix() + CUSTOM_SCHEMA_SEPARATOR;
-    var command = (useDockerSudo ? "sudo " : "")
+    String adapterId = TAIL_PROCESS_ADAPTER_PREFIX + logPath.getFullPath();
+    String dockerLogsOptions = format("--follow --tail=%d", tailLength);
+    String fullPrefix = logPath.getType().getPrefix() + CUSTOM_SCHEMA_SEPARATOR;
+    String command = (useDockerSudo ? "sudo " : "")
                 + "docker logs";
     return new ProcessTailAdapterSpec()
         .executable(command)
@@ -220,11 +220,11 @@ public class TailingFlowProvider {
   }
 
   private MessageProducerSpec<?, ?> newTailAdapter4Kubernetes(LogPath logPath, boolean isTrackingFlat, boolean isTailNeeded) {
-    var tailLength = isTailNeeded
+    int tailLength = isTailNeeded
         ? isTrackingFlat ? 45 : 20
         : 1;                                // why 1 see in https://github.com/kubernetes/kubernetes/issues/35335
-    var adapterId = TAIL_PROCESS_ADAPTER_PREFIX + logPath.getFullPath();
-    var optsBuilder = new StringBuilder();
+    String adapterId = TAIL_PROCESS_ADAPTER_PREFIX + logPath.getFullPath();
+    StringBuilder optsBuilder = new StringBuilder();
     optsBuilder.append(format("--follow --tail=%d", tailLength));
     String resource = null;
     String[] tokens = logPath.getTarget().split("/");
@@ -232,13 +232,13 @@ public class TailingFlowProvider {
       String token = tokens[i];
       switch (token.toLowerCase()) {
         case "namespace":
-          var namespace = tokens[i + 1];
+          String namespace = tokens[i + 1];
           optsBuilder.append(" --namespace=").append(namespace);
           i++;
           break;
         case "container":
         case "c":
-          var container = tokens[i + 1];
+          String container = tokens[i + 1];
           optsBuilder.append(" --container=").append(container);
           i++;
           break;
@@ -260,7 +260,7 @@ public class TailingFlowProvider {
     String k8sLogsOptions = optsBuilder.toString();
     log.debug("Target '{}' is converted into resource '{}' and options: {}", logPath.getTarget(), resource, k8sLogsOptions);
 
-    var fullPrefix = logPath.getType().getPrefix() + CUSTOM_SCHEMA_SEPARATOR;
+    String fullPrefix = logPath.getType().getPrefix() + CUSTOM_SCHEMA_SEPARATOR;
     return new ProcessTailAdapterSpec()
         .executable("kubectl logs")
         .file(new ContainerTargetFile(fullPrefix, resource))
@@ -271,10 +271,10 @@ public class TailingFlowProvider {
   }
 
   private MessageProducerSpec<?, ?> newTailAdapter4File(LogPath logPath, boolean isTrackingFlat, boolean isTailNeeded) {
-    var tailNativeOptions = isTrackingFlat
+    String tailNativeOptions = isTrackingFlat
         ? tailSpecificsProvider.getFlatTailNativeOptions(isTailNeeded)
         : tailSpecificsProvider.getGroupTailNativeOptions(isTailNeeded);
-    var adapterId = TAIL_PROCESS_ADAPTER_PREFIX + logPath.getFullPath();
+    String adapterId = TAIL_PROCESS_ADAPTER_PREFIX + logPath.getFullPath();
     return tailAdapter(new File(logPath.getFullPath()))
         .id(adapterId)
         .nativeOptions(tailNativeOptions)

@@ -82,19 +82,19 @@ class AnaLogUtilsTest {
 
   @Test
   void customPathDetection_1() {
-    var path = "kubernetes://deploy/pod_a";
+    String path = "kubernetes://deploy/pod_a";
     assertFalse(PathUtils.isLocalFilePath(path));
   }
 
   @Test
   void customPathDetection_2() {
-    var path = "C:/Users/Anonymous/app.log";
+    String path = "C:/Users/Anonymous/app.log";
     assertTrue(PathUtils.isLocalFilePath(path));
   }
 
   @Test
   void customPathDetection_3() {
-    var path = "docker:app.log";
+    String path = "docker:app.log";
     assertTrue(PathUtils.isLocalFilePath(path));
   }
 }

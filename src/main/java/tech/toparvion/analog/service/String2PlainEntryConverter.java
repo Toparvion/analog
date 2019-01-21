@@ -63,12 +63,12 @@ public class String2PlainEntryConverter implements Converter<String, LogPath> {
     if (logType == NODE) {          // paths pointing to specific node require special handling
       // obtain path without 'node://' prefix, e.g. 'angara/home/upc/app.log'
       int schemaSeparatorIndex = convertedPath.indexOf(CUSTOM_SCHEMA_SEPARATOR);
-      var nodefulPath = convertedPath.substring(schemaSeparatorIndex + CUSTOM_SCHEMA_SEPARATOR.length());
+      String nodefulPath = convertedPath.substring(schemaSeparatorIndex + CUSTOM_SCHEMA_SEPARATOR.length());
       int nodeSeparatorIndex = nodefulPath.indexOf('/');
       // extract node name, e.g. 'angara'
-      var detectedNode = nodefulPath.substring(0, nodeSeparatorIndex);
+      String detectedNode = nodefulPath.substring(0, nodeSeparatorIndex);
       // ...and the path itself (within the node), e.g. '/home/upc/app.log'
-      var cleanPath = nodefulPath.substring(nodeSeparatorIndex);
+      String cleanPath = nodefulPath.substring(nodeSeparatorIndex);
       // a tricky moment: in case of Windows path we must strip the leading slash, so we detect it by presence of colon
       if (cleanPath.indexOf(':') == 2) {      // e.g. /c:/windows/folder
         cleanPath = cleanPath.substring(1);
@@ -79,7 +79,7 @@ public class String2PlainEntryConverter implements Converter<String, LogPath> {
 
     } else if (convertedPath.contains(CUSTOM_SCHEMA_SEPARATOR)) {        // any other custom path
       int schemaSeparatorIndex = convertedPath.indexOf(CUSTOM_SCHEMA_SEPARATOR);
-      var target = convertedPath.substring(schemaSeparatorIndex + CUSTOM_SCHEMA_SEPARATOR.length());
+      String target = convertedPath.substring(schemaSeparatorIndex + CUSTOM_SCHEMA_SEPARATOR.length());
       logPath.setTarget(target);
       logPath.setFullPath(convertedPath);
       logPath.setNode(thisNodeName);

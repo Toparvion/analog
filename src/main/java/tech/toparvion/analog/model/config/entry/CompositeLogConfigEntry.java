@@ -3,12 +3,12 @@ package tech.toparvion.analog.model.config.entry;
 import tech.toparvion.analog.util.PathUtils;
 
 import javax.annotation.Nullable;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.joining;
 import static org.springframework.util.StringUtils.hasText;
@@ -44,7 +44,11 @@ public class CompositeLogConfigEntry extends AbstractLogConfigEntry {
   public String getHKey() {
     String idSuffix;
     if (hasText(uriName)) {
-      idSuffix = URLEncoder.encode(uriName, UTF_8);
+      try {
+        idSuffix = URLEncoder.encode(uriName, "UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        throw new RuntimeException(e);
+      }
     } else {
       idSuffix = overallHashCode();
     }
@@ -61,7 +65,12 @@ public class CompositeLogConfigEntry extends AbstractLogConfigEntry {
    */
   public boolean matches(String idOrCode) {
     if (hasText(uriName)) {
-      var decodedIdOrCode = URLDecoder.decode(idOrCode, UTF_8);
+      String decodedIdOrCode;
+      try {
+        decodedIdOrCode = URLDecoder.decode(idOrCode, "UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        throw new RuntimeException(e);
+      }
       if (uriName.equalsIgnoreCase(decodedIdOrCode)) {
         return true;
       }

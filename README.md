@@ -1,4 +1,12 @@
 # AnaLog
+
+### The purpose of this branch
+There is a target environment for AnaLog where only Solaris 10 OS installed. This OS is *not* compatible with Java
+11 so that the latest AnaLog version cannot be started there. As a temporary workaround AnaLog will be downgraded to
+Java 9 in order make it capable of launching in that environment. 
+  
+This branch is not intended to be a base for any future AnaLog releases.   
+
 #### :information_source: :us: :gb: Note for English speakers
 The tool is in trial stage now and is being tested by Russian speaking users. Therefore the tool's UI as well as its documentation are made in Russian only (for the time being). English translation is planned for the next development iteration. Please feel free to [file an issue](https://github.com/Toparvion/analog/issues/new) if you'd like it to happen sooner.
 
