@@ -1,5 +1,6 @@
 package tech.toparvion.analog.model.config;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ class ChoicePropertiesTest {
   ChoiceProperties choiceProperties;
 
   @Test
+  @Disabled("Unstable")
   void getCompositeChoices() {
     List<ChoiceGroup> groups = choiceProperties.getChoices();
     assertThat(groups).isNotEmpty();
