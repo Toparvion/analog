@@ -1,5 +1,7 @@
 package tech.toparvion.analog.model;
 
+import tech.toparvion.analog.model.config.entry.LogPath;
+
 import javax.annotation.Nullable;
 import java.io.Serializable;
 
@@ -11,23 +13,31 @@ import java.io.Serializable;
  * @since v0.7
  */
 public class TrackingRequest implements Serializable {
-  private final String logFullPath;
+  private final LogPath logPath;
+  /** May be null in case of plain (non-composite) log */
   @Nullable
   private final String timestampFormat;
-  private final String nodeName;
-  private final String uid;
+  /**
+   * Logical address for broadcasting log's records to WebSocket clients. Usually looks exactly as specified on the
+   * client side, e.g. {@code node://angara/home/upc/app.log}.<p>
+   * May be null in case switching the tracking off.
+   */
+  @Nullable
+  private final String clientDestination;
   private final boolean isTailNeeded;
 
-  public TrackingRequest(String logFullPath, @Nullable String timestampFormat, String nodeName, String uid, boolean isTailNeeded) {
-    this.logFullPath = logFullPath;
+  public TrackingRequest(LogPath logPath,
+                         @Nullable String timestampFormat,
+                         @Nullable String clientDestination,
+                         boolean isTailNeeded) {
+    this.logPath = logPath;
     this.timestampFormat = timestampFormat;
-    this.nodeName = nodeName;
-    this.uid = uid;
+    this.clientDestination = clientDestination;
     this.isTailNeeded = isTailNeeded;
   }
 
-  public String getLogFullPath() {
-    return logFullPath;
+  public LogPath getLogPath() {
+    return logPath;
   }
 
   @Nullable
@@ -35,13 +45,9 @@ public class TrackingRequest implements Serializable {
     return timestampFormat;
   }
 
-  @SuppressWarnings("unused")     // the method is called by means of SpEL (see ServerConfig.serverRegistrationRouter)
-  public String getNodeName() {
-    return nodeName;
-  }
-
-  public String getUid() {
-    return uid;
+  @Nullable
+  public String getClientDestination() {
+    return clientDestination;
   }
 
   public boolean isTailNeeded() {
@@ -60,13 +66,11 @@ public class TrackingRequest implements Serializable {
   @Override
   public String toString() {
     return "TrackingRequest{" +
-        "logFullPath='" + logFullPath + '\'' +
+        "logPath='" + logPath + '\'' +
         ", timestampFormat='" + timestampFormat + '\'' +
         ", isFlat='" + isFlat() + '\'' +
-        ", nodeName='" + nodeName + '\'' +
-        ", uid='" + uid + '\'' +
+        ", clientDestination='" + clientDestination + '\'' +
         ", isTailNeeded=" + isTailNeeded +
         '}';
   }
-
 }

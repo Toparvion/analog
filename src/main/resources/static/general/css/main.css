@@ -10,10 +10,6 @@ body {
 .navbar-last-item {
     margin-right: 10px;
 }
-#consolePanel {
-    font-family: Courier New, monospace;
-    font-size: 13px;
-}
 #substrate {
     bottom: 0;
     max-height: 35%;
@@ -23,6 +19,17 @@ body {
     z-index: -10;
 }
 /*</editor-fold>*/
+
+#consolePanel {
+    font-family: Courier New, monospace;
+    font-size: 13px;
+}
+.text-nowrap {
+    white-space: pre;
+}
+.text-wrap {
+    white-space: pre-wrap;
+}
 
 /*<editor-fold desc="Log levels">*/
 .TRACE {

@@ -6,26 +6,26 @@ app.constant('notifications', {
     //<editor-fold desc="Server Events">
     serverConnected: {
         level: 'success',
-        title: 'Ура!',
-        text: 'Связь с сервером восстановлена. Можно работать.'
+        title: 'Сервер снова доступен',
+        text: 'Связь восстановлена, можно работать.'
     },
     serverDisconnected: {
         level: 'warning',
-        title: 'Ой-ой...',
-        text: 'Нет связи с сервером. Как восстановится, сообщу и продолжу отслеживание (если надо).'
+        title: 'Нет связи с сервером',
+        text: 'Слежение продолжится автоматически (если нужно) после восстановления связи.'
     },
     //</editor-fold>
 
     //<editor-fold desc="Tail Events">
     fileNotFound: {
         level: 'info',
-        title: 'Хм...',
+        title: 'Лог не найден',
         text: "Файл <span class='highlight'>{logPath}</span> не найден на узле " +
                 "<span class='highlight'>{nodeName}</span>. Ожидаю его появления..."
     },
     fileAppeared: {
         level: 'success',
-        title: 'Есть контакт!',
+        title: 'Лог обнаружен',
         text: "Файл <span class='highlight'>{logPath}</span> на узле <span class='highlight'>{nodeName}</span> " +
                 "появился. Отслеживаю его изменения."
     },
@@ -37,13 +37,13 @@ app.constant('notifications', {
     },
     fileDisappeared: {
         level: 'info',
-        title: 'Oops',
+        title: 'Лог потерян',
         text: "Файл <span class='highlight'>{logPath}</span> пропал с узла " +
                 "<span class='highlight'>{nodeName}</span>. Продолжу отслеживание, когда появится."
     },
     fileTruncated: {
         level: 'danger',
-        title: 'Ай-ай!',
+        title: 'Лог сократился',
         text: "Файл <span class='highlight'>{logPath}</span> на узле " +
                 "<span class='highlight'>{nodeName}</span> сократился в размере.<br/>" +
                 "Дальнейшее отслеживание может быть ошибочным.<br/>В этом случае лучше начать его заново."
@@ -53,14 +53,13 @@ app.constant('notifications', {
     //<editor-fold desc="Server Fault(s)">
     serverFailure: {
         level: 'danger',
-        title: 'Ай-ай!',
-        text: "На сервере произошел сбой; отслеживание прекращено.<br/>Для выяснения причин нужно поискать в логе" +
-                " сервера вот такое сообщение:<br/><span class='failure-message'>{message}</span>"
+        title: 'Сбой на сервере',
+        text: "Отслеживание прекращено из-за ошибки:<br/><span class='failure-message'>{message}</span>"
     },
     choicesNotFound: {
         level: 'danger',
-        title: 'Вот блин!',
-        text: "Не удалось получить варианты логов с сервера из-за ошибки:<br/>" +
+        title: 'Сбой на сервере',
+        text: "Не удалось получить варианты логов из-за ошибки:<br/>" +
                 "<span class='failure-message'>{message}</span>"
     }
     //</editor-fold>

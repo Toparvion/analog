@@ -1,8 +1,7 @@
 app.factory('watchingService', ['$log', '$rootScope', 'renderingService', 'config',
                         function ($log, $rootScope, renderingService, config) {
-    var stompClient = undefined;
-    var subscription = undefined;
-
+    let stompClient = undefined;
+    let subscription = undefined;
 
     function connect() {
         if (angular.isDefined(stompClient)) {
@@ -26,25 +25,17 @@ app.factory('watchingService', ['$log', '$rootScope', 'renderingService', 'confi
     }
 
     function startWatching(selectedLog, isTailNeeded) {
-        var logId, isPlain;
-        if (selectedLog.uid) {
-            logId = selectedLog.uid;
-            isPlain = false;
-        } else {
-            logId = selectedLog.path;
-            isPlain = true;
-        }
-        var headers = {
-            isPlain: isPlain,
+        let headers = {
             isTailNeeded: isTailNeeded
         };
-        subscription = stompClient.subscribe(config.websocket.topicPrefix + logId, onServerMessage, headers);
-        $log.log("New subscription has been created with headers: %o", headers)
+        let destination = config.websocket.topicPrefix + selectedLog.id;
+        subscription = stompClient.subscribe(destination, onServerMessage, headers);
+        $log.log("New subscription to destination '%s' has been created with headers %o", destination, headers)
     }
 
     function onServerMessage(message) {
-        var payload = JSON.parse(message.body);
-        var messageType = message.headers['type'];
+        let payload = JSON.parse(message.body);
+        let messageType = message.headers['type'];
 
         switch (messageType) {
             case 'RECORD':

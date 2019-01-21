@@ -1,21 +1,18 @@
 server:
     port: 8083
     address: 0.0.0.0
-logging:
-  config: config/logback-file.xml
 
 nodes:
-  - name: myself
-    host: localhost
-    agentPort: 8085
-    myself: true
+  this:
+    name: myself
+    agentPort: 7801
+
+adapters:
+  docker:
+    useSudo: true
 
 choices:
   - group: АнаЛог
     plainLogs:
-      - ${user.dir}/log/${APP_NAME}.log as "Логи АнаЛога :-)"
-
-#  - group: Микросервисы в Docker
-#    pathBase: /micros/
-#    plainLogs:
-#      - toffee/log/toffee.log as ToFFee (selected)
+      - path: ${user.dir}/log/${spring.application.name}.log
+        title: 'Логи АнаЛога :-)'

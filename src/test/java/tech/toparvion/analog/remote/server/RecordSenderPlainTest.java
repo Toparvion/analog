@@ -41,7 +41,7 @@ class RecordSenderPlainTest {
     payloadAsList.add("Tax Free</payment-info>");
     payloadAsList.add("doc4sms: [N695: #508#]");
 
-    List<StyledLine> records = sut.preparePlainRecords(payloadAsList);
+    List<StyledLine> records = sut.prepareFlatMessage(payloadAsList);
     log.info("\n{}", records.stream()
         .map(rec -> String.format("%7s: %s", rec.getStyle(), rec.getText()))
         .collect(joining("\n")));

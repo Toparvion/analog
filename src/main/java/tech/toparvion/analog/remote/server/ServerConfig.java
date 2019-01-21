@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.config.EnableIntegrationManagement;
@@ -12,7 +11,7 @@ import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.file.tail.FileTailingMessageProducerSupport.FileTailingEvent;
 import org.springframework.integration.rmi.RmiInboundGateway;
-import tech.toparvion.analog.model.config.ClusterProperties;
+import tech.toparvion.analog.model.config.nodes.NodesProperties;
 import tech.toparvion.analog.service.tail.GnuCoreUtilsTailSpecificsProvider;
 import tech.toparvion.analog.service.tail.MacOsTailSpecificsProvider;
 import tech.toparvion.analog.service.tail.SolarisTailSpecificsProvider;
@@ -49,16 +48,16 @@ public class ServerConfig {
     SpEL to extract the field value, combine it with the constant value and thus define the channel name to redirect
     the message to. */
     return IntegrationFlows.from(direct(SERVER_REGISTRATION_ROUTER__CHANNEL))
-        .route(format("'%s'.concat(payload.nodeName)", SERVER_REGISTRATION_RMI_OUT__CHANNEL_PREFIX))
+        .route(format("'%s'.concat(payload.logPath.node)", SERVER_REGISTRATION_RMI_OUT__CHANNEL_PREFIX))
         .get();
   }
 
   @Bean
-  public IntegrationFlow serverRmiPayloadFlow(ClusterProperties clusterProperties,
+  public IntegrationFlow serverRmiPayloadFlow(NodesProperties nodesProperties,
                                               RecordSender recordSender,
                                               MetaDataSender metaDataSender) {
     DirectChannel payloadRmiInChannel = direct(SERVER_RMI_PAYLOAD_IN__CHANNEL).get();
-    int myPort = clusterProperties.getMyselfNode().getAgentPort();
+    int myPort = nodesProperties.getThis().getAgentPort();
 
     RmiInboundGateway inboundRmiGateway = new RmiInboundGateway();
     inboundRmiGateway.setRequestChannel(payloadRmiInChannel);
@@ -89,7 +88,6 @@ public class ServerConfig {
   }
 
   @Bean
-  @Lazy(false)      // to reveal problems with tail ASAP
   public TailSpecificsProvider tailSpecificsProvider() throws Exception {
     String idfString = obtainTailIdfString();
     TailSpecificsProvider specificsProvider;
@@ -128,10 +126,12 @@ public class ServerConfig {
       process = Runtime.getRuntime().exec("tail --version");
     } catch (IOException e) {
       if (e.getMessage().startsWith("Cannot run program")) {
-        log.error("Failed to find 'tail' program on this server. Please check if it is correctly installed, accessible " +
-            "for AnaLog and its path is included into PATH environment variable. Root cause: {}", e.getMessage());
+        String explanationMessage = "Failed to find 'tail' program on this server. Please check if it is correctly " +
+            "installed, accessible for AnaLog and its path is included into PATH environment variable.";
+        throw new IllegalStateException(explanationMessage, e);
+      } else {
+        throw e;
       }
-      throw e;
     }
 
     // then read the first string it has printed

@@ -20,13 +20,13 @@ public class MacOsTailSpecificsProvider implements TailSpecificsProvider {
   }
 
   @Override
-  public String getCompositeTailNativeOptions(boolean includePreviousLines) {
+  public String getGroupTailNativeOptions(boolean includePreviousLines) {
     // follow file name with retries, starting with either the very EOF or some offset before the EOF
     return "-F -" + (includePreviousLines ? "20" : "0");
   }
 
   @Override
-  public String getPlainTailNativeOptions(boolean includePreviousLines) {
+  public String getFlatTailNativeOptions(boolean includePreviousLines) {
     // follow file name with retries, starting with either the very EOF or some offset before the EOF
     return "-F -" + (includePreviousLines ? "45" : "0");
   }

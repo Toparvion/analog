@@ -102,7 +102,7 @@ public class RecordLevelDetector {
     int curPos = startPos;
     char curChar = record.charAt(startPos);
     int wordPos = 0;
-    boolean matchingLevels[] = new boolean[levelMatrix.getLevelsCount()];
+    boolean[] matchingLevels = new boolean[levelMatrix.getLevelsCount()];
     int firstMatchingLevelIdx;
     do {
       matchingLevels = levelMatrix.markMatchingLevels(curChar, wordPos, matchingLevels);

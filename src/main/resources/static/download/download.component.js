@@ -1,8 +1,9 @@
 function DownloadController($scope, $element, $attrs, $log, $http) {
-    var ctrl = this;
+    let ctrl = this;
 
     // behavioral (non-visual) state of controller
     ctrl.isShowingDialog = false;
+    ctrl.isShowingButton = false;
     ctrl.lastError = undefined;
     ctrl.isLoading = false;
     ctrl.file2Download = undefined;
@@ -23,17 +24,19 @@ function DownloadController($scope, $element, $attrs, $log, $http) {
     };
 
     ctrl.initDialogData = function() {
-        if (!ctrl.selectedLog)
+        if (!ctrl.selectedLog) {
             return [];
-        var firstMember = {
+        }
+        let path = extractPath(ctrl.selectedLog.id);
+        let firstMember = {
             node: ctrl.selectedLog.node,
-            path: ctrl.selectedLog.path,
-            file: extractFileName(ctrl.selectedLog.path)
+            path: path,
+            file: extractFileName(path)
         };
-        // By default currently chosen file aimed for downloading is the first member (which is not among includes).
-        // NOTE: This will trigger fetchDataFromServer() via corresponding $watch!
+        // NOTE: The following assignment will trigger fetchDataFromServer() via corresponding $watch!
         ctrl.file2Download = firstMember;
         ctrl.allMembers = new Array(firstMember);
+/* TODO fix inclusion choice for composite logs
         if (ctrl.selectedLog.includes) {
             var otherMembers = ctrl.selectedLog.includes.map(function (member) {
                 return {
@@ -44,12 +47,15 @@ function DownloadController($scope, $element, $attrs, $log, $http) {
             });
             ctrl.allMembers = ctrl.allMembers.concat(otherMembers);
         }
+*/
     };
 
     ctrl.fetchDataFromServer = function () {
-        var uriPath = '/download?path=' + ctrl.file2Download.path;
+        let uriPath = '/download?path=' + ctrl.file2Download.path;
         // it doesn't matter whether specified node is remote or local; server will handle it itself
-        uriPath += ("&node=" + ctrl.file2Download.node);
+        if (angular.isDefined(ctrl.file2Download.node)) {
+            uriPath += ("&node=" + ctrl.file2Download.node);
+        }
         ctrl.isLoading = true;
         $http.head(uriPath)
             .then(
@@ -93,8 +99,12 @@ function DownloadController($scope, $element, $attrs, $log, $http) {
     $scope.$watch(function () {
         return ctrl.selectedLog;
     }, function () {
-        if (ctrl.isShowingDialog)
+        if (ctrl.isShowingDialog) {
             ctrl.initDialogData();
+        }
+        if (ctrl.selectedLog) {
+            ctrl.isShowingButton = (ctrl.selectedLog.type === "LOCAL_FILE") || (ctrl.selectedLog.type === "NODE");
+        }
     });
 
     // the following watch allows to react instantly on changes of selected file among composite log's file list

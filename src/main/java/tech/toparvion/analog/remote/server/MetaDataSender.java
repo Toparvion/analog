@@ -37,7 +37,7 @@ public class MetaDataSender {
 
   void sendMetaData(Message<?> metaMessage) {
     // extract header values in order to include them into metadata being sent
-    String uid = metaMessage.getHeaders().get(LOG_CONFIG_ENTRY_UID__HEADER, String.class);
+    String destination = metaMessage.getHeaders().get(CLIENT_DESTINATION__HEADER, String.class);
     String sourceNode = metaMessage.getHeaders().get(SOURCE_NODE__HEADER, String.class);
 
     // extract payload - the tailing event itself
@@ -50,17 +50,18 @@ public class MetaDataSender {
       eventType = tailSpecificsProvider.detectEventType(event.toString());
 
     } catch (UnrecognizedTailEventException e) {
-      log.error("Server received an event from tail process (uid='{}' on node='{}') but couldn't send it to clients " +
-          "within metadata because failed to detect the event's type with {}. Text of the event: \n{}",
-          uid, sourceNode, tailSpecificsProvider.getClass().getSimpleName(), e.getMessage());
+      log.error("Server received an event from tail process (destination='{}' on node='{}') but couldn't send it " +
+              "to clients within metadata because failed to detect the event's type with {}. Text of the event: \n{}",
+          destination, sourceNode, tailSpecificsProvider.getClass().getSimpleName(), e.getMessage());
       return;
     }
     String logPath = event.getFile().getAbsolutePath();
     Metadata metadata = new Metadata(eventType, logPath, sourceNode);
-    log.debug("Preparing tailing event for sending to clients.\nEvent: {}\nHeaders: node={}, uid='{}'", event, sourceNode, uid);
+    log.debug("Preparing tailing event for sending to clients.\nEvent: {}\nHeaders: node={}, destination='{}'",
+        event, sourceNode, destination);
 
     // and finally send it to all clients subscribed to this log
-    messagingTemplate.convertAndSend(WEBSOCKET_TOPIC_PREFIX + uid,
+    messagingTemplate.convertAndSend(WEBSOCKET_TOPIC_PREFIX + destination,
         metadata, singletonMap(MESSAGE_TYPE_HEADER, MessageType.METADATA));
   }
 

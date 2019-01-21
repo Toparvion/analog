@@ -1,20 +1,20 @@
 package tech.toparvion.analog.model.config;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-import tech.toparvion.analog.util.AnaLogUtils;
+import tech.toparvion.analog.util.config.ChoiceValidator;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Toparvion
  */
-@SuppressWarnings({"unused", "WeakerAccess"})     // such access level and setters presence are required by Spring Boot
+@SuppressWarnings({"unused"})     // setters presence are required by Spring Boot
 @Component
 @ConfigurationProperties
-public class ChoiceProperties implements InitializingBean {
+public class ChoiceProperties {
   private List<ChoiceGroup> choices = new ArrayList<>();
 
   public List<ChoiceGroup> getChoices() {
@@ -25,8 +25,16 @@ public class ChoiceProperties implements InitializingBean {
     this.choices = choices;
   }
 
+  @PostConstruct
+  public void tuneProperties() {
+    ChoiceValidator.applyPathBase(choices);
+    ChoiceValidator.checkAndFixSelectedEntry(choices);
+  }
+
   @Override
-  public void afterPropertiesSet() {
-    choices.forEach(AnaLogUtils::applyPathBase);
+  public String toString() {
+    return "ChoiceProperties{" +
+        "groupsCount=" + choices.size() +
+        '}';
   }
 }

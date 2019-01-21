@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="10 seconds">
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!--<editor-fold desc="Console appender">-->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%clr(%d{HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(%15.15t){faint} - %clr(%-40.40logger{39}){cyan} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+    <!--</editor-fold>-->
+
+    <!-- Default (root) log level and appender -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+    <!-- =============================== Application loggers (from business logic) ============================== -->
+    <logger name="tech.toparvion.analog" level="TRACE"/>
+    <logger name="tech.toparvion.analog.remote.server.RecordSender" level="DEBUG"/>
+    <logger name="tech.toparvion.analog.util.dev.LogFileGenerator" level="INFO"/>
+    <!-- ===================================== System loggers (from libraries) ================================== -->
+    <logger name="org.springframework.integration.file.tail.OSDelegatingFileTailingMessageProducer" level="DEBUG"/>
+
+</configuration>

@@ -24,26 +24,26 @@ app.factory('renderingService', ['$log', '$interval', 'config', function($log, $
 
     function prepareCompositeMessages(newPart) {
         $log.log("Preparing COMPOSITE record: %o", newPart);
-        var $newRecord = $('<div></div>')
+        let $newRecord = $('<div></div>')
             .addClass('composite-record')
-            .addClass('highlight-'+ newPart.highlightColor)
+            .addClass('highlight-' + newPart.highlightColor)
             .data('timestamp', newPart.timestamp)
             .hide();
 
-        var $marker = $('<div></div>')
+        let $marker = $('<div></div>')
             .addClass('marker')
             .attr('data-balloon', ('[' + newPart.sourceNode + '] ' + newPart.sourcePath))
             .attr('data-balloon-pos', 'right');
         $newRecord.append($marker);
 
-        var $payload = $('<div></div>')
+        let $payload = $('<div></div>')
             .addClass('payload');
         $newRecord.append($payload);
 
         angular.forEach(newPart.lines, function (line) {
-            var $messageLine;
+            let $messageLine;
             if (line.style === 'XML') {
-                var $code = $("<code></code>")
+                let $code = $("<code></code>")
                     .addClass("xml")
                     .html(line.text);
                 $messageLine = $("<pre></pre>").append($code);
@@ -56,9 +56,9 @@ app.factory('renderingService', ['$log', '$interval', 'config', function($log, $
             $payload.append($messageLine);
         });
         // determine correct position to insert new record
-        var $records = $consolePanel.find("> .composite-record");
-        var $precedingRecord;
-        for (var i = $records.length; i-- > 0;) {
+        let $records = $consolePanel.find("> .composite-record");
+        let $precedingRecord;
+        for (let i = $records.length; i-- > 0;) {
             if (jQuery.data($records[i], 'timestamp') <= newPart.timestamp) {
                 $precedingRecord = $($records[i]);
                 break;
@@ -80,17 +80,17 @@ app.factory('renderingService', ['$log', '$interval', 'config', function($log, $
 
     function preparePlainMessages(newPart) {
         $log.log("Preparing PLAIN records: %o", newPart);
-        var $recordsBunch = $("<div></div>")
+        let $recordsBunch = $("<div></div>")
                          // .addClass('plain-record')            // no need for the time being
                             .hide();
         angular.forEach(newPart.lines, function (line) {
-            var $messageLine;
+            let $messageLine;
             if (line.style !== 'XML') {
                 $messageLine = $("<div></div>")
                     .addClass(line.style)
                     .html(line.text);
             } else {
-                var $code = $("<code></code>")
+                let $code = $("<code></code>")
                     .addClass("xml")
                     .html(line.text);
                 $messageLine = $("<pre></pre>")

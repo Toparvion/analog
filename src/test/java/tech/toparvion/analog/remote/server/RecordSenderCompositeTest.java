@@ -37,7 +37,7 @@ class RecordSenderCompositeTest {
   void emptyPayload() {
     List<String> payloadAsList = emptyList();
 
-    List<StyledLine> styledLines = sut.prepareCompositeRecords(payloadAsList, null);
+    List<StyledLine> styledLines = sut.prepareGroupMessage(payloadAsList, null);
     assertThat(styledLines, is(empty()));
   }
 
@@ -47,7 +47,7 @@ class RecordSenderCompositeTest {
     List<String> payload = new ArrayList<>();
     payload.add("<payment><amount>100.00</amount></payment>");
     assertThrows(IllegalStateException.class,
-        () -> sut.prepareCompositeRecords(payload, null));
+        () -> sut.prepareGroupMessage(payload, null));
   }
 
   @Test
@@ -57,7 +57,7 @@ class RecordSenderCompositeTest {
     payloadAsList.add("2012-10-24 13:08:00,323 [http-9014-Processor23] DEBUG [LiteEngine] - generateOTP: " +
                       "<payment><amount>100.00</amount></payment>");
 
-    List<StyledLine> records = sut.prepareCompositeRecords(payloadAsList, "DEBUG");
+    List<StyledLine> records = sut.prepareGroupMessage(payloadAsList, "DEBUG");
     log.trace("\n{}", records.stream()
         .map(rec -> String.format("%7s: %s", rec.getStyle(), rec.getText()))
         .collect(joining("\n")));
@@ -80,7 +80,7 @@ class RecordSenderCompositeTest {
         "doc4hash: [<payment><amount>100.00</amount></payment>], " +
         "docHash: com.tfc.web.mdse.model.DocHash@135ecf1");
 
-    List<StyledLine> records = sut.prepareCompositeRecords(payloadAsList, "DEBUG");
+    List<StyledLine> records = sut.prepareGroupMessage(payloadAsList, "DEBUG");
     log.info("\n{}", records.stream()
         .map(rec -> String.format("%7s: %s", rec.getStyle(), rec.getText()))
         .collect(joining("\n")));
@@ -109,7 +109,7 @@ class RecordSenderCompositeTest {
     payloadAsList.add("Tax Free</payment-info>");
     payloadAsList.add("</payment>");
 
-    List<StyledLine> records = sut.prepareCompositeRecords(payloadAsList, "DEBUG");
+    List<StyledLine> records = sut.prepareGroupMessage(payloadAsList, "DEBUG");
     log.info("\n{}", records.stream()
         .map(rec -> String.format("%7s: %s", rec.getStyle(), rec.getText()))
         .collect(joining("\n")));
@@ -139,7 +139,7 @@ class RecordSenderCompositeTest {
     payloadAsList.add("</payment>]");
     payloadAsList.add("docHash: ru.cft.web.mDSE.model.DocHash@135ecf1");
 
-    List<StyledLine> records = sut.prepareCompositeRecords(payloadAsList, "DEBUG");
+    List<StyledLine> records = sut.prepareGroupMessage(payloadAsList, "DEBUG");
     log.info("\n{}", records.stream()
         .map(rec -> String.format("%7s: %s", rec.getStyle(), rec.getText()))
         .collect(joining("\n")));
@@ -176,7 +176,7 @@ class RecordSenderCompositeTest {
     payloadAsList.add("Tax Free</payment-info>");
     payloadAsList.add("doc4sms: [N695: #508#]");
 
-    List<StyledLine> records = sut.prepareCompositeRecords(payloadAsList, "DEBUG");
+    List<StyledLine> records = sut.prepareGroupMessage(payloadAsList, "DEBUG");
     log.info("\n{}", records.stream()
         .map(rec -> String.format("%7s: %s", rec.getStyle(), rec.getText()))
         .collect(joining("\n")));

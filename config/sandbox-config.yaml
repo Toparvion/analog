@@ -1,0 +1,17 @@
+choices:
+  - group: Примеры
+    localPlainLogsBase: E:\Issues\Testing\incubator\analog\log-samples
+    plainLogs:
+      - path: generated\core.log
+        title: $f [генерируемый]
+      - path: generated\micro.log
+      - path: source\core-source.log
+      - path: source\micro-source.log
+    compositeLogs:
+      - title: 'Пробный композит'
+        uriName: 'test-composite'
+        includes:
+          - path: k8s://deploy/restorun-test-deployment
+            timestamp: yyyy-MM-dd HH:mm:ss,SSS
+          - path: k8s://deploy/alcatraz-test-deployment
+            timestamp: HH:mm:ss,SSS

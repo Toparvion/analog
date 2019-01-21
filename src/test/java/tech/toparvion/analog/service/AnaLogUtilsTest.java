@@ -5,14 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.toparvion.analog.util.AnaLogUtils;
+import tech.toparvion.analog.util.PathUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.joining;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Toparvion
@@ -32,9 +31,9 @@ class AnaLogUtilsTest {
     log.info("Original record:\n{}", originalRecord);
     String[] originalTokens = originalRecord.split("\n");
     List<String> lines = new ArrayList<>(asList(originalTokens));
-    String startingLine = AnaLogUtils.distinguishXmlComposite(lines, 0);
+    String startingLine = AnaLogUtils.distinguishXml4Group(lines, 0);
     log.info("Starting line: '{}'", startingLine);
-    String processedRecord = lines.stream().collect(joining("\n"));
+    String processedRecord = String.join("\n", lines);
     log.info("Processed record:\n{}", processedRecord);
 
     assertEquals(originalRecord, processedRecord);
@@ -51,9 +50,9 @@ class AnaLogUtilsTest {
     log.info("Original record:\n{}", originalRecord);
     String[] originalTokens = originalRecord.split("\n");
     List<String> lines = new ArrayList<>(asList(originalTokens));
-    String startingLine = AnaLogUtils.distinguishXmlComposite(lines, 0);
+    String startingLine = AnaLogUtils.distinguishXml4Group(lines, 0);
     log.info("Starting line: '{}'", startingLine);
-    String processedRecord = lines.stream().collect(joining("\n"));
+    String processedRecord = String.join("\n", lines);
     log.info("Processed record:\n{}", processedRecord);
 
     assertTrue(startingLine.startsWith("__XML__"));
@@ -71,9 +70,9 @@ class AnaLogUtilsTest {
     log.info("Original record:\n{}", originalRecord);
     String[] originalTokens = originalRecord.split("\n");
     List<String> lines = new ArrayList<>(asList(originalTokens));
-    String startingLine = AnaLogUtils.distinguishXmlComposite(lines, 0);
+    String startingLine = AnaLogUtils.distinguishXml4Group(lines, 0);
     log.info("Starting line: '{}'", startingLine);
-    String processedRecord = lines.stream().collect(joining("\n"));
+    String processedRecord = String.join("\n", lines);
     log.info("Processed record:\n{}", processedRecord);
 
     assertEquals("<?xml version='1.0' encoding='UTF-8'?>", startingLine);
@@ -81,4 +80,21 @@ class AnaLogUtilsTest {
     assertTrue(processedRecord.endsWith("...and something else..."));
   }
 
+  @Test
+  void customPathDetection_1() {
+    var path = "kubernetes://deploy/pod_a";
+    assertFalse(PathUtils.isLocalFilePath(path));
+  }
+
+  @Test
+  void customPathDetection_2() {
+    var path = "C:/Users/Anonymous/app.log";
+    assertTrue(PathUtils.isLocalFilePath(path));
+  }
+
+  @Test
+  void customPathDetection_3() {
+    var path = "docker:app.log";
+    assertTrue(PathUtils.isLocalFilePath(path));
+  }
 }

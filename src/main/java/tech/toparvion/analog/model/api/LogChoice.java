@@ -1,7 +1,8 @@
 package tech.toparvion.analog.model.api;
 
+import tech.toparvion.analog.model.config.entry.LogType;
+
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -10,64 +11,67 @@ import java.util.Objects;
  */
 @SuppressWarnings("unused")   // getters are used by Jackson during serializing the object to JSON
 public class LogChoice {
+
   private final String group;
-  private final String path;
-  private final String node;
-  private final boolean remote;
+  /**
+   * ID for a plain log is its full path, ID for a composite log is either its uriName or computed hashCode
+   */
+  private final String id;
+  /**
+   * String representation of {@linkplain LogType log type}. Must be provided as
+   * {@link LogType#toString()}.
+   */
+  private final String type;
   private final String title;
   private final boolean selected;
-  @Nullable   // null in case of plain (not composite) log
-  private final String uid;
-  private final List<CompositeInclusion> includes = new ArrayList<>();
+  /** Sensible for 'node://' type logs only */
+  @Nullable
+  private final String node;
+  /** Defined for 'composite://' type logs only */
+  private final List<String> includes;
 
   LogChoice(String group,
-            String path,
-            String node,
-            boolean remote,
+            String id,
+            String type,
             String title,
             boolean selected,
-            @Nullable String uid,
-            List<CompositeInclusion> includes) {
+            @Nullable String node,
+            List<String> includes) {
     this.group = group;
-    this.path = path;
+    this.id = id;
+    this.type = type;
     this.node = node;
-    this.remote = remote;
     this.title = title;
     this.selected = selected;
-    this.uid = uid;
-    this.includes.addAll(includes);
+    this.includes = includes;
   }
 
   public String getGroup() {
     return group;
   }
 
-  public String getPath() {
-    return path;
+  public String getId() {
+    return id;
   }
 
-  public boolean getRemote() {
-    return remote;
+  public String getType() {
+    return type;
   }
 
   public String getTitle() {
     return title;
   }
 
-  public String getNode() {
-    return node;
-  }
-
-  public boolean getSelected() {
+  public boolean isSelected() {
     return selected;
   }
 
   @Nullable
-  public String getUid() {
-    return uid;
+  public String getNode() {
+    return node;
   }
 
-  public List<CompositeInclusion> getIncludes() {
+  public List<String> getIncludes() {
     return includes;
   }
 
@@ -76,13 +80,11 @@ public class LogChoice {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     LogChoice logChoice = (LogChoice) o;
-    return Objects.equals(path, logChoice.path) &&
-        Objects.equals(node, logChoice.node) &&
-        Objects.equals(uid, logChoice.uid);
+    return id.equals(logChoice.id);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(path, node, uid);
+    return Objects.hash(id);
   }
 }

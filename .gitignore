@@ -7,8 +7,9 @@
 *.iws
 *.iml
 *.ipr
+out/
 
+### Custom ###
 memo.txt
 log-samples/
 /dist/deploy-*/
-application.log

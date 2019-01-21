@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title ng-bind-html="watchingLog">АнаЛ&oacute;г v0.10.1</title>
+    <title ng-bind-html="watchingLog">АнаЛ&oacute;г v0.11</title>
 
     <script type="text/javascript" src="webjars/jquery/1.11.1/jquery.min.js"></script>
     <script type="text/javascript" src="webjars/jquery.scrollto/2.1.2/jquery.scrollTo.min.js"></script>
@@ -47,7 +47,7 @@
         <!-- Brand -->
         <div class="navbar-header">
             <div class="navbar-brand">
-                <img alt="АнаЛ&oacute;г v0.10.1" title="АнаЛ&oacute;г v0.10.1" src="general/img/logo-20-20.png">
+                <img alt="АнаЛ&oacute;г v0.11" title="АнаЛ&oacute;г v0.11" src="general/img/logo-20-20.png">
             </div>
         </div>
         <!-- Watching toggle control -->
@@ -57,19 +57,19 @@
         <!-- Choices field-->
         <div class="navbar-form navbar-left form-group">
             <ui-select ng-model="ctrl.selectedLog" on-select="ctrl.onLogChange()">
-                <ui-select-match allow-clear="false" placeholder="Имя файла, путь, группа, ...">
+                <ui-select-match allow-clear="false" placeholder="Имя лога, путь, группа, ...">
                     <span ng-bind-html="$select.selected.title"></span>
                 </ui-select-match>
                 <ui-select-choices group-by="'group'"
                                    repeat="item in choices | filter: $select.search">
                     <div ng-bind-html="item.title | highlight: $select.search"></div>
                     <small class="log-choice-detail">
-                        <span ng-bind-html="item.path | highlight: $select.search"></span>
+                        <span ng-bind-html="item.id | highlight: $select.search"></span>
                     </small>
                     <div>
                         <span class="label"
-                              ng-class="item.includes ? 'label-warning' : (item.remote ? 'label-info' : 'label-primary')"
-                              ng-bind-html="item | nodeLister | highlight: $select.search"></span>
+                              ng-class="item | labelClassPicker"
+                              ng-bind-html="item | logTypeDetector | highlight: $select.search"></span>
                     </div>
                 </ui-select-choices>
             </ui-select>
@@ -92,7 +92,7 @@
 <!-- Console -->
 <div class="container-fluid">
     <div class="row">
-        <div class="col-xs-12" ng-class="{'text-nowrap': !ctrl.textWrap}" id="consolePanel"></div>
+        <div class="col-xs-12" ng-class="{'text-wrap': ctrl.textWrap, 'text-nowrap': !ctrl.textWrap}" id="consolePanel"></div>
     </div>
     <!-- cursor showing the active watching process -->
     <div class="row" ng-class="{'invisible-cursor': !ctrl.onAir}">
@@ -119,6 +119,6 @@
 </div>
 
 <!-- Substrate -->
-<img id="substrate" src="general/img/magnifier.png"/>
+<img id="substrate" src="general/img/magnifier.png" alt="substrate logo"/>
 </body>
 </html>

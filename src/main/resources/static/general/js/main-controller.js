@@ -1,7 +1,7 @@
 app = angular.module("AnaLog", ['ngSanitize', 'ngAnimate', 'ui.select']);
 
 app.run(function ($rootScope, watchingService) {
-    $rootScope.watchingLog = "АнаЛ&oacute;г v0.10.1 (загрузка...)";
+    $rootScope.watchingLog = "АнаЛ&oacute;г v0.11 (загрузка...)";
     watchingService.connect();
 });
 
@@ -17,9 +17,14 @@ app.controller('mainController', function ($scope, $rootScope, $window,
     $scope.choices = [];
 
     vm.onLogChange = function() {
-        $log.log("New choice: " + vm.selectedLog.path);
+        let locationPath = removeSlashIfNeeded($location.path());
+        if (arePathsEqual(locationPath, vm.selectedLog.id)) {
+            $log.log("onLogChange handling has been bypassed as no actual change happened (%s)", vm.selectedLog.id);
+            return;
+        }
+        $log.log("New choice: " + vm.selectedLog.id);
         $rootScope.watchingLog = vm.selectedLog.title + " - " + config.general.appTitle;
-        $location.path(vm.selectedLog.path);
+        $location.path(addSlashIfNeeded(vm.selectedLog.id));
         vm.clear();
         if (vm.onAir) {
             watchingService.stopWatching();
@@ -34,10 +39,10 @@ app.controller('mainController', function ($scope, $rootScope, $window,
     $scope.$watch(function () {
         return $location.path();
     }, function (value) {
-        // $log.log("Raw value: " + value); // helpful for troubleshooting paths starting with 'C:\'
-        var newPath = value;
-        if (vm.selectedLog && !arePathsEqual(vm.selectedLog.path, newPath)) {
-            $log.log("Path change detected from: '" + vm.selectedLog.path + "' to: '" + newPath +"'.");
+        // $log.log("$location.path() raw value: " + value); // helpful for troubleshooting paths starting with 'C:\'
+        let newId = removeSlashIfNeeded(value);
+        if (vm.selectedLog && !arePathsEqual(vm.selectedLog.id, newId)) {
+            $log.log("Log ID change detected from: '" + vm.selectedLog.id + "' to: '" + newId +"'.");
             vm.clear();
             choicesService();
             // then the watching will be reactivated (if needed) during the handling of choicesReady event
@@ -47,7 +52,7 @@ app.controller('mainController', function ($scope, $rootScope, $window,
     $scope.$watch(function () {
         return vm.onAir;
     }, function () {
-        var needTail = renderingService.isConsoleEmpty();
+        let needTail = renderingService.isConsoleEmpty();
         $log.log("Turning onAir to: %s", vm.onAir);
         if (vm.onAir) {
             watchingService.startWatching(vm.selectedLog, needTail)
@@ -93,40 +98,29 @@ app.controller('mainController', function ($scope, $rootScope, $window,
 
 });
 
-app.filter('nodeLister', function () {
+app.filter('logTypeDetector', function () {
     return function (logChoice) {
-        var label;
-        var allNodes = new Array({node: logChoice.node, path: logChoice.path});
-        if (logChoice.includes) {
-            allNodes = allNodes.concat(logChoice.includes);
+        switch (logChoice.type) {
+            case 'LOCAL_FILE':
+                return 'локальный файл';
+            case 'NODE':
+                return 'удалённый файл на узле {node}'.format(logChoice);
+            case 'COMPOSITE':
+                return 'композит из {size} {logs}'.format({size: logChoice.includes.length,
+                                                           logs: quantify(logChoice.includes.length)});
+            case 'DOCKER':
+                return 'контейнер в Docker';
+            case 'KUBERNETES':
+            case 'K8S':
+                return 'ресурс в Kubernetes';
+            default:
+                return '[неизвестный тип лога]';
         }
-        // console.log("All nodes: %o", allNodes);
-        if (allNodes.length > 1) {
-            var counts = {};
-            // first let's count how many times each node is encountered in the list
-            allNodes.forEach(function (inclusion) {
-                counts[inclusion.node] = (counts[inclusion.node] || 0) + 1;
-            });
-            // console.log("Counts: %o", counts);
-            // then extract only distinct node names from the list
-            var uniqueNodes = removeDuplicates(allNodes, 'node');
-            // console.log("Unique nodes: %o", uniqueNodes);
-            var nodeList = '';
-            // finally compose a string list of distinct node names with quantity of their occurrences (if > 1)
-            uniqueNodes.forEach(function (inclusion) {
-                if (nodeList)
-                    nodeList += ', ';
-                nodeList += inclusion.node;
-                if (counts[inclusion.node] > 1)
-                    nodeList += '(' + counts[inclusion.node] + ')';
-            });
-            // console.log("Node list: %o", nodeList);
-            label = 'композитный: ' + nodeList;
-
-        } else {  // if there is only one node for this log
-            label = logChoice.remote ? 'удаленный: ' : 'локальный: ';
-            label += logChoice.node || 'на текущем узле';
-        }
-        return label;
     }
 });
+
+app.filter('labelClassPicker', ['config', function (config) {
+    return function (logChoice) {
+        return "label-" + (config.mappings.type2class.get(logChoice.type) || "default");
+    }
+}]);

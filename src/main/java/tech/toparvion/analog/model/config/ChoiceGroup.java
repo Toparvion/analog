@@ -1,5 +1,9 @@
 package tech.toparvion.analog.model.config;
 
+import tech.toparvion.analog.model.config.entry.CompositeLogConfigEntry;
+import tech.toparvion.analog.model.config.entry.PlainLogConfigEntry;
+import tech.toparvion.analog.model.config.entry.ScanLocations;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,11 +13,11 @@ import java.util.List;
 @SuppressWarnings("unused")       // setters are used by Spring while processing @ConfigurationProperties
 public class ChoiceGroup {
 
-  private String group                          = "(non-grouped)";
-  private String pathBase                       = "";
-  private String scanDir                        = null;
-  private List<LogConfigEntry> compositeLogs    = new ArrayList<>();
-  private List<String> plainLogs                = new ArrayList<>();
+  private String group                                    = "(non-grouped)";
+  private String localPlainLogsBase                       = "";
+  private ScanLocations scanLocations                     = null;
+  private List<CompositeLogConfigEntry> compositeLogs     = new ArrayList<>();
+  private List<PlainLogConfigEntry> plainLogs             = new ArrayList<>();
 
   public ChoiceGroup() { }
 
@@ -25,35 +29,46 @@ public class ChoiceGroup {
     this.group = group;
   }
 
-  public String getPathBase() {
-    return pathBase;
+  public String getLocalPlainLogsBase() {
+    return localPlainLogsBase;
   }
 
-  public void setPathBase(String pathBase) {
-    this.pathBase = pathBase;
+  public void setLocalPlainLogsBase(String localPlainLogsBase) {
+    this.localPlainLogsBase = localPlainLogsBase;
   }
 
-  public String getScanDir() {
-    return scanDir;
+  public ScanLocations getScanLocations() {
+    return scanLocations;
   }
 
-  public void setScanDir(String scanDir) {
-    this.scanDir = scanDir;
+  public void setScanLocations(ScanLocations scanLocations) {
+    this.scanLocations = scanLocations;
   }
 
-  public List<LogConfigEntry> getCompositeLogs() {
+  public List<CompositeLogConfigEntry> getCompositeLogs() {
     return compositeLogs;
   }
 
-  public void setCompositeLogs(List<LogConfigEntry> compositeLogs) {
+  public void setCompositeLogs(List<CompositeLogConfigEntry> compositeLogs) {
     this.compositeLogs = compositeLogs;
   }
 
-  public List<String> getPlainLogs() {
+  public List<PlainLogConfigEntry> getPlainLogs() {
     return plainLogs;
   }
 
-  public void setPlainLogs(List<String> plainLogs) {
+  public void setPlainLogs(List<PlainLogConfigEntry> plainLogs) {
     this.plainLogs = plainLogs;
+  }
+
+  @Override
+  public String toString() {
+    return "ChoiceGroup{" +
+        "group='" + group + '\'' +
+        ", plainLogsLocalBase='" + localPlainLogsBase + '\'' +
+        ", scanLocations=" + scanLocations +
+        ", compositeLogsSize=" + compositeLogs.size() +
+        ", plainLogsSize=" + plainLogs.size() +
+        '}';
   }
 }
