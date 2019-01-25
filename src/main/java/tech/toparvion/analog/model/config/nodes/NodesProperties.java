@@ -1,6 +1,5 @@
 package tech.toparvion.analog.model.config.nodes;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -28,14 +27,7 @@ public class NodesProperties {
    * that explicit node's coordinates are required (i.e. no host/serverPort/agentPort).
    */
   // private ServiceRegistryProperties serviceRegistryProperties;
-
-  private final int serverPort;
-
-  public NodesProperties(@Value("${server.port}") int serverPort) {
-    Assert.isTrue(serverPort != 0, "server.port must be specified");
-    this.serverPort = serverPort;
-  }
-
+  
   public Node getThis() {
     return thisNode;
   }
@@ -66,7 +58,7 @@ public class NodesProperties {
 
   @PostConstruct
   public void validateAndFix() {
-    NodeValidator.validateThisNode(thisNode, serverPort);
+    NodeValidator.validateThisNode(thisNode);
     NodeValidator.fixOtherNodesPorts(others, thisNode);
   }
 

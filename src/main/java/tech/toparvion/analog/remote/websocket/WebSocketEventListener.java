@@ -107,7 +107,7 @@ public class WebSocketEventListener {
         // 1. Ensure that all RMI registration channels are created
         ensureRegistrationChannelsCreated(logConfig);
         // 2. Register the tracking on specified nodes
-        startTrackingOnServer(logConfig, path, isTailNeeded);
+        startTracking(logConfig, path, isTailNeeded);
         // 3. Remember the tracking in the registry
         registry.addEntry(logConfig, sessionId);
         log.info("New tracking for log '{}' has started within session id={}.", logConfig.getId(), sessionId);
@@ -116,9 +116,6 @@ public class WebSocketEventListener {
         log.error(format("Failed to start watching of log '%s'.", logConfig.getId()), e);
         ServerFailure failure = new ServerFailure(e.getMessage(), now());
         messagingTemplate.convertAndSend(destination, failure, singletonMap(MESSAGE_TYPE_HEADER, MessageType.FAILURE));
-        // TODO Научиться по аналогии с этим отправлять сообщение об успешной настройке подписки, для чего превратить
-        //  serverFailure в более общий тип сообщения. При получении этого типа убирать на клиенте прелоадер,
-        //  выставленный перед отправкой запроса на подписку.
       }
 
     } else {    // i.e. if there are watching sessions already in registry
@@ -173,7 +170,7 @@ public class WebSocketEventListener {
     // in case it was the latest session watching that log we should unsubscribe current node from the agent
     AbstractLogConfigEntry watchingLog = registry.findLogConfigEntryBy(sessionId);
     log.debug("No sessions left watching log '{}'. Will unsubscribe current node...", watchingLog.getId());
-    doSafely(getClass(), () -> stopTrackingOnServer(watchingLog));
+    doSafely(getClass(), () -> stopTracking(watchingLog));
     // now that the log is not watched anymore on current node we need to remove it from the registry
     registry.removeEntry(watchingLog);
     log.info("Current node has unregistered itself from tracking log '{}' as there is no watching sessions anymore.",
@@ -247,18 +244,18 @@ public class WebSocketEventListener {
     }
   }
 
-  private void startTrackingOnServer(AbstractLogConfigEntry logConfigEntry, String destination, boolean isTailNeeded) {
-    switchTrackingOnServer(logConfigEntry, destination, true, isTailNeeded);
+  private void startTracking(AbstractLogConfigEntry logConfigEntry, String destination, boolean isTailNeeded) {
+    switchTracking(logConfigEntry, destination, true, isTailNeeded);
   }
 
-  private void stopTrackingOnServer(AbstractLogConfigEntry logConfigEntry) {
-    switchTrackingOnServer(logConfigEntry, null, false, false);
+  private void stopTracking(AbstractLogConfigEntry logConfigEntry) {
+    switchTracking(logConfigEntry, null, false, false);
   }
 
-  private void switchTrackingOnServer(AbstractLogConfigEntry logConfigEntry,
-                                      @Nullable String destination /*can be null when switching OFF*/,
-                                      boolean isOn,
-                                      boolean isTailNeeded) {
+  private void switchTracking(AbstractLogConfigEntry logConfigEntry,
+                              @Nullable String destination /*can be null when switching OFF*/,
+                              boolean isOn,
+                              boolean isTailNeeded) {
     Assert.isTrue(!(isTailNeeded && !isOn), "isTailNeeded flag shouldn't be raised when switching tracking off");
 
     // handling plain entries is quite simple so let's do it first

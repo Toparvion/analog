@@ -25,7 +25,7 @@ app.constant('config', {
     websocket: {
         topicPrefix: "/topic/",
         watchEndpoint: '/watch-endpoint',
-        reconnectDelayMs: 10000
+        reconnectDelayMs: 5000
     },
 
     mappings: {

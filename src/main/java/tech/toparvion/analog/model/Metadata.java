@@ -11,14 +11,16 @@ import java.io.Serializable;
  */
 @SuppressWarnings("unused")   // getters are actually used by Jackson serializer during conversion to JSON
 public class Metadata implements Serializable {
-  private final TailEventType eventType;
+  private final LogEventType eventType;
   private final String logPath;
   private final String nodeName;
+  private final String message;
 
-  public Metadata(TailEventType eventType, String logPath, String nodeName) {
+  public Metadata(LogEventType eventType, String logPath, String nodeName, String message) {
     this.eventType = eventType;
     this.logPath = logPath;
     this.nodeName = nodeName;
+    this.message = message;
   }
 
   public String getEventType() {
@@ -33,12 +35,17 @@ public class Metadata implements Serializable {
     return nodeName;
   }
 
+  public String getMessage() {
+    return message;
+  }
+
   @Override
   public String toString() {
     return "Metadata{" +
-        "eventType=" + eventType +
-        ", logPath='" + logPath + '\'' +
-        ", nodeName='" + nodeName + '\'' +
-        '}';
+            "eventType=" + eventType +
+            ", logPath='" + logPath + '\'' +
+            ", nodeName='" + nodeName + '\'' +
+            ", message='" + message + '\'' +
+            '}';
   }
 }

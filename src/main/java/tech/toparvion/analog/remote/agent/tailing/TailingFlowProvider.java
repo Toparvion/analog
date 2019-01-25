@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.dsl.MessageProducerSpec;
@@ -15,17 +16,23 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import tech.toparvion.analog.model.config.adapters.GeneralAdapterParams;
+import tech.toparvion.analog.model.config.adapters.TrackingProperties;
 import tech.toparvion.analog.model.config.entry.LogPath;
 import tech.toparvion.analog.remote.agent.misc.CorrelationIdHeaderEnricher;
 import tech.toparvion.analog.remote.agent.misc.SequenceNumberHeaderEnricher;
+import tech.toparvion.analog.remote.agent.origin.adapt.DockerOriginAdapter;
+import tech.toparvion.analog.remote.agent.origin.adapt.FileOriginAdapter;
+import tech.toparvion.analog.remote.agent.origin.adapt.KubernetesOriginAdapter;
 import tech.toparvion.analog.remote.agent.si.ContainerTargetFile;
 import tech.toparvion.analog.remote.agent.si.ProcessTailAdapterSpec;
 import tech.toparvion.analog.service.RecordLevelDetector;
-import tech.toparvion.analog.service.tail.TailSpecificsProvider;
+import tech.toparvion.analog.util.PathUtils;
 import tech.toparvion.analog.util.timestamp.TimestampExtractor;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.util.Comparator;
 import java.util.concurrent.PriorityBlockingQueue;
 
@@ -33,7 +40,6 @@ import static java.lang.String.format;
 import static org.springframework.integration.IntegrationMessageHeaderAccessor.CORRELATION_ID;
 import static org.springframework.integration.dsl.MessageChannels.publishSubscribe;
 import static org.springframework.integration.dsl.MessageChannels.queue;
-import static org.springframework.integration.file.dsl.Files.tailAdapter;
 import static org.springframework.util.StringUtils.hasText;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
 import static tech.toparvion.analog.remote.agent.AgentConstants.TAIL_FLOW_PREFIX;
@@ -51,31 +57,25 @@ public class TailingFlowProvider {
   private static final String TAIL_PROCESS_ADAPTER_PREFIX = "tailProcess_";
 
   private final TimestampExtractor timestampExtractor;
-  private final TailSpecificsProvider tailSpecificsProvider;
   private final RecordLevelDetector recordLevelDetector;
   private final IntegrationFlowContext flowContext;
-  private final int groupSizeThreshold;
-  private final int groupTimeoutMs;
+  private final TrackingProperties trackingProperties;
+  private final ApplicationContext appContext;
   private final String thisNodeName;
-  private final boolean useDockerSudo;
 
   @Autowired
   public TailingFlowProvider(TimestampExtractor timestampExtractor,
-                             TailSpecificsProvider tailSpecificsProvider,
                              RecordLevelDetector recordLevelDetector,
                              IntegrationFlowContext flowContext,
-                             @Value("${tracking.group.sizeThreshold:500}") int groupSizeThreshold,
-                             @Value("${tracking.group.timeoutMs:500}") int groupTimeoutMs,
-                             @Value("${nodes.this.name}") String thisNodeName,
-                             @Value("${adapters.docker.useSudo:true}") boolean useDockerSudo) {
+                             TrackingProperties trackingProperties,
+                             ApplicationContext appContext,
+                             @Value("${nodes.this.name}") String thisNodeName) {
     this.timestampExtractor = timestampExtractor;
-    this.tailSpecificsProvider = tailSpecificsProvider;
     this.recordLevelDetector = recordLevelDetector;
     this.flowContext = flowContext;
-    this.groupSizeThreshold = groupSizeThreshold;
-    this.groupTimeoutMs = groupTimeoutMs;
+    this.trackingProperties = trackingProperties;
+    this.appContext = appContext;
     this.thisNodeName = thisNodeName;
-    this.useDockerSudo = useDockerSudo;
   }
 
   /**
@@ -103,8 +103,10 @@ public class TailingFlowProvider {
         Comparator.comparingLong(message -> message.getHeaders().get(SEQUENCE_NUMBER__HEADER, Long.class)));
     MessageChannel preAggregatorQueueChannel = queue(queue).get();
 
+    int groupSizeThreshold = trackingProperties.getGrouping().getSizeThreshold();
+    long groupTimeout = trackingProperties.getGrouping().getTimeout().toMillis();
     GroupAggregatorConfigurer recordAggregatorConfigurer
-        = new GroupAggregatorConfigurer(preAggregatorQueueChannel, groupSizeThreshold, groupTimeoutMs);
+        = new GroupAggregatorConfigurer(preAggregatorQueueChannel, groupSizeThreshold, groupTimeout);
 
     String tailFlowOutChannelName = findOrCreateTailFlow(logPath, false, isTailNeeded);
 
@@ -129,12 +131,14 @@ public class TailingFlowProvider {
    */
   public IntegrationFlow provideFlatFlow(LogPath logPath, boolean isTailNeeded) {
     String tailFlowOutChannelName = findOrCreateTailFlow(logPath, true, isTailNeeded);
+    int groupSizeThreshold = trackingProperties.getGrouping().getSizeThreshold();
+    long groupTimeout = trackingProperties.getGrouping().getTimeout().toMillis();
     return IntegrationFlows
         .from(tailFlowOutChannelName)
         .aggregate(aggregatorSpec -> aggregatorSpec
             .correlationStrategy(message -> BigDecimal.ONE)
             .releaseStrategy(group -> group.size() > groupSizeThreshold)
-            .groupTimeout(groupTimeoutMs)
+            .groupTimeout(groupTimeout)
             .expireGroupsUponTimeout(true)
             .expireGroupsUponCompletion(true)
             .sendPartialResultOnExpiry(true))
@@ -191,60 +195,98 @@ public class TailingFlowProvider {
 
       case NODE:
         Assert.isTrue(thisNodeName.equals(logPath.getNode()),
-                      format("request for node '%s' has come to node '%s'", logPath.getNode(), thisNodeName));
+                      format("request for node '%s' has come to foreign node '%s'", logPath.getNode(), thisNodeName));
         // no break needed
       case LOCAL_FILE:
         return newTailAdapter4File(logPath, isTrackingFlat, isTailNeeded);
+
+      case COMPOSITE:
+        throw new IllegalStateException("Single adapter cannot be applied to composite log: " + logPath);
 
       default:
         throw new IllegalArgumentException("Unsupported type of logPath: " + logPath);
     }
   }
 
-  private MessageProducerSpec<?, ?> newTailAdapter4Docker(LogPath logPath, boolean isTrackingFlat, boolean isTailNeeded) {
-    int tailLength = isTailNeeded
-            ? isTrackingFlat ? 45 : 20
+  private MessageProducerSpec<?, ?> newTailAdapter4File(LogPath logPath, boolean isTrackingFlat, boolean isTailNeeded) {
+    FileOriginAdapter fileOriginAdapter = appContext.getBean(FileOriginAdapter.class); // (!) this will init the adapter firstly!
+    GeneralAdapterParams adapterParams = fileOriginAdapter.adapterParams();
+    String followCommand = adapterParams.getFollowCommand();
+    int tailSize = isTailNeeded
+            ? isTrackingFlat
+              ? trackingProperties.getTailSize().getFlat()
+              : trackingProperties.getTailSize().getGroup()
             : 0;
+    String nativeOptions = MessageFormat.format(followCommand, tailSize);
     String adapterId = TAIL_PROCESS_ADAPTER_PREFIX + logPath.getFullPath();
-    String dockerLogsOptions = format("--follow --tail=%d", tailLength);
-    String fullPrefix = logPath.getType().getPrefix() + CUSTOM_SCHEMA_SEPARATOR;
-    String command = (useDockerSudo ? "sudo " : "")
-                + "docker logs";
+    String executable = adapterParams.getExecutable();
+    log.debug("Starting file tracking with executable '{}' and options '{}'...", executable, nativeOptions);
+    String localPath = PathUtils.extractLocalPath(logPath);
     return new ProcessTailAdapterSpec()
-        .executable(command)
+            .executable(executable)
+            .file(new File(localPath))
+            .id(adapterId)
+            .nativeOptions(nativeOptions)
+            .fileDelay(trackingProperties.getRetryDelay().toMillis())
+            .enableStatusReader(true);
+  }
+
+  private MessageProducerSpec<?, ?> newTailAdapter4Docker(LogPath logPath, boolean isTrackingFlat, boolean isTailNeeded) {
+    DockerOriginAdapter dockerOriginAdapter = appContext.getBean(DockerOriginAdapter.class); // (!) this will init the adapter firstly!
+    GeneralAdapterParams adapterParams = dockerOriginAdapter.adapterParams();
+    String followCommand = adapterParams.getFollowCommand();
+    int tailSize = isTailNeeded
+            ? isTrackingFlat
+              ? trackingProperties.getTailSize().getFlat()
+              : trackingProperties.getTailSize().getGroup()
+            : 0;
+    String nativeOptions = MessageFormat.format(followCommand, tailSize);
+    String adapterId = TAIL_PROCESS_ADAPTER_PREFIX + logPath.getFullPath();
+    String fullPrefix = logPath.getType().getPrefix() + CUSTOM_SCHEMA_SEPARATOR;
+    String executable = adapterParams.getExecutable();
+    log.debug("Starting Docker tracking with executable '{}' and options '{}'...", executable, nativeOptions);
+    return new ProcessTailAdapterSpec()
+        .executable(executable)
         .file(new ContainerTargetFile(fullPrefix, logPath.getTarget()))
         .id(adapterId)
-        .nativeOptions(dockerLogsOptions)
-        .fileDelay(5000)
+        .nativeOptions(nativeOptions)
+        .fileDelay(trackingProperties.getRetryDelay().toMillis())
         .enableStatusReader(true);
   }
 
+  // TODO consider moving this and fellow methods to corresponding adapters as they are highly specific for the origins
   private MessageProducerSpec<?, ?> newTailAdapter4Kubernetes(LogPath logPath, boolean isTrackingFlat, boolean isTailNeeded) {
-    int tailLength = isTailNeeded
-        ? isTrackingFlat ? 45 : 20
-        : 1;                                // why 1 see in https://github.com/kubernetes/kubernetes/issues/35335
+    KubernetesOriginAdapter kubernetesOriginAdapter = appContext.getBean(KubernetesOriginAdapter.class);// (!) this will init the adapter firstly!
+    GeneralAdapterParams adapterParams = kubernetesOriginAdapter.adapterParams();
+    String followCommand = adapterParams.getFollowCommand();
+    int tailSize = isTailNeeded
+            ? isTrackingFlat
+              ? trackingProperties.getTailSize().getFlat()
+              : trackingProperties.getTailSize().getGroup()
+            : 1;                                 // why 1 see in https://github.com/kubernetes/kubernetes/issues/35335
+    String nativeOptions = MessageFormat.format(followCommand, tailSize);
     String adapterId = TAIL_PROCESS_ADAPTER_PREFIX + logPath.getFullPath();
-    StringBuilder optsBuilder = new StringBuilder();
-    optsBuilder.append(format("--follow --tail=%d", tailLength));
+    var optsBuilder = new StringBuilder(nativeOptions);
     String resource = null;
     String[] tokens = logPath.getTarget().split("/");
     for (int i = 0; i < tokens.length; i++) {
       String token = tokens[i];
       switch (token.toLowerCase()) {
         case "namespace":
-          String namespace = tokens[i + 1];
+          var namespace = tokens[i + 1];
           optsBuilder.append(" --namespace=").append(namespace);
+          // (!) Caution: namespace might be already specified in adapters.kubernetes.followCommand (application.yaml)
           i++;
           break;
         case "container":
         case "c":
-          String container = tokens[i + 1];
+          var container = tokens[i + 1];
           optsBuilder.append(" --container=").append(container);
           i++;
           break;
         default:
-          String newResource;// i.e. if index (i+1) exists in tokens array
-          if ((i + 1) <= (tokens.length - 1)) {
+          String newResource;
+          if ((i + 1) <= (tokens.length - 1)) {   // i.e. if index (i+1) exists in tokens array
             newResource = String.format("%s/%s", tokens[i], tokens[i + 1]);
             i++;
           } else {
@@ -260,25 +302,13 @@ public class TailingFlowProvider {
     String k8sLogsOptions = optsBuilder.toString();
     log.debug("Target '{}' is converted into resource '{}' and options: {}", logPath.getTarget(), resource, k8sLogsOptions);
 
-    String fullPrefix = logPath.getType().getPrefix() + CUSTOM_SCHEMA_SEPARATOR;
+    var fullPrefix = logPath.getType().getPrefix() + CUSTOM_SCHEMA_SEPARATOR;
     return new ProcessTailAdapterSpec()
-        .executable("kubectl logs")
+        .executable(adapterParams.getExecutable())
         .file(new ContainerTargetFile(fullPrefix, resource))
         .id(adapterId)
         .nativeOptions(k8sLogsOptions)
-        .fileDelay(5000)
-        .enableStatusReader(true);
-  }
-
-  private MessageProducerSpec<?, ?> newTailAdapter4File(LogPath logPath, boolean isTrackingFlat, boolean isTailNeeded) {
-    String tailNativeOptions = isTrackingFlat
-        ? tailSpecificsProvider.getFlatTailNativeOptions(isTailNeeded)
-        : tailSpecificsProvider.getGroupTailNativeOptions(isTailNeeded);
-    String adapterId = TAIL_PROCESS_ADAPTER_PREFIX + logPath.getFullPath();
-    return tailAdapter(new File(logPath.getFullPath()))
-        .id(adapterId)
-        .nativeOptions(tailNativeOptions)
-        .fileDelay(tailSpecificsProvider.getAttemptsDelay())
+        .fileDelay(trackingProperties.getRetryDelay().toMillis())
         .enableStatusReader(true);
   }
 

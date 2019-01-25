@@ -2,6 +2,7 @@ package tech.toparvion.analog.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 import org.w3c.tidy.Tidy;
 
 import java.io.PrintWriter;
@@ -27,6 +28,8 @@ public class AnaLogUtils {
   private static final Pattern MESSAGE_LEVEL_EXTRACTOR = Pattern.compile("^[\\S ]*(TRACE|DEBUG|INFO|WARN|ERROR|FATAL)");
   private static final Pattern XML_OPEN_EXTRACTOR = Pattern.compile("<((?:\\w[\\w-]*:)?\\w[\\w-]*).*>");
   private static final Pattern WHOLE_XML_EXTRACTOR = Pattern.compile("^<((?:\\w[\\w-]*:)?\\w[\\w-]*).*>.*</\\1>$", Pattern.DOTALL);
+
+  private static final Pattern TAIL_EVENT_MESSAGE_PATTERN = Pattern.compile("message=(.*), file=", Pattern.DOTALL);
 
   public static String escapeSpecialCharacters(String inputString) {
     String result = inputString.replaceAll("\"", "&quot;");
@@ -287,6 +290,21 @@ public class AnaLogUtils {
       LoggerFactory.getLogger(callerClass).error("Failed to perform action.", e);
       return Optional.of(e);
     }
+  }
+
+  /**
+   * It's a shame but {@link org.springframework.integration.file.tail.FileTailingMessageProducerSupport.FileTailingEvent
+   * FileTailingEvent} has no <em>public</em> getter method for {@code message} field. That's why we have to extract it
+   * by means of regular expression from event's {@code toString()} dump. Another solution might be to use reflection
+   * but it also doesn't seem suitable for this sutiation.
+   * @param fileTailEventStringDump result of {@code FileTailingEvent#toString()} invocation
+   * @return event's message text
+   */
+  public static String extractMessage(String fileTailEventStringDump) {
+    Assert.hasText(fileTailEventStringDump, "Tail event must not be empty.");
+    Matcher matcher = TAIL_EVENT_MESSAGE_PATTERN.matcher(fileTailEventStringDump);
+    Assert.isTrue(matcher.find(), "Couldn't extract message from tail event: " + fileTailEventStringDump);
+    return matcher.group(1);
   }
 
   @FunctionalInterface

@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Date;
 
+import static java.lang.String.format;
+
 /**
  * sudo docker logs --follow --tail=0 b181bbb05d49
  * kubectl logs --follow --tail=1 deployment/devrel-restorun
@@ -101,7 +103,12 @@ public class ProcessTailMessageProducer extends FileTailingMessageProducerSuppor
     super.doStart();
     destroyProcess();
 //    this.command = "kubectl logs " + this.options + " " + target;
-    this.command = String.format("%s %s %s", executable, this.options, getFile().getName());
+    try {
+      this.command = format("%s %s %s", this.executable, this.options, getFile().getCanonicalPath());
+    } catch (IOException e) {
+      throw new MessagingException(format("Failed to start process tail producer for executable=%s and options='%s'",
+              executable, this.options), e);
+    }
     this.getTaskExecutor().execute(this::runExec);
   }
 
@@ -125,7 +132,7 @@ public class ProcessTailMessageProducer extends FileTailingMessageProducerSuppor
   private void runExec() {
     this.destroyProcess();
     if (logger.isInfoEnabled()) {
-      logger.info("Starting tail process");
+      logger.info("Starting tail process with command: " + this.command);
     }
     try {
       Process process = Runtime.getRuntime().exec(this.command);
