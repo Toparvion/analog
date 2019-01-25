@@ -25,6 +25,11 @@
     color: palegoldenrod;
 }
 
+.alert-warning .highlight {
+    font-weight: bold;
+    color: white;
+}
+
 .alert-danger .highlight {
     font-weight: bold;
     color: cornsilk;
@@ -35,5 +40,15 @@
     color: limegreen;
     font-family: monospace;
     background-color: black;
-    padding: 1px 3px 1px 3px;
+    padding: 3px 3px 3px 3px;
+    display: inline-block;
+}
+
+.alert-warning .tracking-message {
+    font-weight: bold;
+    color: limegreen;
+    font-family: monospace;
+    background-color: black;
+    padding: 3px 3px 3px 3px;
+    display: inline-block;
 }
