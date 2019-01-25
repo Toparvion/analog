@@ -1,15 +1,11 @@
 server:
     port: 8083
-    address: 0.0.0.0
+    address: localhost
 
 nodes:
   this:
     name: myself
     agentPort: 7801
-
-adapters:
-  docker:
-    useSudo: true
 
 choices:
   - group: АнаЛог
