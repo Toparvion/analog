@@ -61,7 +61,7 @@ public abstract class AbstractOriginAdapter implements OriginAdapter {
   }
 
   private String readAllOutput(InputStream inputStream) throws IOException {
-    var idfStringBuilder = new StringBuilder();
+    StringBuilder idfStringBuilder = new StringBuilder();
     try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, UTF_8))) {
       String line;
       while ((line = bufferedReader.readLine()) != null) {

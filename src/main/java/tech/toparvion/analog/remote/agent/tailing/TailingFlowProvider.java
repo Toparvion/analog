@@ -266,21 +266,21 @@ public class TailingFlowProvider {
             : 1;                                 // why 1 see in https://github.com/kubernetes/kubernetes/issues/35335
     String nativeOptions = MessageFormat.format(followCommand, tailSize);
     String adapterId = TAIL_PROCESS_ADAPTER_PREFIX + logPath.getFullPath();
-    var optsBuilder = new StringBuilder(nativeOptions);
+    StringBuilder optsBuilder = new StringBuilder(nativeOptions);
     String resource = null;
     String[] tokens = logPath.getTarget().split("/");
     for (int i = 0; i < tokens.length; i++) {
       String token = tokens[i];
       switch (token.toLowerCase()) {
         case "namespace":
-          var namespace = tokens[i + 1];
+          String namespace = tokens[i + 1];
           optsBuilder.append(" --namespace=").append(namespace);
           // (!) Caution: namespace might be already specified in adapters.kubernetes.followCommand (application.yaml)
           i++;
           break;
         case "container":
         case "c":
-          var container = tokens[i + 1];
+          String container = tokens[i + 1];
           optsBuilder.append(" --container=").append(container);
           i++;
           break;
@@ -302,7 +302,7 @@ public class TailingFlowProvider {
     String k8sLogsOptions = optsBuilder.toString();
     log.debug("Target '{}' is converted into resource '{}' and options: {}", logPath.getTarget(), resource, k8sLogsOptions);
 
-    var fullPrefix = logPath.getType().getPrefix() + CUSTOM_SCHEMA_SEPARATOR;
+    String fullPrefix = logPath.getType().getPrefix() + CUSTOM_SCHEMA_SEPARATOR;
     return new ProcessTailAdapterSpec()
         .executable(adapterParams.getExecutable())
         .file(new ContainerTargetFile(fullPrefix, resource))
