@@ -1,7 +1,5 @@
 package tech.toparvion.analog.remote.server;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.IntegrationComponentScan;
@@ -12,14 +10,7 @@ import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.file.tail.FileTailingMessageProducerSupport.FileTailingEvent;
 import org.springframework.integration.rmi.RmiInboundGateway;
 import tech.toparvion.analog.model.config.nodes.NodesProperties;
-import tech.toparvion.analog.service.tail.GnuCoreUtilsTailSpecificsProvider;
-import tech.toparvion.analog.service.tail.MacOsTailSpecificsProvider;
-import tech.toparvion.analog.service.tail.SolarisTailSpecificsProvider;
-import tech.toparvion.analog.service.tail.TailSpecificsProvider;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Collection;
 
 import static java.lang.String.format;
@@ -36,7 +27,6 @@ import static tech.toparvion.analog.remote.RemotingConstants.*;
 @IntegrationComponentScan
 @EnableIntegrationManagement(defaultCountsEnabled = "true", defaultStatsEnabled = "true")
 public class ServerConfig {
-  private static final Logger log = LoggerFactory.getLogger(ServerConfig.class);
 
   @Bean
   public IntegrationFlow serverRegistrationRouter() {
@@ -85,73 +75,6 @@ public class ServerConfig {
     return Collection.class.isAssignableFrom(messagePayload.getClass())
         ? Collection.class
         : messagePayload.getClass();
-  }
-
-  @Bean
-  public TailSpecificsProvider tailSpecificsProvider() throws Exception {
-    String idfString = obtainTailIdfString();
-    TailSpecificsProvider specificsProvider;
-    if (GnuCoreUtilsTailSpecificsProvider.matches(idfString)) {
-      specificsProvider = new GnuCoreUtilsTailSpecificsProvider();
-
-    } else if (SolarisTailSpecificsProvider.matches(idfString)) {
-      specificsProvider = new SolarisTailSpecificsProvider();
-
-    } else if (MacOsTailSpecificsProvider.matches(idfString)) {
-      specificsProvider = new MacOsTailSpecificsProvider();
-
-    } else {
-      throw new IllegalStateException("No suitable specifics provider found for tail's idf string: " + idfString +
-      "\nPlease post this message to https://github.com/Toparvion/analog/issues/new in order to support this " +
-          " tail implementation in future versions of AnaLog.");
-    }
-
-    log.info("Found 'tail' program on this server and selected '{}' for it.", specificsProvider.getClass().getSimpleName());
-    return specificsProvider;
-  }
-
-  /**
-   * Launches {@code tail} program with {@code --version} option and reads the first line that {@code tail} prints in reply.
-   * This option is supported by GNU coreutils tail implementation only but this is not an issue as other implementations
-   * can also be recognized by analyzing the first output line (which can be found either in standard or error input).<p>
-   * Since such a behavior is highly dependent on various implementations, this method is potential subject to change in
-   * future releases.
-   * @return the first line which {@code tail} program returns in reply to invocation with {@code --version} option
-   * @throws Exception when {@code tail} program is absent or cannot be accessed by AnaLog
-   */
-  private String obtainTailIdfString() throws Exception {
-    // first check whether tail is present and try to run it
-    Process process;
-    try {
-      process = Runtime.getRuntime().exec("tail --version");
-    } catch (IOException e) {
-      if (e.getMessage().startsWith("Cannot run program")) {
-        String explanationMessage = "Failed to find 'tail' program on this server. Please check if it is correctly " +
-            "installed, accessible for AnaLog and its path is included into PATH environment variable.";
-        throw new IllegalStateException(explanationMessage, e);
-      } else {
-        throw e;
-      }
-    }
-
-    // then read the first string it has printed
-    String firstLine;
-    try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-      firstLine = bufferedReader.readLine();
-    }
-    if (firstLine != null && !"".equals(firstLine)) {
-      log.debug("Obtained idf line of tail from standard input: '{}'", firstLine);
-    } else {
-      // tail might reply in error stream, e.g. on Solaris OS, so let's check if error input contains any data
-      try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
-        firstLine = bufferedReader.readLine();
-        log.debug("Obtained idf line of tail from error input: '{}'", firstLine);
-      }
-    }
-    log.debug("Waiting for tail to finish...");
-    process.waitFor();
-    log.debug("tail has finished. Going on.");
-    return firstLine;
   }
 
 }

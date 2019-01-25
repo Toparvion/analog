@@ -17,36 +17,38 @@ app.constant('notifications', {
     //</editor-fold>
 
     //<editor-fold desc="Tail Events">
-    fileNotFound: {
+    logNotFound: {
         level: 'info',
         title: 'Лог не найден',
-        text: "Файл <span class='highlight'>{logPath}</span> не найден на узле " +
-                "<span class='highlight'>{nodeName}</span>. Ожидаю его появления..."
+        text: "Лог <span class='highlight'>{logPath}</span> не найден. Ожидаю его появления..."
     },
-    fileAppeared: {
+    logAppeared: {
         level: 'success',
         title: 'Лог обнаружен',
-        text: "Файл <span class='highlight'>{logPath}</span> на узле <span class='highlight'>{nodeName}</span> " +
-                "появился. Отслеживаю его изменения."
+        text: "Лог <span class='highlight'>{logPath}</span> появился. Отслеживаю его изменения."
     },
-    fileRotated: {
+    logRotated: {
         level: 'info',
         title: 'Ротация лога',
-        text: "Файл <span class='highlight'>{logPath}</span> на узле <span class='highlight'>{nodeName}</span> " +
-                "начал писаться с начала. Предыдущие записи, вероятно, перенесены в другой файл."
+        text: "Лог <span class='highlight'>{logPath}</span> начал писаться с начала. " +
+            "Предыдущие записи, вероятно, перенесены в другой лог."
     },
-    fileDisappeared: {
+    logDisappeared: {
         level: 'info',
         title: 'Лог потерян',
-        text: "Файл <span class='highlight'>{logPath}</span> пропал с узла " +
-                "<span class='highlight'>{nodeName}</span>. Продолжу отслеживание, когда появится."
+        text: "Лог <span class='highlight'>{logPath}</span> пропал. Продолжу отслеживание, когда появится."
     },
-    fileTruncated: {
+    logTruncated: {
         level: 'danger',
         title: 'Лог сократился',
-        text: "Файл <span class='highlight'>{logPath}</span> на узле " +
-                "<span class='highlight'>{nodeName}</span> сократился в размере.<br/>" +
+        text: "Лог <span class='highlight'>{logPath}</span> сократился в размере.<br/>" +
                 "Дальнейшее отслеживание может быть ошибочным.<br/>В этом случае лучше начать его заново."
+    },
+    unrecognized: {
+        level: 'warning',
+        title: 'Сообщение о слежении',
+        text: "При слежении за логом <span class='highlight'>{logPath}</span> получено сообщение:<br/>" +
+                "<span class='failure-message'>{message}</span>"
     },
     //</editor-fold>
 

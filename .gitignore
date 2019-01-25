@@ -12,4 +12,5 @@ out/
 ### Custom ###
 memo.txt
 log-samples/
+work/
 /dist/deploy-*/

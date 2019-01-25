@@ -1,5 +1,8 @@
 package tech.toparvion.analog.util;
 
+import tech.toparvion.analog.model.config.entry.LogPath;
+import tech.toparvion.analog.model.config.entry.LogType;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -77,5 +80,22 @@ public final class PathUtils {
               .getFileName()
               .toString();
     }
+  }
+
+  /**
+   * Checks if given path is of type {@link LogType#NODE NODE} and, if so, returns only the local file system path.
+   * For example, turns {@code node://north/home/upc/some.log} into {@code /home/upc/some.log}. <br/>
+   * Returns path as is for all other log types.
+   * @param logPath path to extract local path from
+   * @return local file system path
+   */
+  public static String extractLocalPath(LogPath logPath) {
+    if (logPath.getType() != LogType.NODE) {
+      return logPath.getFullPath();
+    }
+    String logFullPath = logPath.getFullPath();
+    int separatorIdx = logFullPath.indexOf(CUSTOM_SCHEMA_SEPARATOR);
+    int nodeSlashIdx = logFullPath.indexOf('/', separatorIdx + CUSTOM_SCHEMA_SEPARATOR.length());
+    return logFullPath.substring(nodeSlashIdx);
   }
 }

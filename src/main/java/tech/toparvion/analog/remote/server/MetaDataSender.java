@@ -7,10 +7,14 @@ import org.springframework.integration.file.tail.FileTailingMessageProducerSuppo
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+import tech.toparvion.analog.model.LogEventType;
 import tech.toparvion.analog.model.Metadata;
-import tech.toparvion.analog.model.TailEventType;
-import tech.toparvion.analog.service.tail.TailSpecificsProvider;
-import tech.toparvion.analog.service.tail.UnrecognizedTailEventException;
+import tech.toparvion.analog.remote.server.origin.detect.LogEventTypeDetector;
+import tech.toparvion.analog.util.AnaLogUtils;
+
+import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Collections.singletonMap;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
@@ -27,12 +31,13 @@ public class MetaDataSender {
   private static final Logger log = LoggerFactory.getLogger(MetaDataSender.class);
 
   private final SimpMessagingTemplate messagingTemplate;
-  private final TailSpecificsProvider tailSpecificsProvider;
+  private final Map<String, LogEventTypeDetector> detectorsMap;
 
   @Autowired
-  public MetaDataSender(SimpMessagingTemplate messagingTemplate, TailSpecificsProvider tailSpecificsProvider) {
+  public MetaDataSender(SimpMessagingTemplate messagingTemplate,
+                        Map<String, LogEventTypeDetector> detectorsMap) {
     this.messagingTemplate = messagingTemplate;
-    this.tailSpecificsProvider = tailSpecificsProvider;
+    this.detectorsMap = detectorsMap;
   }
 
   void sendMetaData(Message<?> metaMessage) {
@@ -42,21 +47,22 @@ public class MetaDataSender {
 
     // extract payload - the tailing event itself
     Object payload = metaMessage.getPayload();
-    assert (payload instanceof FileTailingEvent);
+    Assert.isInstanceOf(FileTailingEvent.class, payload);
     FileTailingEvent event = (FileTailingEvent) payload;
-    // map tail's message text too AnaLog's event type
-    TailEventType eventType;
-    try {
-      eventType = tailSpecificsProvider.detectEventType(event.toString());
-
-    } catch (UnrecognizedTailEventException e) {
-      log.error("Server received an event from tail process (destination='{}' on node='{}') but couldn't send it " +
-              "to clients within metadata because failed to detect the event's type with {}. Text of the event: \n{}",
-          destination, sourceNode, tailSpecificsProvider.getClass().getSimpleName(), e.getMessage());
-      return;
-    }
     String logPath = event.getFile().getAbsolutePath();
-    Metadata metadata = new Metadata(eventType, logPath, sourceNode);
+    String eventMessage = AnaLogUtils.extractMessage(event.toString());
+    // map tail's message text to AnaLog's event type
+    LogEventType detectedLogEventType = null;
+    for (LogEventTypeDetector detector : detectorsMap.values()) {
+      Optional<LogEventType> detectedOpt = detector.detectEventType(eventMessage, logPath);
+      if (detectedOpt.isPresent()) {
+        detectedLogEventType = detectedOpt.get();
+        break;
+      }
+    }
+    Assert.notNull(detectedLogEventType, "Unable to find appropriate detector for log event: " + event.toString());
+
+    Metadata metadata = new Metadata(detectedLogEventType, logPath, sourceNode, eventMessage);
     log.debug("Preparing tailing event for sending to clients.\nEvent: {}\nHeaders: node={}, destination='{}'",
         event, sourceNode, destination);
 

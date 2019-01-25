@@ -119,7 +119,7 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot' , name: 'spring-boot-starter-websocket'
-    implementation group: 'net.bull.javamelody', name: 'javamelody-spring-boot-starter', version: '1.72.0'
+    implementation group: 'net.bull.javamelody', name: 'javamelody-spring-boot-starter', version: '1.75.0'
 
     implementation group: 'org.springframework.integration', name: 'spring-integration-file'
     implementation group: 'org.springframework.integration', name: 'spring-integration-rmi'
@@ -127,6 +127,7 @@ dependencies {
     implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
     implementation group: 'net.sf.jtidy', name: 'jtidy', version: 'r938'
     implementation group: 'com.github.mpkorstanje', name: 'simmetrics-core', version: '4.1.1'
+    implementation group: 'com.github.zafarkhaja', name: 'java-semver', version: '0.9.0'
 
     // Frontend deps
     implementation group: 'org.webjars', name: 'angularjs', version: '1.5.8'
@@ -144,8 +145,8 @@ dependencies {
     runtimeOnly group: 'commons-logging', name: 'commons-logging', version: '1.2'
 
     // Test deps
-    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-    testCompile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    testImplementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
     // JUnit family
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api'
     testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine'

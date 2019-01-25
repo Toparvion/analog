@@ -4,7 +4,7 @@
 app.controller('notificationController', ['$scope', '$log', '$interval', 'notifications',
     function ($scope, $log, $interval, notifications) {
         let vm = this;
-        const SHOW_DELAY = 13000;       // it's better to set it higher than websocket.reconnectDelayMs config value
+        const SHOW_DELAY = 10000;       // it's better to set it higher than websocket.reconnectDelayMs config value
         vm.message = undefined;
         vm.showing = false;
         vm.onceDisconnected = false;
@@ -27,32 +27,38 @@ app.controller('notificationController', ['$scope', '$log', '$interval', 'notifi
         //</editor-fold>
 
         //<editor-fold desc="Tail Events">
-        $scope.$on('fileNotFound', function (event, details) {
-            vm.message = angular.copy(notifications['fileNotFound']);
+        $scope.$on('logNotFound', function (event, details) {
+            vm.message = angular.copy(notifications['logNotFound']);
             vm.message.text = vm.message.text.format(details);
             vm.startAutoHideTimer();
             vm.showing = true;
         });
-        $scope.$on('fileAppeared', function (event, details) {
-            vm.message = angular.copy(notifications['fileAppeared']);
+        $scope.$on('logAppeared', function (event, details) {
+            vm.message = angular.copy(notifications['logAppeared']);
             vm.message.text = vm.message.text.format(details);
             vm.startAutoHideTimer();
             vm.showing = true;
         });
-        $scope.$on('fileRotated', function (event, details) {
-            vm.message = angular.copy(notifications['fileRotated']);
+        $scope.$on('logRotated', function (event, details) {
+            vm.message = angular.copy(notifications['logRotated']);
             vm.message.text = vm.message.text.format(details);
             vm.startAutoHideTimer();
             vm.showing = true;
         });
-        $scope.$on('fileDisappeared', function (event, details) {
-            vm.message = angular.copy(notifications['fileDisappeared']);
+        $scope.$on('logDisappeared', function (event, details) {
+            vm.message = angular.copy(notifications['logDisappeared']);
             vm.message.text = vm.message.text.format(details);
             vm.startAutoHideTimer();
             vm.showing = true;
         });
-        $scope.$on('fileTruncated', function (event, details) {
-            vm.message = angular.copy(notifications['fileTruncated']);
+        $scope.$on('logTruncated', function (event, details) {
+            vm.message = angular.copy(notifications['logTruncated']);
+            vm.message.text = vm.message.text.format(details);
+            vm.startAutoHideTimer();
+            vm.showing = true;
+        });
+        $scope.$on('unrecognized', function (event, details) {
+            vm.message = angular.copy(notifications['unrecognized']);
             vm.message.text = vm.message.text.format(details);
             vm.startAutoHideTimer();
             vm.showing = true;

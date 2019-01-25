@@ -14,9 +14,19 @@ server:
 logging:
   config: classpath:logging/logback-console.xml
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+
 javamelody:
   # Enable JavaMelody auto-configuration (optional, default: true)
   enabled: true
+  advisor-auto-proxy-creator-enabled: false     # to prevent BeanNotOfRequiredTypeException when gettting lazy services
   # Initialization parameters for JavaMelody (optional)
   # See: https://github.com/javamelody/javamelody/wiki/UserGuide#6-optional-parameters
   init-parameters:
@@ -24,6 +34,7 @@ javamelody:
     log: true
     # to exclude images, css, fonts and js urls from the monitoring:
     url-exclude-pattern: (/webjars/.*|.*\.css|.*\.js|/general/fonts/.*|.*\.png|.*\.jp[e]?g|.*\.gif|.*\.ico|.*\.htm[l]?)
+    storage-directory: '${user.dir}/work/javamelody'
     # to add basic auth:
     #authorized-users: admin:pwd
     # to change the default storage directory:
@@ -32,6 +43,35 @@ javamelody:
     #monitoring-path: /admin/performance
 
 tracking:
-  group:
+  grouping:
     sizeThreshold: 500
-    timeoutMs: 500
+    timeout: 500ms
+  tailSize:
+    flat: 45
+    group: 20
+  retryDelay: 5s
+
+adapters:
+  file:
+    detectionRequest: 'tail --version'
+    tailImplementations:
+      GnuCoreUtils:        # both tail implementations: Linux native and Cygwin Windows port
+        executable:        'tail'
+        followCommand:     '-F -n {0}'
+        detectionResponse: 'tail (GNU coreutils)'
+      Mac:
+        executable:        'tail'
+        followCommand:     '-F -{0}'
+        detectionResponse: 'tail: illegal option --'
+      Solaris:
+        executable:        'tail'
+        followCommand:     '-{0}f'
+        detectionResponse: 'usage: tail'
+  docker:
+    executable:     'sudo docker'
+    followCommand:  'logs --follow --tail={0}'
+    versionCommand: 'version --format ''{{.Client.Version}}'''
+  kubernetes:
+    executable:     'kubectl'
+    followCommand:  'logs --follow --tail={0}'
+    versionCommand: 'version --client --short'
