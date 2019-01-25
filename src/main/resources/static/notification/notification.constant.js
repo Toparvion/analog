@@ -12,7 +12,7 @@ app.constant('notifications', {
     serverDisconnected: {
         level: 'warning',
         title: 'Нет связи с сервером',
-        text: 'Слежение продолжится автоматически (если нужно) после восстановления связи.'
+        text: 'При необходимости слежение продолжится автоматически после восстановления связи.'
     },
     //</editor-fold>
 
@@ -48,7 +48,7 @@ app.constant('notifications', {
         level: 'warning',
         title: 'Сообщение о слежении',
         text: "При слежении за логом <span class='highlight'>{logPath}</span> получено сообщение:<br/>" +
-                "<span class='failure-message'>{message}</span>"
+                "<span class='tracking-message'>{message}</span>"
     },
     //</editor-fold>
 

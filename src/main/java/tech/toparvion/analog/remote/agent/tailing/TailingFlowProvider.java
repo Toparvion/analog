@@ -54,7 +54,7 @@ import static tech.toparvion.analog.util.PathUtils.CUSTOM_SCHEMA_SEPARATOR;
 @Component
 public class TailingFlowProvider {
   private static final Logger log = LoggerFactory.getLogger(TailingFlowProvider.class);
-  private static final String TAIL_PROCESS_ADAPTER_PREFIX = "tailProcess_";
+  public static final String TAIL_PROCESS_ADAPTER_PREFIX = "tailProcess_";
 
   private final TimestampExtractor timestampExtractor;
   private final RecordLevelDetector recordLevelDetector;

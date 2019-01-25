@@ -32,7 +32,6 @@ import static org.springframework.integration.dsl.context.IntegrationFlowContext
 import static tech.toparvion.analog.remote.RemotingConstants.*;
 import static tech.toparvion.analog.remote.agent.AgentConstants.*;
 import static tech.toparvion.analog.util.AnaLogUtils.doSafely;
-import static tech.toparvion.analog.util.PathUtils.convertToUnixStyle;
 
 /**
  * Applied logical service providing routines for remote log tracking.
@@ -283,8 +282,11 @@ public class TrackingService {
   @EventListener
   public void processFileTailingEvent(FileTailingEvent tailingEvent) {
     log.debug("received-tailing-event", tailingEvent.toString());
-    String logPath = convertToUnixStyle(tailingEvent.getFile().getAbsolutePath());
+    String sourceString = tailingEvent.getSource().toString();
+    // sourceString - is tracking flow component name e.g. tailProcess_k8s://namespace/fee/deployment/backend
+    String logPath = sourceString.substring(TailingFlowProvider.TAIL_PROCESS_ADAPTER_PREFIX.length());
 
+    boolean eventHandled = false;
     for (String prefix : new String[]{FLAT_PREFIX, GROUP_PREFIX}) {
       String trackingFlowId = composeTrackingFlowId(prefix, logPath);
       log.trace("trying-to-find-tracking-flow", trackingFlowId);
@@ -297,6 +299,10 @@ public class TrackingService {
       PublishSubscribeChannel trackingOutChannel = extractOutChannel(trackingFlow);
       trackingOutChannel.send(MessageBuilder.withPayload(tailingEvent).build());
       log.debug("sent-tailing-event", tailingEvent, trackingOutChannel.getComponentName());
+      eventHandled = true;      // don't break the loop to let other flows to be notified as well
+    }
+    if (!eventHandled) {
+      throw new IllegalStateException("No trackings found to accept tailing event: " + tailingEvent.toString());
     }
   }
 
