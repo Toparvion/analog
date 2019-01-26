@@ -1,39 +1,30 @@
-# AnaLog
-#### :information_source: :us: :gb: Note for English speakers
-The tool is in trial stage now and is being tested by Russian speaking users. Therefore the tool's UI as well as its documentation are made in Russian only (for the time being). English translation is planned for the next development iteration. Please feel free to [file an issue](https://github.com/Toparvion/analog/issues/new) if you'd like it to happen sooner.
+# AnaL&oacute;g
 
-# АнаЛ&oacute;г
-**АнаЛ&oacute;г** - это основанное на [tail](https://ru.wikipedia.org/wiki/Tail) веб-приложение, позволяющее просматривать в реальном времени одновременно несколько логов с удаленных тестовых серверов.  
-Основные возможности программы:
-* просмотр логов через веб браузер;  
-_не требуется инсталляция специального ПО на клиентских машинах_;
-* отображение новых записей в реальном времени;  
-_не нужно перезагружать к себе просматриваемый файл или обновлять страницу;_
-* подсветка уровней логирования;  
-_сообщение каждого уровня выводится в своем собственном цвете;_
-* гибкая настройка вариантов логов для выбора из UI:
-  * через YAML-конфигурацию _(удобно для явного перечисления вариантов);_
-  * через сканирование директорий _(удобно для автоматического обнаружения логов);_
-  * через указание полного пути в URL _(удобно для быстрого открытия любого лога и для закладок в браузере)._
-* поддержка композитных логов;  
-_можно объединить несколько файлов (в т.ч. с разных серверов) в один виртуальный лог, который будет выводиться в браузере со строгим соблюдением временной последовательности и целостности записей (в т.ч. многострочных);_
-* форматирование XML;  
-_АнаЛ&oacute;г распознает XML-документы, расставляет для них отступы (даже если изначально XML был однострочным) и подсвечивает их синтаксис;_
-* скачивание логов через браузер для открытия в текстовом редакторе;  
-_АнаЛ&oacute;г позволяет скачать текущий файл лога, даже если он находится на удаленном узле агента АнаЛога.  
-При этом любой файл можно скачать как полностью, так и только последнюю его часть удобного размера._
+AnaLog (pronounced with stressed "*o*") is a tool for convenient real-time displaying of various logs in your browser.
+Think of it as of web interface to traditional [tail](https://ru.wikipedia.org/wiki/Tail) utility
+with a bunch of improvements:
+* log level syntax highlighting
+* predefined and on-demand log choice configuration (via YAML or URL correspondingly)
+* fetching logs from various sources including remote servers, Docker containers and Kubernetes resources
+* ability to combine several separate log sources into one composite log
+* automatic formatting and highlighting of XML documents in logs
+* downloading currently chosen log fully or partly for further 'offline' processing
 
-### Как это работает?
-АнаЛ&oacute;г - Java-приложение, поставляемое в виде монолитного JAR-модуля и пары сопутствующих текстовых файлов. Приложение должно запускаться на том сервере, логи которого необходимо просматривать. После запуска приложение поднимает на указанном в настройках порту веб-интерфейс, через который пользователи могут выбирать и просматривать логи. Когда пользователь выбирает лог, приложение начинает отслеживать обновления этого лога при помощи встроенной в ОС утилиты `tail` (для Windows поставляется отдельно). Всякий раз, когда в логе появляется новая запись, `tail` передает ее АнаЛогу, а тот - рассылает ее всем клиентам (браузерам), прослушивающим этот лог.  
-В случае **композитных логов** схема работы чуть сложнее: приложение АнаЛог должно быть запущено на всех серверах, логи с которых необходимо просматривать. При этом каждый экземпляр приложения может играть две роли:
-1. роль сервера, к которому подключаются конечные пользователи;
-2. роль агента, к которому подключаются другие серверы, чтобы запрашивать логи.
+## Project Status
+AnaLog is personal R&D project and currently it is still in development
+and stabilization stage. As a consequence:
+1. It is not production-ready yet product but is being prepared to be.
+2. Its web UI interface aimed to current testing users audience and
+therefore supports their native language only (Russian).
 
-В такой схеме любой сервер АнаЛога может составлять композитный лог, включающий как локальные для него логи, так и удаленные, доступ к которым он получит через агентов. Получая данные из этих источников, сервер агрегирует их и рассылает всем клиентам (браузерам), прослушивающим композитный лог.
+If you have any questions about the product, want to try it or to help
+in its development, please feel free to [contact the author](mailto:toparvion@gmx.com) or
+[submit an issue](https://github.com/Toparvion/analog/issues/new).
 
-### Как установить и настроить?
-Ссылка для скачивания и инструкция по установке приведены на странице [последнего релиза](https://github.com/Toparvion/analog/releases/latest).  
-Пример и пояснения к параметрам конфигурации можно [посмотреть в Wiki](https://github.com/Toparvion/analog/wiki/%D0%9F%D1%80%D0%B8%D0%BC%D0%B5%D1%80-%D0%BA%D0%BE%D0%BD%D1%84%D0%B8%D0%B3%D1%83%D1%80%D0%B0%D1%86%D0%B8%D0%B8).
-
-### Статус проекта
-В настоящее время АнаЛог находится на стадии тестирования и стабилизации. В нем реализован минимально необходимый функционал и исправлены не все значимые ошибки. Предложения по улучшению, замечания, вопросы и другую обратную связь можно оставлять [здесь](https://github.com/Toparvion/analog/issues/new) или направлять [сюда](mailto:toparvion@gmx.com).
+## Where to get help?
+Because AnaLog is still under development it's not provided with neither
+comprehensive documentation nor support. Some basic information can be
+found on [Wiki pages](https://github.com/Toparvion/analog/wiki).
+Nevertheless the author would be glad to help you with any questions
+concerning AnaLog usage. You can ask for help
+by means of an [issue](https://github.com/Toparvion/analog/issues/new).
