@@ -43,7 +43,7 @@ public class KubernetesOriginAdapter extends AbstractOriginAdapter {
     Matcher matcher = VERSION_PATTERN.matcher(idfString);
     String versionString;
     if (!matcher.find()) {
-      log.warn("kubectl version string cannot be recognized: ", idfString);
+      log.warn("kubectl version string cannot be recognized: {}", idfString);
       versionString = "[n/a]";
     } else {
       Version kubectlSemVer = Version.valueOf(matcher.group());
