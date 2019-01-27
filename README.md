@@ -1,7 +1,7 @@
 # AnaL&oacute;g
 
-AnaLog (pronounced with stressed "*o*") is a tool for convenient real-time displaying of various logs in your browser.
-Think of it as of web interface to traditional [tail](https://ru.wikipedia.org/wiki/Tail) utility
+AnaLog (pronounced with stressed "*o*") is a tool for convenient real-time displaying of various logs in your browser.  
+Think of it as of web interface to traditional [tail](https://en.wikipedia.org/wiki/Tail_(Unix)) utility
 with a bunch of improvements:
 * log level syntax highlighting
 * predefined and on-demand log choice configuration (via YAML or URL correspondingly)
@@ -23,26 +23,27 @@ in its development, please feel free to [contact the author](mailto:toparvion@gm
 
 ## What it looks like?
 ### For end users
-Click on the following images to see them in full size.
+Click the images to see them in full size.
 
 <a href="https://raw.githubusercontent.com/wiki/Toparvion/analog/images/composite-example.png">
-<img src="https://raw.githubusercontent.com/wiki/Toparvion/analog/images/composite-example.png" align="left" height="200">
+<img src="https://raw.githubusercontent.com/wiki/Toparvion/analog/images/composite-example.png" height="170">
 </a>&nbsp;
 <a href="https://raw.githubusercontent.com/wiki/Toparvion/analog/images/choices-example.png">
-<img src="https://raw.githubusercontent.com/wiki/Toparvion/analog/images/choices-example.png" align="left" height="200">
+<img src="https://raw.githubusercontent.com/wiki/Toparvion/analog/images/choices-example.png" height="170">
 </a>&nbsp;
 <a href="https://raw.githubusercontent.com/wiki/Toparvion/analog/images/dialogs-example.png">
-<img src="https://raw.githubusercontent.com/wiki/Toparvion/analog/images/dialogs-example.png" align="left" height="200">
+<img src="https://raw.githubusercontent.com/wiki/Toparvion/analog/images/dialogs-example.png" height="170">
 </a>
 
 ### For administrator
 In case of AnaLog the administrator is a person who installs and
-configures AnaLog instances. From the administrator's perspective AnaLog:
+configures AnaLog instances.  
+From the administrator's perspective AnaLog:
 * is standalone Java application with built-in web server (based on [Spring Boot](https://spring.io/projects/spring-boot) framework)
-* works on Java 11 and above
+* works on [Java 11](http://jdk.java.net/11/) and above
 * has flexible configuration in 2 YAML files: for system settings and log choices (see [examples](https://github.com/Toparvion/analog/wiki))
 * must be installed on every server where the file logs must be fetched from
-* relies on `tail`, `docker` and `kubectl` binaries to fetch logs from corresponding resources.
+* relies on `tail`, `docker` and `kubectl` binaries to fetch logs from corresponding sources.
 
 ## Installation & Usage
 1. Download `analog.zip` from [latest release](https://github.com/Toparvion/analog/releases/latest) page
