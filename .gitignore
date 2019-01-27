@@ -13,4 +13,4 @@ out/
 memo.txt
 log-samples/
 work/
-/dist/deploy-*/
+/dist/
