@@ -50,11 +50,14 @@ From the administrator's perspective AnaLog:
 2. Unpack it and give execution permission to `bin/analog` script (in case of *nix OS)
 3. *[optional]* Configure `config/application.yaml` and `config/choices.yaml` by [examples](https://github.com/Toparvion/analog/wiki)
 4. Run `bin/analog` (*nix OS) or `bin/analog.bat` (Windows)
-5. Open browser on configured host:port (`http://localhost:8083` by default) and type desired log path into URI, for example:
+5. Open browser on configured host:port (by default `http://localhost:8083`) and type desired log path into URI, for example:
 ```
 http://localhost:8083/#/home/me/apps/my-app/events.log
+http://localhost:8083/#/node://my-remote-node/home/me/apps/my-app/events.log
+http://localhost:8083/#/docker://my-container
+http://localhost:8083/#/kubernetes://my-pod-4g5h57-hj4d
+http://localhost:8083/#/k8s://deployment/my-deployment
 ```
-
 By now the last several lines of the log must be rendered in browser and the new records must be added to them as they appear in the source file.
 
 #### :heavy_exclamation_mark: Security caution
@@ -68,3 +71,10 @@ found on [Wiki pages](https://github.com/Toparvion/analog/wiki).
 Nevertheless the author would be glad to help you with any questions
 concerning AnaLog usage. You can ask for help
 by means of an [issue](https://github.com/Toparvion/analog/issues/new).
+
+## Contributing
+See [CONTRIBUTING](https://github.com/Toparvion/analog/blob/master/CONTRIBUTING.md) document.
+
+
+## License
+AnaLog uses MIT license. See [this document](https://github.com/Toparvion/analog/blob/master/LICENSE) for details.
