@@ -6,9 +6,9 @@ with a bunch of improvements:
 * log level syntax highlighting
 * predefined and on-demand log choice configuration (via YAML or URL correspondingly)
 * fetching logs from various sources including remote servers, Docker containers and Kubernetes resources
-* ability to combine several separate log sources into one composite log
+* ability to display several separate log sources as a single composite log
 * automatic formatting and highlighting of XML documents in logs
-* downloading currently chosen log fully or partly for further 'offline' processing
+* downloading currently chosen log fully or partly (for file logs only)
 
 ## Project Status
 AnaLog is personal R&D project and currently it is still in development
@@ -20,6 +20,45 @@ therefore supports their native language only (Russian).
 If you have any questions about the product, want to try it or to help
 in its development, please feel free to [contact the author](mailto:toparvion@gmx.com) or
 [submit an issue](https://github.com/Toparvion/analog/issues/new).
+
+## What it looks like?
+### For end users
+Click on the following images to see them in full size.
+
+<a href="https://raw.githubusercontent.com/wiki/Toparvion/analog/images/composite-example.png">
+<img src="https://raw.githubusercontent.com/wiki/Toparvion/analog/images/composite-example.png" align="left" height="200">
+</a>&nbsp;
+<a href="https://raw.githubusercontent.com/wiki/Toparvion/analog/images/choices-example.png">
+<img src="https://raw.githubusercontent.com/wiki/Toparvion/analog/images/choices-example.png" align="left" height="200">
+</a>&nbsp;
+<a href="https://raw.githubusercontent.com/wiki/Toparvion/analog/images/dialogs-example.png">
+<img src="https://raw.githubusercontent.com/wiki/Toparvion/analog/images/dialogs-example.png" align="left" height="200">
+</a>
+
+### For administrator
+In case of AnaLog the administrator is a person who installs and
+configures AnaLog instances. From the administrator's perspective AnaLog:
+* is standalone Java application with built-in web server (based on [Spring Boot](https://spring.io/projects/spring-boot) framework)
+* works on Java 11 and above
+* has flexible configuration in 2 YAML files: for system settings and log choices (see [examples](https://github.com/Toparvion/analog/wiki))
+* must be installed on every server where the file logs must be fetched from
+* relies on `tail`, `docker` and `kubectl` binaries to fetch logs from corresponding resources.
+
+## Installation & Usage
+1. Download `analog.zip` from [latest release](https://github.com/Toparvion/analog/releases/latest) page
+2. Unpack it and give execution permission to `bin/analog` script (in case of *nix OS)
+3. *[optional]* Configure `config/application.yaml` and `config/choices.yaml` by [examples](https://github.com/Toparvion/analog/wiki)
+4. Run `bin/analog` (*nix OS) or `bin/analog.bat` (Windows)
+5. Open browser on configured host:port (`http://localhost:8083` by default) and type desired log path into URI, for example:
+```
+http://localhost:8083/#/home/me/apps/my-app/events.log
+```
+
+By now the last several lines of the log must be rendered in browser and the new records must be added to them as they appear in the source file.
+
+#### :heavy_exclamation_mark: Security caution
+AnaLog does not include any file access restrictions and completely relies on the underlying operation system permission model.
+Therefore you must run it under carefully restricted user account in order to prevent queries like `http://localhost:8083/#/etc/passwd`.
 
 ## Where to get help?
 Because AnaLog is still under development it's not provided with neither
