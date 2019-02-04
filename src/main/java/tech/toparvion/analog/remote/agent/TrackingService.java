@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import tech.toparvion.analog.model.TrackingRequest;
 import tech.toparvion.analog.model.config.entry.LogPath;
+import tech.toparvion.analog.model.config.entry.LogType;
 import tech.toparvion.analog.remote.agent.tailing.TailingFlowProvider;
 import tech.toparvion.analog.util.LocalizedLogger;
 import tech.toparvion.analog.util.timestamp.TimestampExtractor;
@@ -138,7 +139,10 @@ public class TrackingService {
         .id(composeTrackingFlowId(GROUP_PREFIX, fullPath))
         .useFlowIdAsPrefix()
         .register();
-    timestampExtractor.registerNewTimestampFormat(request.getTimestampFormat(), fullPath);
+    String timestampKey = (logPath.getType() == LogType.NODE)
+            ? logPath.getTarget()   // in case of node we must omit its name as records will come with pure path only 
+            : fullPath;
+    timestampExtractor.registerNewTimestampFormat(request.getTimestampFormat(), timestampKey);
     log.info("created-new-group-flow", fullPath, trackingRegistration.getId());
     return (StandardIntegrationFlow) trackingRegistration.getIntegrationFlow();
   }
