@@ -287,7 +287,7 @@ public class TrackingService {
   public void processFileTailingEvent(FileTailingEvent tailingEvent) {
     log.debug("received-tailing-event", tailingEvent.toString());
     String sourceString = tailingEvent.getSource().toString();
-    // sourceString - is tracking flow component name e.g. tailProcess_k8s://namespace/fee/deployment/backend
+    // sourceString is tracking flow component name e.g. tailProcess_k8s://namespace/fee/deployment/backend
     String logPath = sourceString.substring(TailingFlowProvider.TAIL_PROCESS_ADAPTER_PREFIX.length());
 
     boolean eventHandled = false;

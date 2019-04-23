@@ -1,4 +1,4 @@
-package tech.toparvion.analog.remote.agent.misc;
+package tech.toparvion.analog.remote.agent.enrich;
 
 import org.springframework.messaging.Message;
 

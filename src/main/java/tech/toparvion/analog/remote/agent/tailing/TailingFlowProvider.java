@@ -19,11 +19,12 @@ import org.springframework.util.Assert;
 import tech.toparvion.analog.model.config.adapters.GeneralAdapterParams;
 import tech.toparvion.analog.model.config.adapters.TrackingProperties;
 import tech.toparvion.analog.model.config.entry.LogPath;
-import tech.toparvion.analog.remote.agent.misc.CorrelationIdHeaderEnricher;
-import tech.toparvion.analog.remote.agent.misc.SequenceNumberHeaderEnricher;
+import tech.toparvion.analog.remote.agent.enrich.CorrelationIdHeaderEnricher;
+import tech.toparvion.analog.remote.agent.enrich.SequenceNumberHeaderEnricher;
 import tech.toparvion.analog.remote.agent.origin.adapt.DockerOriginAdapter;
 import tech.toparvion.analog.remote.agent.origin.adapt.FileOriginAdapter;
 import tech.toparvion.analog.remote.agent.origin.adapt.KubernetesOriginAdapter;
+import tech.toparvion.analog.remote.agent.origin.restrict.FileAccessGuard;
 import tech.toparvion.analog.remote.agent.si.ContainerTargetFile;
 import tech.toparvion.analog.remote.agent.si.ProcessTailAdapterSpec;
 import tech.toparvion.analog.service.RecordLevelDetector;
@@ -60,6 +61,7 @@ public class TailingFlowProvider {
   private final RecordLevelDetector recordLevelDetector;
   private final IntegrationFlowContext flowContext;
   private final TrackingProperties trackingProperties;
+  private final FileAccessGuard fileAccessGuard;
   private final ApplicationContext appContext;
   private final String thisNodeName;
 
@@ -68,12 +70,14 @@ public class TailingFlowProvider {
                              RecordLevelDetector recordLevelDetector,
                              IntegrationFlowContext flowContext,
                              TrackingProperties trackingProperties,
+                             FileAccessGuard fileAccessGuard,
                              ApplicationContext appContext,
                              @Value("${nodes.this.name}") String thisNodeName) {
     this.timestampExtractor = timestampExtractor;
     this.recordLevelDetector = recordLevelDetector;
     this.flowContext = flowContext;
     this.trackingProperties = trackingProperties;
+    this.fileAccessGuard = fileAccessGuard;
     this.appContext = appContext;
     this.thisNodeName = thisNodeName;
   }
@@ -195,7 +199,7 @@ public class TailingFlowProvider {
 
       case NODE:
         Assert.isTrue(thisNodeName.equals(logPath.getNode()),
-                      format("request for node '%s' has come to foreign node '%s'", logPath.getNode(), thisNodeName));
+                      format("request aimed to node '%s' has come to different node '%s'", logPath.getNode(), thisNodeName));
         // no break needed
       case LOCAL_FILE:
         return newTailAdapter4File(logPath, isTrackingFlat, isTailNeeded);
@@ -222,6 +226,8 @@ public class TailingFlowProvider {
     String executable = adapterParams.getExecutable();
     log.debug("Starting file tracking with executable '{}' and options '{}'...", executable, nativeOptions);
     String localPath = PathUtils.extractLocalPath(logPath);
+    // the following call will throw AccessControlException in case of violation
+    fileAccessGuard.checkAccess(localPath);
     return new ProcessTailAdapterSpec()
             .executable(executable)
             .file(new File(localPath))
@@ -287,7 +293,7 @@ public class TailingFlowProvider {
         default:
           String newResource;
           if ((i + 1) <= (tokens.length - 1)) {   // i.e. if index (i+1) exists in tokens array
-            newResource = String.format("%s/%s", tokens[i], tokens[i + 1]);
+            newResource = format("%s/%s", tokens[i], tokens[i + 1]);
             i++;
           } else {
             newResource = tokens[i];

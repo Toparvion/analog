@@ -273,7 +273,7 @@ public class AnaLogUtils {
 
   /**
    * Prevents {@link Throwable}s from being thrown outside this method. Intended for use when performing some
-   * error-prone action must not interrupt further steps from being taken. It is actually equal to {@code
+   * error-prone action that must not interrupt further steps from execution. It is actually equal to {@code
    * try/finally} statement but more flexible and compact.
    * @implNote The class of exception is deliberately escalated to Throwable to account cases when e.g.
    * {@link AssertionError} are thrown.
@@ -296,7 +296,7 @@ public class AnaLogUtils {
    * It's a shame but {@link org.springframework.integration.file.tail.FileTailingMessageProducerSupport.FileTailingEvent
    * FileTailingEvent} has no <em>public</em> getter method for {@code message} field. That's why we have to extract it
    * by means of regular expression from event's {@code toString()} dump. Another solution might be to use reflection
-   * but it also doesn't seem suitable for this sutiation.
+   * but it also doesn't seem suitable for this situation.
    * @param fileTailEventStringDump result of {@code FileTailingEvent#toString()} invocation
    * @return event's message text
    */

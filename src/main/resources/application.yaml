@@ -26,7 +26,7 @@ management:
 javamelody:
   # Enable JavaMelody auto-configuration (optional, default: true)
   enabled: true
-  advisor-auto-proxy-creator-enabled: false     # to prevent BeanNotOfRequiredTypeException when gettting lazy services
+  advisor-auto-proxy-creator-enabled: false     # to prevent BeanNotOfRequiredTypeException when getting lazy services
   # Initialization parameters for JavaMelody (optional)
   # See: https://github.com/javamelody/javamelody/wiki/UserGuide#6-optional-parameters
   init-parameters:
@@ -75,3 +75,14 @@ adapters:
     executable:     'kubectl'
     followCommand:  'logs --follow --tail={0}'
     versionCommand: 'version --client --short'
+
+# AnaLog uses restrictive access control model, i.e. everything that is not explicitly allowed, is denied.
+# At the same time, the following (default) settings allow access to certain common log locations. The settings can 
+# be overridden by AnaLog administrator as needed. 
+allowed-log-locations:
+  file:
+    include:
+      - ${user.home}/**/*.log
+    exclude:
+      - ${user.home}/**/.*
+    symlink-resolution-limit: 1
