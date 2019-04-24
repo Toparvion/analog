@@ -1,6 +1,9 @@
 package tech.toparvion.analog.remote.agent.origin.restrict;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import tech.toparvion.analog.model.config.access.AllowedLogLocations;
 import tech.toparvion.analog.model.config.access.FileAllowedLogLocations;
 
@@ -57,9 +60,6 @@ class FileAccessGuardTest {
     var hackingTarget = Paths.get(based("/etc/passwd"));
     Files.createSymbolicLink(hackingSymlink, hackingTarget);
   }
-
-  @BeforeEach
-  void setUp() {}
 
   @Test
   @DisplayName("Default glob pattern allows for *.log files in home directory only")
@@ -149,6 +149,17 @@ class FileAccessGuardTest {
     var sut = new FileAccessGuard(allLocations);
     var accessException = assertThrows(AccessControlException.class,
             () -> sut.checkAccess(based(HACKING_SYMLINK_STRING_PATH)));
+    assertTrue(accessException.getMessage().startsWith("Access denied"));
+    assertTrue(accessException.getMessage().contains("is not included into"));
+  }
+  
+  @Test
+  @DisplayName("Relative path doesn't provide a way to get a log out of restricted locations")
+  void relativePaths() {
+    var allLocations = composeLocations("/home/me/app1/*.log");
+    var sut = new FileAccessGuard(allLocations);
+    var accessException = assertThrows(AccessControlException.class,
+            () -> sut.checkAccess(based("/../restrict/etc/passwd")));
     assertTrue(accessException.getMessage().startsWith("Access denied"));
     assertTrue(accessException.getMessage().contains("is not included into"));
   }

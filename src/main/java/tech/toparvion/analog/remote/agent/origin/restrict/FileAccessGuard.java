@@ -18,6 +18,9 @@ import java.util.List;
 import static java.lang.String.format;
 
 /**
+ * Log access guard responsible for restricting access to file logs (only).
+ * Acts as a singleton stateless bean basing its behavior on autowired {@linkplain AllowedLogLocations settings} bean.
+ * 
  * @author Toparvion
  * @since v0.12
  */
@@ -38,13 +41,31 @@ public class FileAccessGuard {
   }
 
   /**
-   * TODO задокументировать
-   * @param pathString
-   * @throws AccessControlException
+   * Checks given path against {@linkplain FileAllowedLogLocations configured file log locations} in the following 
+   * manner: <ol>
+   *   <li>Normalizes given path:<ul> 
+   *      <li>turns it from relative path to an absolute one</li>
+   *      <li>converts slashes to current OS format</li>
+   *      <li>resolves symbolic links as many times as {@code allowed-log-locations.file.symlink-resolution-limit}
+   *      property specifies; if the property equals 0, symlink resolution is denied at all (log cannot be read)
+   *      </li></ul>
+   *   </li>
+   *   <li>Checks given path against {@code allowed-log-locations.file.include} config section which contains a 
+   *   list of GLOB patterns that the path MUST conform to. The method processes the list in the order of declaration, 
+   *   the first matching pattern wins, no other patterns are checked in this case. If no patterns are specified, 
+   *   an exception is thrown immediately, without any further checks. If given path conforms to any of including GLOB 
+   *   patterns, it doesn't mean that the path is allowed because it must pass the check against excluding patterns 
+   *   (see next).</li>
+   *   <li>Checks given path against {@code allowed-log-locations.file.exclude} config section which contains a list 
+   *   of GLOB patterns that the path MUST NOT conform to. The method processes the list in the order of declaration, 
+   *   the first matching pattern wins, no other patterns are checked in this case. If no patterns are specified, 
+   *   the path is considered allowed and the method returns normally.     
+   *   </li>
+   * </ol>
+   * @param pathString string representation of the path to check
+   * @throws AccessControlException in case of any access violation (including IO errors during the check)
    */
-  // TODO логику покрыть тестами
-  public void checkAccess(String pathString)
-          throws AccessControlException {
+  public void checkAccess(String pathString) throws AccessControlException {
     // first let's check if there is any allowed location
     if (includingGlobs.isEmpty()) {
       throw new AccessControlException("No allowed file log locations specified. See 'allowed-log-locations' property.");

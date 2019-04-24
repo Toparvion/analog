@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 /**
+ * Root config section for storing settings of all kinds of log access restrictions e.g. access to files, to Docker, etc.
  * @author Toparvion
  * @since v0.12
  */
