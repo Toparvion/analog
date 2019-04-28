@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import tech.toparvion.analog.model.config.nodes.Node;
 import tech.toparvion.analog.model.config.nodes.NodesProperties;
+import tech.toparvion.analog.remote.agent.origin.restrict.FileAccessGuard;
 import tech.toparvion.analog.service.DownloadRestTemplate;
 
 import javax.annotation.Nullable;
@@ -32,7 +33,6 @@ import java.time.Instant;
 import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.nio.file.Files.isReadable;
 import static java.nio.file.Files.size;
 import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.HttpStatus.*;
@@ -59,11 +59,13 @@ public class DownloadController {
   private static final Charset DEFAULT_CHARSET = UTF_8;
 
   private final NodesProperties nodesProperties;
+  private final FileAccessGuard fileAccessGuard;
   private final DownloadRestTemplate downloadRestTemplate;
 
   @Autowired
-  public DownloadController(NodesProperties nodesProperties) {
+  public DownloadController(NodesProperties nodesProperties, FileAccessGuard fileAccessGuard) {
     this.nodesProperties = nodesProperties;
+    this.fileAccessGuard = fileAccessGuard;
     this.downloadRestTemplate = new DownloadRestTemplate();
   }
 
@@ -76,11 +78,11 @@ public class DownloadController {
     long size, lastModified;
     String extendedPath;
     if (!isRemote) {
-      Path path = Paths.get(denormalize(pathParam));
-      log.debug("Local file size requested; Will query from path: {}", path);
-      if (!isReadable(path)) {
-        throw new IllegalArgumentException(format("Local file '%s' not found or is inaccessible for reading.", path));
-      }
+      String pathString = denormalize(pathParam);
+      log.debug("Local file size requested; will query from path: {}", pathString);
+      // the following call will throw AccessControlException in case of violation
+      fileAccessGuard.checkAccess(pathString);
+      Path path = Paths.get(pathString);
       size = size(path);
       lastModified = Files.getLastModifiedTime(path).toMillis();
       extendedPath = path.toAbsolutePath().toString();
@@ -121,11 +123,11 @@ public class DownloadController {
     Node node = getNodeByName(nodeName);
     boolean isRemote = !node.equals(nodesProperties.getThis());
     if (!isRemote) {
-      Path path = Paths.get(denormalize(pathParam));
-      log.debug("Local file requested. Retrieving it from path: {}", path);
-      if (!isReadable(path)) {
-        throw new IllegalArgumentException(format("Local file '%s' not found or is inaccessible for reading.", path));
-      }
+      String pathString = denormalize(pathParam);
+      log.debug("Local file requested. Retrieving it from path: {}", pathString);
+      // the following call will throw AccessControlException in case of violation
+      fileAccessGuard.checkAccess(pathString);
+      Path path = Paths.get(pathString);
       long entireFileSize = size(path);               // it's just a snapshot of file size which can change immediately
       int lastBytes = lastKBytes << 10;               // 1 KByte = 2^10 bytes so it's enough to shift it left by 10
       long readStartPosition = (lastBytes > 0)
@@ -200,6 +202,12 @@ public class DownloadController {
         : nodesProperties.getThis();
   }
 
+  /**
+   * Removes leading forward slash from Windows absolute path. This is required because web client uses Unix path 
+   * notation where every absolute path starts with '/'. 
+   * @param pathParam path to clean up
+   * @return given path without leading forward slash (if given path is of Windows style)
+   */
   private String denormalize(String pathParam) {
     if (pathParam.matches("^/\\w:.*")) {
       pathParam = pathParam.substring(1);
