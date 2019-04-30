@@ -28,12 +28,13 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.AccessControlException;
 import java.time.Instant;
 
 import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.nio.file.Files.size;
+import static java.nio.file.Files.isReadable;
 import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
@@ -78,12 +79,14 @@ public class DownloadController {
     long size, lastModified;
     String extendedPath;
     if (!isRemote) {
-      String pathString = denormalize(pathParam);
-      log.debug("Local file size requested; will query from path: {}", pathString);
+      Path path = Paths.get(denormalize(pathParam));
+      log.debug("Local file size requested; will query from path: {}", path);
+      if (!isReadable(path)) {
+        throw new IllegalArgumentException(format("Local file '%s' not found or is inaccessible for reading.", path));
+      }      
       // the following call will throw AccessControlException in case of violation
-      fileAccessGuard.checkAccess(pathString);
-      Path path = Paths.get(pathString);
-      size = size(path);
+      fileAccessGuard.checkAccess(path);
+      size = Files.size(path);
       lastModified = Files.getLastModifiedTime(path).toMillis();
       extendedPath = path.toAbsolutePath().toString();
 
@@ -123,12 +126,14 @@ public class DownloadController {
     Node node = getNodeByName(nodeName);
     boolean isRemote = !node.equals(nodesProperties.getThis());
     if (!isRemote) {
-      String pathString = denormalize(pathParam);
-      log.debug("Local file requested. Retrieving it from path: {}", pathString);
+      Path path = Paths.get(denormalize(pathParam));
+      log.debug("Local file requested. Retrieving it from path: {}", path);
+      if (!isReadable(path)) {
+        throw new IllegalArgumentException(format("Local file '%s' not found or is inaccessible for reading.", path));
+      }      
       // the following call will throw AccessControlException in case of violation
-      fileAccessGuard.checkAccess(pathString);
-      Path path = Paths.get(pathString);
-      long entireFileSize = size(path);               // it's just a snapshot of file size which can change immediately
+      fileAccessGuard.checkAccess(path);
+      long entireFileSize = Files.size(path);         // it's just a snapshot of file size which can change immediately
       int lastBytes = lastKBytes << 10;               // 1 KByte = 2^10 bytes so it's enough to shift it left by 10
       long readStartPosition = (lastBytes > 0)
           ? max(0, (entireFileSize - lastBytes))      // 'max()' to prevent exceeding of actual file size
@@ -179,6 +184,12 @@ public class DownloadController {
   @ResponseStatus(value = NOT_FOUND)
   public void handleLocalFileAbsence(IllegalArgumentException fileNotFoundException) {
     log.warn("Failed to download file: {} ", fileNotFoundException.getMessage());
+  }
+
+  @ExceptionHandler(AccessControlException.class)
+  @ResponseStatus(value = FORBIDDEN)
+  public void handleAccessRestriction(AccessControlException accessControlException) {
+    log.warn("Failed to download file: {} ", accessControlException.getMessage());
   }
 
   @ExceptionHandler(HttpClientErrorException.class)

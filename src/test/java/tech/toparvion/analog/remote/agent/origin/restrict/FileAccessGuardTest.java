@@ -25,6 +25,8 @@ import static org.mockito.Mockito.*;
 /**
  * @author Toparvion
  * @since v0.12
+ * @implNote <em>ATTENTION!</em> On Windows the JVM running this test must be started with Administrator privileges 
+ * because otherwise it would fail to create symbolic links on the file system! 
  */
 class FileAccessGuardTest {
 
@@ -34,7 +36,6 @@ class FileAccessGuardTest {
   private static final String HACKING_SYMLINK_STRING_PATH = "/home/me/app1/hacking-symlink.log";
 
   private static String basePath;
-  private static String basePathGlob;   // the same as basePath but with doubled backward slashes
   private AllowedLogLocations locations;
 
   @BeforeAll
@@ -47,7 +48,6 @@ class FileAccessGuardTest {
     assertTrue(Files.exists(anchorPath, NOFOLLOW_LINKS));
     basePath = anchorPath.getParent().toAbsolutePath().toString();
     assertTrue(basePath.endsWith(System.getProperty("file.separator") + "restrict"));
-    basePathGlob = basePath.replaceAll("\\\\", "\\\\\\\\");
 
     // 2. We have to create symlink by hand because there is no guarantee that it neither will survive in repository 
     // nor won't be lost during tests' artifacts deployment 
@@ -178,7 +178,7 @@ class FileAccessGuardTest {
 
   private AllowedLogLocations composeLocations(String... includeGlobs) {
     List<String> absoluteGlobs = Arrays.stream(includeGlobs)
-            .map(glob -> basePathGlob + glob)
+            .map(glob -> basePath + glob)
             .collect(toList());
     var fileLocations = spy(new FileAllowedLogLocations());
     fileLocations.setInclude(absoluteGlobs);
@@ -189,7 +189,7 @@ class FileAccessGuardTest {
 
   private void setExclusions(AllowedLogLocations inclusions, String... exclusions) {
     List<String> absoluteGlobs = Arrays.stream(exclusions)
-            .map(glob -> basePathGlob + glob)
+            .map(glob -> basePath + glob)
             .collect(toList());
     inclusions.getFile().setExclude(absoluteGlobs);
   }

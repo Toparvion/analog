@@ -16,6 +16,7 @@ import java.security.AccessControlException;
 import java.util.List;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Log access guard responsible for restricting access to file logs (only).
@@ -35,9 +36,23 @@ public class FileAccessGuard {
   @Autowired
   public FileAccessGuard(AllowedLogLocations allLocations) {
     FileAllowedLogLocations fileLocations = allLocations.getFile();
-    this.includingGlobs = fileLocations.getInclude();
-    this.excludingGlobs = fileLocations.getExclude();
+    // in the following assignments all the backward slashes are doubled to adapt them to Glob format
+    this.includingGlobs = fileLocations.getInclude()
+            .stream()
+            .map(glob -> glob.replace("\\", "\\\\"))
+            .collect(toList());
+    this.excludingGlobs = fileLocations.getExclude()            
+            .stream()
+            .map(glob -> glob.replace("\\", "\\\\"))
+            .collect(toList());
     this.symlinkResolutionLimit = fileLocations.getSymlinkResolutionLimit();
+  }
+
+  /**
+   * Converts given string to {@link Path} and delegates to {@link #checkAccess(Path)}. 
+   */
+  public void checkAccess(String pathString) throws AccessControlException {
+    checkAccess(Paths.get(pathString));
   }
 
   /**
@@ -47,7 +62,8 @@ public class FileAccessGuard {
    *      <li>turns it from relative path to an absolute one</li>
    *      <li>converts slashes to current OS format</li>
    *      <li>resolves symbolic links as many times as {@code allowed-log-locations.file.symlink-resolution-limit}
-   *      property specifies; if the property equals 0, symlink resolution is denied at all (log cannot be read)
+   *      property specifies; if the property equals 0, symlink resolution is denied at all (log cannot be read).<br/>
+   *      If the file does not exist, it isn't considered a symlink and the checking proceeds. 
    *      </li></ul>
    *   </li>
    *   <li>Checks given path against {@code allowed-log-locations.file.include} config section which contains a 
@@ -62,16 +78,18 @@ public class FileAccessGuard {
    *   the path is considered allowed and the method returns normally.     
    *   </li>
    * </ol>
-   * @param pathString string representation of the path to check
+   * @implNote The method doesn't rely on denoted file existence. If given path points to an absent file, no exception
+   * is thrown (the check for symlink is considered returning {@code false}).
+   * @param path2check path that must be checked for access
    * @throws AccessControlException in case of any access violation (including IO errors during the check)
    */
-  public void checkAccess(String pathString) throws AccessControlException {
+  public void checkAccess(Path path2check) throws AccessControlException {
     // first let's check if there is any allowed location
     if (includingGlobs.isEmpty()) {
       throw new AccessControlException("No allowed file log locations specified. See 'allowed-log-locations' property.");
     }
     // then streamline the path in order to avoid tricks with relative paths
-    Path path = Paths.get(pathString).toAbsolutePath().normalize();
+    Path path = path2check.toAbsolutePath().normalize();
     // now find out the real log path by resolving all the symlinks towards it
     int hop = 0;
     while (hop < symlinkResolutionLimit && Files.isSymbolicLink(path)) {
@@ -93,8 +111,8 @@ public class FileAccessGuard {
               : format("Symbolic links resolution limit (%d) has been reached.", symlinkResolutionLimit);
       throw new AccessControlException(message);
     }
-    if (!pathString.equals(path.toString())) {
-      log.debug("Path '{}' has been normalized to '{}'.", pathString, path.toString());
+    if (!path2check.equals(path)) {
+      log.debug("Path '{}' has been normalized to '{}'.", path2check, path.toString());
     }
     // now it's time to check the path against including patterns
     log.trace("Checking log path '{}' against {} INCLUDING pattern(s)...", path, includingGlobs.size());
@@ -104,26 +122,26 @@ public class FileAccessGuard {
       if (includingMatcher.matches(path)) {
         anyMatch = true;
         log.info("Log path '{}' is allowed according to '{}' including pattern. Will be also checked for exclusion.",
-                pathString, includingGlob);
+                path2check, includingGlob);
       }
     }
     if (!anyMatch) {
       throw new AccessControlException(format("Access denied: log path '%s' is not included into " +
-              "'allowed-log-locations' property.", pathString));
+              "'allowed-log-locations' property.", path2check));
     }
     // and last, we must check the path against excluding patterns (if any)
     if (!excludingGlobs.isEmpty()) {
-      log.trace("Checking log path '{}' against {} EXCLUDING pattern(s)...", pathString, excludingGlobs.size());
+      log.trace("Checking log path '{}' against {} EXCLUDING pattern(s)...", path2check, excludingGlobs.size());
       for (String excludingGlob : excludingGlobs) {
         var excludingMatcher = FileSystems.getDefault().getPathMatcher("glob:" + excludingGlob);
         if (excludingMatcher.matches(path)) {
-          log.info("Log path '{}' is denied according to excluding pattern: {}", pathString, excludingGlob);
+          log.info("Log path '{}' is denied according to excluding pattern: {}", path2check, excludingGlob);
           throw new AccessControlException(format("Access denied: log path '%s' is excluded from " +
-                  "'allowed-log-locations' property.", pathString));
+                  "'allowed-log-locations' property.", path2check));
         }
       }
     }
-    log.debug("All checks passed. Access is allowed for log path: {}", pathString);
+    log.debug("All checks passed. Access is allowed for log path: {}", path2check);
   }
   
 }

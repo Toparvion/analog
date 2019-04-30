@@ -306,7 +306,7 @@ public class TrackingService {
       eventHandled = true;      // don't break the loop to let other flows to be notified as well
     }
     if (!eventHandled) {
-      throw new IllegalStateException("No trackings found to accept tailing event: " + tailingEvent.toString());
+      throw new IllegalStateException("No tracking found to accept tailing event: " + tailingEvent.toString());
     }
   }
 

@@ -82,8 +82,9 @@ adapters:
 allowed-log-locations:
   file:
     include:
-      - ${user.home}/**.log
-      - ${user.dir}/**.log
+      - ${user.home}/**.log         # any logs in current users home directory
+      - ${user.dir}/**.log          # AnaLog's own logs
     exclude:
-      - ${user.home}/**/.*
+      - ${user.home}/**/.*          # exception for hidden files
+    # - /home/me/audit.log          # just an example of concrete path       
     symlink-resolution-limit: 1
