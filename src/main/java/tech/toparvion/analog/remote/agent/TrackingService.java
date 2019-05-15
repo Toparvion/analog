@@ -2,33 +2,29 @@ package tech.toparvion.analog.remote.agent;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.context.event.EventListener;
 import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.dsl.StandardIntegrationFlow;
 import org.springframework.integration.dsl.context.IntegrationFlowContext;
-import org.springframework.integration.file.tail.FileTailingMessageProducerSupport.FileTailingEvent;
 import org.springframework.integration.rmi.RmiInboundGateway;
 import org.springframework.integration.rmi.RmiOutboundGateway;
 import org.springframework.jmx.export.annotation.ManagedResource;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import tech.toparvion.analog.model.TrackingRequest;
 import tech.toparvion.analog.model.config.entry.LogPath;
 import tech.toparvion.analog.model.config.entry.LogType;
+import tech.toparvion.analog.model.remote.TrackingRequest;
+import tech.toparvion.analog.remote.agent.origin.restrict.FileAccessGuard;
 import tech.toparvion.analog.remote.agent.tailing.TailingFlowProvider;
+import tech.toparvion.analog.service.origin.LogEventTypeDetector;
 import tech.toparvion.analog.util.LocalizedLogger;
 import tech.toparvion.analog.util.timestamp.TimestampExtractor;
 
 import javax.annotation.Nullable;
 import java.net.InetSocketAddress;
-import java.util.LinkedList;
 
 import static java.lang.String.format;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toCollection;
 import static org.springframework.integration.dsl.context.IntegrationFlowContext.IntegrationFlowRegistration;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
 import static tech.toparvion.analog.remote.agent.AgentConstants.*;
@@ -46,6 +42,8 @@ public class TrackingService {
   private final IntegrationFlowContext flowContext;
   private final TimestampExtractor timestampExtractor;
   private final TailingFlowProvider trackingFlowProvider;
+  private final LogEventTypeDetector dispatcher;
+  private final FileAccessGuard fileAccessGuard;
 
   private final LocalizedLogger log;
 
@@ -53,10 +51,14 @@ public class TrackingService {
   public TrackingService(IntegrationFlowContext flowContext,
                          TimestampExtractor timestampExtractor,
                          TailingFlowProvider trackingFlowProvider,
+                         LogEventTypeDetector dispatcher,
+                         FileAccessGuard fileAccessGuard,
                          MessageSource messageSource) {
     this.flowContext = flowContext;
     this.timestampExtractor = timestampExtractor;
     this.trackingFlowProvider = trackingFlowProvider;
+    this.dispatcher = dispatcher;
+    this.fileAccessGuard = fileAccessGuard;
 
     log = new LocalizedLogger(this, messageSource);
   }
@@ -91,7 +93,7 @@ public class TrackingService {
   private StandardIntegrationFlow findExistingTrackingFlow(TrackingRequest request) {
     String logPath = request.getLogPath().getFullPath();
     String flowPrefix = request.isFlat() ? FLAT_PREFIX : GROUP_PREFIX;
-    String trackingFlowId = composeTrackingFlowId(flowPrefix, logPath);
+    String trackingFlowId = AgentUtils.composeTrackingFlowId(flowPrefix, logPath);
     IntegrationFlowRegistration trackingRegistration = flowContext.getRegistrationById(trackingFlowId);
 
     if (trackingRegistration == null) {
@@ -115,7 +117,7 @@ public class TrackingService {
     IntegrationFlowRegistration trackingRegistration = flowContext
         .registration(flatFlow)
         .autoStartup(false)   // to prevent the tail from sending messages to incomplete sending flow
-        .id(composeTrackingFlowId(FLAT_PREFIX, logPath))
+        .id(AgentUtils.composeTrackingFlowId(FLAT_PREFIX, logPath))
         .useFlowIdAsPrefix()
         .register();
     log.info("created-new-flat-flow", logPath, trackingRegistration.getId());
@@ -136,7 +138,7 @@ public class TrackingService {
     IntegrationFlowRegistration trackingRegistration = flowContext
         .registration(groupingFlow)
         .autoStartup(false)       // to prevent the tail from posting messages to uncompleted sending flow
-        .id(composeTrackingFlowId(GROUP_PREFIX, fullPath))
+        .id(AgentUtils.composeTrackingFlowId(GROUP_PREFIX, fullPath))
         .useFlowIdAsPrefix()
         .register();
     String timestampKey = (logPath.getType() == LogType.NODE)
@@ -150,14 +152,14 @@ public class TrackingService {
   private void subscribeWatcherToTrackingFlow(StandardIntegrationFlow trackingFlow,
                                               InetSocketAddress watcherAddress,
                                               TrackingRequest request) {
-    String sendingFlowId = composeSendingFlowId(request, watcherAddress);
+    String sendingFlowId = AgentUtils.composeSendingFlowId(request, watcherAddress);
     if (flowContext.getRegistrationById(sendingFlowId) != null) {
       log.warn("found-duplicate-watcher", sendingFlowId);
       return;
     }
     log.debug("creating-new-sending-flow", sendingFlowId);
     // by this moment the tracking must be already set up, so it's time to establish outbound sending channel
-    PublishSubscribeChannel outChannel = extractOutChannel(trackingFlow);
+    PublishSubscribeChannel outChannel = AgentUtils.extractOutChannel(trackingFlow);
     String payloadSendingUrl = format("rmi://%s:%d/%s%s",
         watcherAddress.getHostName(),
         watcherAddress.getPort(),
@@ -208,17 +210,17 @@ public class TrackingService {
 
     // first of all, let's try to find an existing tracking flow and extract its output channel
     String flowPrefix = request.isFlat() ? FLAT_PREFIX : GROUP_PREFIX;
-    String trackingFlowId = composeTrackingFlowId(flowPrefix, fullPath);
+    String trackingFlowId = AgentUtils.composeTrackingFlowId(flowPrefix, fullPath);
     IntegrationFlowRegistration trackingRegistration = flowContext.getRegistrationById(trackingFlowId);
     if (trackingRegistration == null) {
       log.warn("not-found-tracking-registration", trackingFlowId);
       return;
     }
     StandardIntegrationFlow trackingFlow = (StandardIntegrationFlow) trackingRegistration.getIntegrationFlow();
-    PublishSubscribeChannel trackingOutChannel = extractOutChannel(trackingFlow);
+    PublishSubscribeChannel trackingOutChannel = AgentUtils.extractOutChannel(trackingFlow);
 
     // 1. Find SENDING FLOW as it stays at the top of the three layers within agent
-    String sendingFlowId = composeSendingFlowId(request, watcherAddress);
+    String sendingFlowId = AgentUtils.composeSendingFlowId(request, watcherAddress);
     IntegrationFlowRegistration sendingRegistration = flowContext.getRegistrationById(sendingFlowId);
     if (sendingRegistration == null) {
       log.warn("not-found-sending-registration", sendingFlowId);
@@ -247,7 +249,7 @@ public class TrackingService {
     }
     IntegrationFlow tailFlow = tailFlowRegistration.getIntegrationFlow();
     Assert.notNull(tailFlowRegistration, "Can't stop not found tail registration " + tailFlowId);
-    PublishSubscribeChannel tailFlowOutChannel = extractOutChannel((StandardIntegrationFlow) tailFlow);
+    PublishSubscribeChannel tailFlowOutChannel = AgentUtils.extractOutChannel((StandardIntegrationFlow) tailFlow);
     int tailSubscriberCount = tailFlowOutChannel.getSubscriberCount();
     if (tailSubscriberCount < 1) {
       doSafely(getClass(), () -> flowContext.remove(tailFlowId));
@@ -255,69 +257,6 @@ public class TrackingService {
     } else {
       log.debug("continued-tailing", tailFlowId, tailSubscriberCount);
     }
-  }
-
-  /**
-   * Finds and returns the latest pub-sub channel of given flow. <br>
-   * To improve: if this method become source of errors, we can avoid its usage by means of referencing the output
-   * channel name by its name only. Of course, such a name must be well-defined by corresponding tracking flow. See
-   * examples in {@code TailingFlowProvider#findOrCreateTailFlow()}.
-   *
-   * @param logTrackingFlow tracking flow to extract output channel from
-   * @return the latest pub-sub channel of the flow
-   */
-  private PublishSubscribeChannel extractOutChannel(StandardIntegrationFlow logTrackingFlow) {
-    LinkedList<PublishSubscribeChannel> channels = logTrackingFlow.getIntegrationComponents()
-        .keySet()
-        .stream()
-        .filter(PublishSubscribeChannel.class::isInstance)
-        .map(PublishSubscribeChannel.class::cast)
-        .collect(toCollection(LinkedList::new));
-    if (channels.isEmpty()) {
-      throw new IllegalStateException(format("No PublishSubscribeChannel found among components of logTrackingFlow: %s",
-          logTrackingFlow.getIntegrationComponents().keySet()
-              .stream()
-              .map(Object::toString)
-              .collect(joining())));
-    }
-    return channels.getLast();
-  }
-
-  @EventListener
-  public void processFileTailingEvent(FileTailingEvent tailingEvent) {
-    log.debug("received-tailing-event", tailingEvent.toString());
-    String sourceString = tailingEvent.getSource().toString();
-    // sourceString is tracking flow component name e.g. tailProcess_k8s://namespace/fee/deployment/backend
-    String logPath = sourceString.substring(TailingFlowProvider.TAIL_PROCESS_ADAPTER_PREFIX.length());
-
-    boolean eventHandled = false;
-    for (String prefix : new String[]{FLAT_PREFIX, GROUP_PREFIX}) {
-      String trackingFlowId = composeTrackingFlowId(prefix, logPath);
-      log.trace("trying-to-find-tracking-flow", trackingFlowId);
-      IntegrationFlowRegistration trackingRegistration = flowContext.getRegistrationById(trackingFlowId);
-      if (trackingRegistration == null) {
-        log.trace("not-found-tracking-registration-by-id", trackingFlowId);
-        continue;
-      }
-      StandardIntegrationFlow trackingFlow = (StandardIntegrationFlow) trackingRegistration.getIntegrationFlow();
-      PublishSubscribeChannel trackingOutChannel = extractOutChannel(trackingFlow);
-      trackingOutChannel.send(MessageBuilder.withPayload(tailingEvent).build());
-      log.debug("sent-tailing-event", tailingEvent, trackingOutChannel.getComponentName());
-      eventHandled = true;      // don't break the loop to let other flows to be notified as well
-    }
-    if (!eventHandled) {
-      throw new IllegalStateException("No tracking found to accept tailing event: " + tailingEvent.toString());
-    }
-  }
-
-  private static String composeTrackingFlowId(String flowPrefix, String logPath) {
-    return flowPrefix + logPath;
-  }
-
-  private static String composeSendingFlowId(TrackingRequest request, InetSocketAddress watcherAddress) {
-    String logPath = request.getLogPath().getFullPath();
-    String flowsPrefix = request.isFlat() ? FLAT_PREFIX : GROUP_PREFIX;
-    return String.format("%s%s_%s", flowsPrefix, watcherAddress, logPath);
   }
 
 }

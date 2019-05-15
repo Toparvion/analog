@@ -126,7 +126,7 @@ public class FileAccessGuard {
       }
     }
     if (!anyMatch) {
-      throw new AccessControlException(format("Access denied: log path '%s' is not included into " +
+      throw new AccessControlException(format("Access denied: Path '%s' is not included into " +
               "'allowed-log-locations' property.", path2check));
     }
     // and last, we must check the path against excluding patterns (if any)

@@ -65,16 +65,21 @@ public class ServerConfig {
   }
 
   /**
-   * Since records can arrive in various forms of collection, AnaLog needs a way to generalize it. Otherwise the router
+   * Since records can arrive in various forms, AnaLog needs a way to generalize it. Otherwise the router
    * wouldn't be able to correctly perform the redirect because payload type router relies on trivial class name
-   * comparison only. To address that issue this method detects and returns {@link Collection} type for any
-   * appropriate message payload.
+   * comparison only.
    * @return message payload type to base the routing on
    */
   private Class<?> detectPayloadClass(Object messagePayload) {
-    return Collection.class.isAssignableFrom(messagePayload.getClass())
-        ? Collection.class
-        : messagePayload.getClass();
+    Class<?> messagePayloadClass = messagePayload.getClass();
+    
+    if (Collection.class.isAssignableFrom(messagePayloadClass)) {           // for log records
+      return Collection.class;
+      
+    } if (FileTailingEvent.class.isAssignableFrom(messagePayloadClass)) {   // for tracking metadata
+      return FileTailingEvent.class;
+    }
+    return messagePayloadClass;
   }
 
 }

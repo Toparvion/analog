@@ -7,8 +7,8 @@ import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.rmi.RmiInboundGateway;
-import tech.toparvion.analog.model.TrackingRequest;
 import tech.toparvion.analog.model.config.nodes.NodesProperties;
+import tech.toparvion.analog.model.remote.TrackingRequest;
 
 import java.net.InetSocketAddress;
 

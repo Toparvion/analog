@@ -43,8 +43,7 @@ import static org.springframework.integration.dsl.MessageChannels.publishSubscri
 import static org.springframework.integration.dsl.MessageChannels.queue;
 import static org.springframework.util.StringUtils.hasText;
 import static tech.toparvion.analog.remote.RemotingConstants.*;
-import static tech.toparvion.analog.remote.agent.AgentConstants.TAIL_FLOW_PREFIX;
-import static tech.toparvion.analog.remote.agent.AgentConstants.TAIL_OUTPUT_CHANNEL_PREFIX;
+import static tech.toparvion.analog.remote.agent.AgentConstants.*;
 import static tech.toparvion.analog.util.PathUtils.CUSTOM_SCHEMA_SEPARATOR;
 
 /**
@@ -55,7 +54,6 @@ import static tech.toparvion.analog.util.PathUtils.CUSTOM_SCHEMA_SEPARATOR;
 @Component
 public class TailingFlowProvider {
   private static final Logger log = LoggerFactory.getLogger(TailingFlowProvider.class);
-  public static final String TAIL_PROCESS_ADAPTER_PREFIX = "tailProcess_";
 
   private final TimestampExtractor timestampExtractor;
   private final RecordLevelDetector recordLevelDetector;

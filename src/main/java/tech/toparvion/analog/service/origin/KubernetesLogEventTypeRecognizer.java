@@ -1,4 +1,4 @@
-package tech.toparvion.analog.remote.server.origin.detect;
+package tech.toparvion.analog.service.origin;
 
 import org.springframework.stereotype.Service;
 import tech.toparvion.analog.model.LogEventType;
@@ -14,7 +14,7 @@ import static tech.toparvion.analog.model.config.entry.LogType.KUBERNETES;
  * @since 0.11
  */
 @Service
-public class KubernetesLogEventTypeDetector extends AbstractLogEventTypeDetector {
+class KubernetesLogEventTypeRecognizer extends AbstractLogEventTypeRecognizer {
 
   @Override
   Set<LogType> getAssociatedLogTypes() {

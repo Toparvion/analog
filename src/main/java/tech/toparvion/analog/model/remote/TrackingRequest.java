@@ -1,4 +1,4 @@
-package tech.toparvion.analog.model;
+package tech.toparvion.analog.model.remote;
 
 import tech.toparvion.analog.model.config.entry.LogPath;
 

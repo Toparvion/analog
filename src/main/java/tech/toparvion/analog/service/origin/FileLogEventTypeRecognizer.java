@@ -1,4 +1,4 @@
-package tech.toparvion.analog.remote.server.origin.detect;
+package tech.toparvion.analog.service.origin;
 
 import org.springframework.stereotype.Service;
 import tech.toparvion.analog.model.LogEventType;
@@ -18,7 +18,7 @@ import static tech.toparvion.analog.model.config.entry.LogType.NODE;
  * @see <a href="https://developer.apple.com/legacy/library/documentation/Darwin/Reference/ManPages/man1/tail.1.html">OS X Man Pages</a>
  */
 @Service
-public class FileLogEventTypeDetector extends AbstractLogEventTypeDetector {
+class FileLogEventTypeRecognizer extends AbstractLogEventTypeRecognizer {
 
   @Override
   Set<LogType> getAssociatedLogTypes() {

@@ -1,4 +1,4 @@
-package tech.toparvion.analog.remote.server.origin.detect;
+package tech.toparvion.analog.service.origin;
 
 import tech.toparvion.analog.model.LogEventType;
 
@@ -8,7 +8,7 @@ import java.util.Optional;
  * @author Toparvion
  * @since 0.11
  */
-public interface LogEventTypeDetector {
+interface LogEventTypeRecognizer {
 
   Optional<LogEventType> detectEventType(String eventMessage, String logPath);
 }
