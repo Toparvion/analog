@@ -136,7 +136,7 @@ public class FileAccessGuard {
         var excludingMatcher = FileSystems.getDefault().getPathMatcher("glob:" + excludingGlob);
         if (excludingMatcher.matches(path)) {
           log.info("Log path '{}' is denied according to excluding pattern: {}", path2check, excludingGlob);
-          throw new AccessControlException(format("Access denied: log path '%s' is excluded from " +
+          throw new AccessControlException(format("Access denied: Path '%s' is excluded from " +
                   "'allowed-log-locations' property.", path2check));
         }
       }
