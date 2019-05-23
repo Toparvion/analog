@@ -15,9 +15,7 @@ import org.springframework.util.Assert;
 import tech.toparvion.analog.model.config.entry.LogPath;
 import tech.toparvion.analog.model.config.entry.LogType;
 import tech.toparvion.analog.model.remote.TrackingRequest;
-import tech.toparvion.analog.remote.agent.origin.restrict.FileAccessGuard;
 import tech.toparvion.analog.remote.agent.tailing.TailingFlowProvider;
-import tech.toparvion.analog.service.origin.LogEventTypeDetector;
 import tech.toparvion.analog.util.LocalizedLogger;
 import tech.toparvion.analog.util.timestamp.TimestampExtractor;
 
@@ -42,8 +40,6 @@ public class TrackingService {
   private final IntegrationFlowContext flowContext;
   private final TimestampExtractor timestampExtractor;
   private final TailingFlowProvider trackingFlowProvider;
-  private final LogEventTypeDetector dispatcher;
-  private final FileAccessGuard fileAccessGuard;
 
   private final LocalizedLogger log;
 
@@ -51,14 +47,10 @@ public class TrackingService {
   public TrackingService(IntegrationFlowContext flowContext,
                          TimestampExtractor timestampExtractor,
                          TailingFlowProvider trackingFlowProvider,
-                         LogEventTypeDetector dispatcher,
-                         FileAccessGuard fileAccessGuard,
                          MessageSource messageSource) {
     this.flowContext = flowContext;
     this.timestampExtractor = timestampExtractor;
     this.trackingFlowProvider = trackingFlowProvider;
-    this.dispatcher = dispatcher;
-    this.fileAccessGuard = fileAccessGuard;
 
     log = new LocalizedLogger(this, messageSource);
   }
