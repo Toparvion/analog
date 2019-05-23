@@ -2,7 +2,7 @@ package tech.toparvion.analog.remote.server;
 
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.messaging.handler.annotation.Header;
-import tech.toparvion.analog.model.TrackingRequest;
+import tech.toparvion.analog.model.remote.TrackingRequest;
 
 import static tech.toparvion.analog.remote.RemotingConstants.REGISTRATION_MODE__HEADER;
 import static tech.toparvion.analog.remote.RemotingConstants.SERVER_REGISTRATION_ROUTER__CHANNEL;

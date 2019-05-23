@@ -52,10 +52,10 @@ class ColorMarkerTest {
         new LongestCommonSubstring()
     };
     List<MultisetMetric<String>> multisetMetrics = Arrays.asList(
-        new CosineSimilarity<String>(),
-        new BlockDistance<String>(),
-        new EuclideanDistance<String>(),
-        new SimonWhite<String>(),
+        new CosineSimilarity<>(),
+        new BlockDistance<>(),
+        new EuclideanDistance<>(),
+        new SimonWhite<>(),
         new GeneralizedJaccard<>(),
         new GeneralizedOverlapCoefficient<>()
     );

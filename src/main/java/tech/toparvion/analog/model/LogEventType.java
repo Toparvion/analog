@@ -1,7 +1,7 @@
 package tech.toparvion.analog.model;
 
 /**
- * Types of events that may happen with a log being followed by tracking processs and that AnaLog is aware of.
+ * Types of events that may happen with a log being followed by tracking process and that AnaLog is aware of.
  * All the types are mapped to their ID on client side (so called {@code jsValue}'s). Thus the server events can be
  * easily treated as client events in a similar fashion.
  *

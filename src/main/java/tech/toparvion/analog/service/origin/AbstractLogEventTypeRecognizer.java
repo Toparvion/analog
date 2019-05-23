@@ -1,4 +1,4 @@
-package tech.toparvion.analog.remote.server.origin.detect;
+package tech.toparvion.analog.service.origin;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +12,7 @@ import java.util.Set;
  * @author Toparvion
  * @since 0.11
  */
-public abstract class AbstractLogEventTypeDetector implements LogEventTypeDetector {
+abstract class AbstractLogEventTypeRecognizer implements LogEventTypeRecognizer {
   private final Logger log = LoggerFactory.getLogger(getClass());
 
   abstract Set<LogType> getAssociatedLogTypes();

@@ -2,3 +2,11 @@ nodes:
   this:
     name: angara
     agentPort: ${random.int[10000,65536]}
+    
+allowed-log-locations:
+  file:
+    include:
+      - ${user.home}/**/*.log
+    exclude:
+      - ${user.home}/**/.*
+    symlink-resolution-limit: 1    

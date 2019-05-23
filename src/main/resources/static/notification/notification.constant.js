@@ -55,7 +55,7 @@ app.constant('notifications', {
     //<editor-fold desc="Server Fault(s)">
     serverFailure: {
         level: 'danger',
-        title: 'Сбой на сервере',
+        title: 'Сообщение от сервера',
         text: "Отслеживание прекращено из-за ошибки:<br/><span class='failure-message'>{message}</span>"
     },
     choicesNotFound: {

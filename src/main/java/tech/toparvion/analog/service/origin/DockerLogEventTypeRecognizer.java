@@ -1,4 +1,4 @@
-package tech.toparvion.analog.remote.server.origin.detect;
+package tech.toparvion.analog.service.origin;
 
 import org.springframework.stereotype.Service;
 import tech.toparvion.analog.model.LogEventType;
@@ -13,7 +13,7 @@ import static tech.toparvion.analog.model.config.entry.LogType.DOCKER;
  * @since 0.11
  */
 @Service
-public class DockerLogEventTypeDetector extends AbstractLogEventTypeDetector {
+class DockerLogEventTypeRecognizer extends AbstractLogEventTypeRecognizer {
 
   @Override
   protected Set<LogType> getAssociatedLogTypes() {

@@ -1,0 +1,7 @@
+This file serves as an anchor for resolution of base path to test files in subdirectories.
+This became necessary because unit tests can be run on any platform and thus they don't 
+know what absolute path would be used at runtime.
+
+Files and directories inside current directory resembles a part of Linux file structure 
+in order to model file locations on a typical user system.
+  

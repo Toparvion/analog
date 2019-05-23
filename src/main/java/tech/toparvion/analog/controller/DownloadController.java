@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import tech.toparvion.analog.model.config.nodes.Node;
 import tech.toparvion.analog.model.config.nodes.NodesProperties;
+import tech.toparvion.analog.remote.agent.origin.restrict.FileAccessGuard;
 import tech.toparvion.analog.service.DownloadRestTemplate;
 
 import javax.annotation.Nullable;
@@ -27,13 +28,13 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.AccessControlException;
 import java.time.Instant;
 
 import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.isReadable;
-import static java.nio.file.Files.size;
 import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
@@ -59,11 +60,13 @@ public class DownloadController {
   private static final Charset DEFAULT_CHARSET = UTF_8;
 
   private final NodesProperties nodesProperties;
+  private final FileAccessGuard fileAccessGuard;
   private final DownloadRestTemplate downloadRestTemplate;
 
   @Autowired
-  public DownloadController(NodesProperties nodesProperties) {
+  public DownloadController(NodesProperties nodesProperties, FileAccessGuard fileAccessGuard) {
     this.nodesProperties = nodesProperties;
+    this.fileAccessGuard = fileAccessGuard;
     this.downloadRestTemplate = new DownloadRestTemplate();
   }
 
@@ -77,11 +80,13 @@ public class DownloadController {
     String extendedPath;
     if (!isRemote) {
       Path path = Paths.get(denormalize(pathParam));
-      log.debug("Local file size requested; Will query from path: {}", path);
+      log.debug("Local file size requested; will query from path: {}", path);
       if (!isReadable(path)) {
         throw new IllegalArgumentException(format("Local file '%s' not found or is inaccessible for reading.", path));
-      }
-      size = size(path);
+      }      
+      // the following call will throw AccessControlException in case of violation
+      fileAccessGuard.checkAccess(path);
+      size = Files.size(path);
       lastModified = Files.getLastModifiedTime(path).toMillis();
       extendedPath = path.toAbsolutePath().toString();
 
@@ -125,8 +130,10 @@ public class DownloadController {
       log.debug("Local file requested. Retrieving it from path: {}", path);
       if (!isReadable(path)) {
         throw new IllegalArgumentException(format("Local file '%s' not found or is inaccessible for reading.", path));
-      }
-      long entireFileSize = size(path);               // it's just a snapshot of file size which can change immediately
+      }      
+      // the following call will throw AccessControlException in case of violation
+      fileAccessGuard.checkAccess(path);
+      long entireFileSize = Files.size(path);         // it's just a snapshot of file size which can change immediately
       int lastBytes = lastKBytes << 10;               // 1 KByte = 2^10 bytes so it's enough to shift it left by 10
       long readStartPosition = (lastBytes > 0)
           ? max(0, (entireFileSize - lastBytes))      // 'max()' to prevent exceeding of actual file size
@@ -179,6 +186,12 @@ public class DownloadController {
     log.warn("Failed to download file: {} ", fileNotFoundException.getMessage());
   }
 
+  @ExceptionHandler(AccessControlException.class)
+  @ResponseStatus(value = FORBIDDEN)
+  public void handleAccessRestriction(AccessControlException accessControlException) {
+    log.warn("Failed to download file: {} ", accessControlException.getMessage());
+  }
+
   @ExceptionHandler(HttpClientErrorException.class)
   public ResponseEntity handleRemote4xxError(HttpClientErrorException remoteException) {
     log.error("Failed to retrieve size of remote file because of HTTP error {} ({})", remoteException.getStatusCode(),
@@ -200,6 +213,12 @@ public class DownloadController {
         : nodesProperties.getThis();
   }
 
+  /**
+   * Removes leading forward slash from Windows absolute path. This is required because web client uses Unix path 
+   * notation where every absolute path starts with '/'. 
+   * @param pathParam path to clean up
+   * @return given path without leading forward slash (if given path is of Windows style)
+   */
   private String denormalize(String pathParam) {
     if (pathParam.matches("^/\\w:.*")) {
       pathParam = pathParam.substring(1);
