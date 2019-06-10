@@ -8,6 +8,12 @@ spring:
   jackson:
     # prevents Jackson mapper from serializing null values, empty arrays and false booleans
     default-property-inclusion: non_default
+  mvc:
+    # provides independence on language requested by client with Accept-Language HTTP header
+    localeResolver: FIXED
+  messages:
+    # prevents AnaLog from using OS language as it may differ from the one selected in external application.yaml
+    fallback-to-system-locale: false
 server:
   servlet:
     application-display-name: AnaLog

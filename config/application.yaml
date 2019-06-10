@@ -1,6 +1,9 @@
 server:
-    port: 8083
-    address: localhost
+  port: 8083
+  address: localhost
+spring:
+  mvc:
+    locale: en    # as of v0.12 supported locales are: en, ru
 
 nodes:
   this:
