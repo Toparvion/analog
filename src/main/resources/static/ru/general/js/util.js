@@ -36,9 +36,9 @@ function arePathsEqual(path1, path2) {
 
 function quantify(count) {
     if (count > 1) {
-        return 'logs';
+        return 'логов';
     } else {
-        return 'log';
+        return 'лога';
     }
 }
 

@@ -6,48 +6,49 @@ app.constant('notifications', {
     //<editor-fold desc="Server Events">
     serverConnected: {
         level: 'success',
-        title: 'Сервер снова доступен',
-        text: 'Связь восстановлена, можно работать.'
+        title: 'Server Is Available',
+        text: 'Connection restored, we can go on working.'
     },
     serverDisconnected: {
         level: 'warning',
-        title: 'Нет связи с сервером',
-        text: 'При необходимости слежение продолжится автоматически после восстановления связи.'
+        title: 'No Connection With Server',
+        text: 'Log tracking will continue (if necessary) after connection restore.'
     },
     //</editor-fold>
 
     //<editor-fold desc="Tail Events">
     logNotFound: {
         level: 'info',
-        title: 'Лог не найден',
-        text: "Лог <span class='highlight'>{logPath}</span> не найден. Ожидаю его появления..."
+        title: 'Log Not Found',
+        text: "Log <span class='highlight'>{logPath}</span> not found. Waiting for it to appear..."
     },
     logAppeared: {
         level: 'success',
-        title: 'Лог обнаружен',
-        text: "Лог <span class='highlight'>{logPath}</span> появился. Отслеживаю его изменения."
+        title: 'Log Detected',
+        text: "Log <span class='highlight'>{logPath}</span> has appeared. Following it..."
     },
     logRotated: {
         level: 'info',
-        title: 'Ротация лога',
-        text: "Лог <span class='highlight'>{logPath}</span> начал писаться с начала. " +
-            "Предыдущие записи, вероятно, перенесены в другой лог."
+        title: 'Log Rotation',
+        text: "Log <span class='highlight'>{logPath}</span> started to write from scratch. " +
+            "Perhaps previous records have been moved to another file."
     },
     logDisappeared: {
         level: 'info',
-        title: 'Лог потерян',
-        text: "Лог <span class='highlight'>{logPath}</span> пропал. Продолжу отслеживание, когда появится."
+        title: 'Log Lost',
+        text: "Log <span class='highlight'>{logPath}</span> has disappeared. The tracking will continue" +
+            " automatically when the log is back."
     },
     logTruncated: {
         level: 'danger',
-        title: 'Лог сократился',
-        text: "Лог <span class='highlight'>{logPath}</span> сократился в размере.<br/>" +
-                "Дальнейшее отслеживание может быть ошибочным.<br/>В этом случае лучше начать его заново."
+        title: 'Log Reduced',
+        text: "Log <span class='highlight'>{logPath}</span> has become shorter.<br/>" +
+                "Current tracking can become incorrect. Restart it if necessary."
     },
     unrecognized: {
         level: 'warning',
-        title: 'Сообщение о слежении',
-        text: "При слежении за логом <span class='highlight'>{logPath}</span> получено сообщение:<br/>" +
+        title: 'Tracking Notification',
+        text: "Log <span class='highlight'>{logPath}</span> produced a message:<br/>" +
                 "<span class='tracking-message'>{message}</span>"
     },
     //</editor-fold>
@@ -55,13 +56,13 @@ app.constant('notifications', {
     //<editor-fold desc="Server Fault(s)">
     serverFailure: {
         level: 'danger',
-        title: 'Сообщение от сервера',
-        text: "Отслеживание прекращено из-за ошибки:<br/><span class='failure-message'>{message}</span>"
+        title: 'Server Message',
+        text: "Tracking has been stopped because of error:<br/><span class='failure-message'>{message}</span>"
     },
     choicesNotFound: {
         level: 'danger',
-        title: 'Сбой на сервере',
-        text: "Не удалось получить варианты логов из-за ошибки:<br/>" +
+        title: 'Server Failure',
+        text: "Couldn't fetch log choices because of error:<br/>" +
                 "<span class='failure-message'>{message}</span>"
     }
     //</editor-fold>
