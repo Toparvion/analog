@@ -44,7 +44,7 @@ From the administrator's perspective AnaLog:
 * has its own access control layer basing on Glob path patterns to log files
 
 ## Installation & Usage
-1. Download `analog.zip` from [latest release](https://github.com/Toparvion/analog/releases/latest) page
+1. Download `analog.tar.gz` or `analog.zip` from [latest release](https://github.com/Toparvion/analog/releases/latest) page
 2. Unpack it and give execution permission to `bin/analog` script (in case of *nix OS)
 3. *[optional]* Configure `config/application.yaml` and `config/choices.yaml` by [examples](https://github.com/Toparvion/analog/wiki)
 4. Run `bin/analog` (*nix OS) or `bin/analog.bat` (Windows)
