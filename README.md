@@ -2,7 +2,7 @@
 
 AnaL&oacute;g (pronounced with stressed “*o*”) is a tool for convenient real-time displaying of various logs in your browser.  
 
-Think of it as of web interface to traditional [tail](https://en.wikipedia.org/wiki/Tail_(Unix)) utility, armed with a bunch of features.  To catch the idea, just take a look at a log displayed both with vanilla `tail` and with AnaLog:
+Think of it as of web interface to traditional [tail](https://en.wikipedia.org/wiki/Tail_(Unix)) utility, armed with a bunch of features.  To catch the idea, just take a look at a log displayed both with vanilla `tail` and with AnaLog (click to enlarge):
 
 <a href="https://raw.githubusercontent.com/wiki/Toparvion/analog/images/tail-vs-analog.png">
 <img src="https://raw.githubusercontent.com/wiki/Toparvion/analog/images/tail-vs-analog.png" width="800">
