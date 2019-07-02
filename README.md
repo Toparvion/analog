@@ -1,7 +1,17 @@
 # AnaL&oacute;g
 
-AnaLog (pronounced with stressed "*o*") is a tool for convenient real-time displaying of various logs in your browser.  
-Think of it as of web interface to traditional [tail](https://en.wikipedia.org/wiki/Tail_(Unix)) utility with a bunch of improvements:
+AnaL&oacute;g[^o] is a tool for convenient real-time displaying of various logs in your browser.  
+
+[^o]: Pronounced with stressed "*o*"
+
+Think of it as of web interface to traditional [tail](https://en.wikipedia.org/wiki/Tail_(Unix)) utility, armed with a bunch of features.  
+To catch the idea, just take a look at a log displayed with both vanilla `tail` and AnaLog:
+
+<a href="https://raw.githubusercontent.com/wiki/Toparvion/analog/images/tail-vs-analog.png">
+<img src="https://raw.githubusercontent.com/wiki/Toparvion/analog/images/tail-vs-analog.png" height="250">
+</a>
+
+General features of AnaLog:
 
 * log level highlighting
 * predefined and on-demand log choice configuration (via YAML or URL correspondingly)
@@ -12,9 +22,7 @@ Think of it as of web interface to traditional [tail](https://en.wikipedia.org/w
 * flexible Glob-based log access control (for file logs only)
 
 ## Project Status
-AnaLog is a personal R&D project and currently it is still in development and stabilization stage. As a consequence:
-1. It is not production-ready yet product but is being prepared to be.
-2. Its web UI interface aimed to current testing users audience and therefore supports their native language only (Russian).
+AnaLog is a personal R&D project and currently it is still in development and stabilization stage. As a consequence, it is not production-ready yet product but is being prepared to be.
 
 If you have any questions about the product, want to try it or to help in its development, please feel free to [contact the author](mailto:toparvion@gmx.com) or [submit an issue](https://github.com/Toparvion/analog/issues/new).
 
@@ -33,7 +41,7 @@ Click the images to see them in full size.
 </a>
 
 ### For administrator
-In AnaLog terms the administrator is a person who installs and configures AnaLog instances.  
+In AnaLog terms the *administrator* is a person who installs and configures AnaLog instances.  
 From the administrator's perspective AnaLog:
 
 * is standalone Java application with built-in web server (based on [Spring Boot](https://spring.io/projects/spring-boot) framework)
@@ -67,4 +75,4 @@ See [CONTRIBUTING](https://github.com/Toparvion/analog/blob/master/CONTRIBUTING.
 
 
 ## License
-AnaLog uses MIT license. See [this document](https://github.com/Toparvion/analog/blob/master/LICENSE) for details.
+AnaLog relies on MIT license. See [this document](https://github.com/Toparvion/analog/blob/master/LICENSE) for details.
