@@ -116,7 +116,7 @@ task createDockerfile(type: Dockerfile) {
     group 'docker'
 
     from project['docker.base-image']
-    // all the consequent command will resolve their path relative to the followin:
+    // all the consequent command will resolve their path relative to the following:
     workingDir "/analog"
     // copy main executable file of the application:
     copyFile bootJar.archiveFileName.get(), bootJar.archiveFileName.get()
@@ -125,10 +125,11 @@ task createDockerfile(type: Dockerfile) {
     // mount dirs to store data between restarts (if needed):
     // volume "/microservice/work", "/microservice/log"
     environmentVariable 'APP_NAME', project.name
+    exposePort 8083
     // conform the launch command:
     entryPoint 'java'
     // the command at whole will look like 'java -X... -jar analog.jar'
-    defaultCommand '-Xmx256M', '-XX:MaxMetaspaceSize=256M', '-XX:+HeapDumpOnOutOfMemoryError',
+    defaultCommand '-Xmx256M', '-XX:MaxMetaspaceSize=256M', '-XX:+HeapDumpOnOutOfMemoryError', '--enable-preview',
                    '-jar', "${bootJar.archiveFileName.get()}"
 }
 
