@@ -28,7 +28,7 @@ apply plugin: 'com.bmuschko.docker-remote-api'
 sourceCompatibility = JavaVersion.VERSION_12
 targetCompatibility = JavaVersion.VERSION_12
 tasks.withType(JavaCompile).each {
-    it.options.compilerArgs.add('--enable-preview')     // to support Java 12 new switch construction
+    it.options.compilerArgs.add('--enable-preview')     // to support Java new language features
 }
 
 bootJar {
@@ -36,7 +36,7 @@ bootJar {
     manifest {
         attributes(
                 "Implementation-Title": "AnaLog",
-                "Implementation-Version": version,
+                "Implementation-Version": archiveVersion,
                 "Implementation-Vendor": "Toparvion"
         )
     }
@@ -97,8 +97,28 @@ test {
     useJUnitPlatform()
     jvmArgs(['--enable-preview'])
 }
-startScripts {
-    enabled = false
+
+startScripts { enabled = false }        // to avoid build fails because of Gradle application plugin 
+
+distributions {
+    boot {
+        contents {
+            into 'config/', { from 'config/' }
+            into 'tail-win', { from 'tail/win' }
+            into('') {   // add empty dirs for logs and work files as per https://stackoverflow.com/a/48901794/3507435
+                File.createTempDir().with {
+                    def tmpLog = new File(absolutePath, 'log')
+                    tmpLog.mkdirs()
+                    from(absolutePath) { includeEmptyDirs = true }
+                }
+                File.createTempDir().with {
+                    def tmpLog = new File(absolutePath, 'work')
+                    tmpLog.mkdirs()
+                    from(absolutePath) { includeEmptyDirs = true }
+                }
+            }
+        }
+    }
 }
 
 //<editor-fold desc="Tasks for working with Docker images">
