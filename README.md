@@ -1,4 +1,4 @@
-# AnaL&oacute;g
+# :mag_right: ​AnaL&oacute;g
 
 AnaL&oacute;g (pronounced with stressed “*o*”) is a tool for convenient real-time displaying of various logs in your browser.  
 
@@ -65,7 +65,7 @@ http://localhost:8083/#/k8s://deployment/my-deployment
 After that you should see last several lines of the log in your browser and the new records must be added to them as they appear in the log source.
 
 ## Where to get help?
-Because AnaLog is still under development it's not provided with neither comprehensive documentation nor support. Some basic information can be found on [Wiki pages](https://github.com/Toparvion/analog/wiki).
+Because AnaLog is still under development, it's not provided with neither comprehensive documentation nor support. Some basic information can be found on [Wiki pages](https://github.com/Toparvion/analog/wiki).
 Nevertheless the author would be glad to help you with any questions concerning AnaLog usage. You can ask for help by means of an [issue](https://github.com/Toparvion/analog/issues/new) or contact the author [directly](mailto:toparvion@gmx.com).
 
 ## Contributing

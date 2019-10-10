@@ -5,7 +5,7 @@ import com.bmuschko.gradle.docker.tasks.image.Dockerfile
 
 buildscript {
     ext {
-        springBootVersion = '2.2.0.M1'
+        springBootVersion = '2.2.0.RC1'
     }
     repositories {
         mavenCentral()
@@ -27,16 +27,16 @@ apply plugin: 'com.bmuschko.docker-remote-api'
 
 sourceCompatibility = JavaVersion.VERSION_12
 targetCompatibility = JavaVersion.VERSION_12
-tasks.withType(JavaCompile).each {
-    it.options.compilerArgs.add('--enable-preview')     // to support Java new language features
-}
+//tasks.withType(JavaCompile).each {
+//    it.options.compilerArgs.add('--enable-preview')     // to support Java new language features;
+//}                                                       // disabled to keep the app compatible with future JDK versions
 
 bootJar {
     archiveFileName = 'analog.jar'
     manifest {
         attributes(
                 "Implementation-Title": "AnaLog",
-                "Implementation-Version": archiveVersion,
+                "Implementation-Version": archiveVersion.get(),
                 "Implementation-Vendor": "Toparvion"
         )
     }
@@ -56,7 +56,7 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot' , name: 'spring-boot-starter-websocket'
-    implementation group: 'net.bull.javamelody', name: 'javamelody-spring-boot-starter', version: '1.75.0'
+    implementation group: 'net.bull.javamelody', name: 'javamelody-spring-boot-starter', version: '1.78.0'
 
     implementation group: 'org.springframework.integration', name: 'spring-integration-file'
     implementation group: 'org.springframework.integration', name: 'spring-integration-rmi'
