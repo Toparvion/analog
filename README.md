@@ -1,5 +1,13 @@
 # :mag_right: ​AnaL&oacute;g
 
+### The purpose of this branch
+There is a target environment for AnaLog where only Solaris 10 OS installed. This OS is *not* compatible with Java
+10+ so that the latest AnaLog version cannot be started there. As a temporary workaround, AnaLog will be downgraded to
+Java 9 in order make it capable of launching in that environment. 
+  
+This branch is not intended to be a base for any future AnaLog releases.  
+---
+
 AnaL&oacute;g (pronounced with stressed “*o*”) is a tool for convenient real-time displaying of various logs in your browser.  
 
 Think of it as of web interface to traditional [tail](https://en.wikipedia.org/wiki/Tail_(Unix)) utility, armed with a bunch of features.  To catch the idea, just take a look at a log displayed both with vanilla `tail` and with AnaLog (click to enlarge):

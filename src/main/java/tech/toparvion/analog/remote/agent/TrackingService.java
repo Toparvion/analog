@@ -15,7 +15,6 @@ import org.springframework.util.Assert;
 import tech.toparvion.analog.model.config.entry.LogPath;
 import tech.toparvion.analog.model.config.entry.LogType;
 import tech.toparvion.analog.model.remote.TrackingRequest;
-import tech.toparvion.analog.model.config.entry.LogType;
 import tech.toparvion.analog.remote.agent.tailing.TailingFlowProvider;
 import tech.toparvion.analog.util.LocalizedLogger;
 import tech.toparvion.analog.util.timestamp.TimestampExtractor;
