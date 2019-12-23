@@ -1,5 +1,6 @@
 package tech.toparvion.analog.remote.websocket;
 
+import com.google.common.base.Throwables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.event.EventListener;
@@ -14,9 +15,9 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 import tech.toparvion.analog.model.ServerFailure;
-import tech.toparvion.analog.model.TrackingRequest;
 import tech.toparvion.analog.model.config.ChoiceProperties;
 import tech.toparvion.analog.model.config.entry.*;
+import tech.toparvion.analog.model.remote.TrackingRequest;
 import tech.toparvion.analog.remote.server.RegistrationChannelCreator;
 import tech.toparvion.analog.remote.server.RemoteGateway;
 import tech.toparvion.analog.util.LocalizedLogger;
@@ -114,7 +115,8 @@ public class WebSocketEventListener {
 
       } catch (Exception e) {
         log.error(format("Failed to start watching of log '%s'.", logConfig.getId()), e);
-        ServerFailure failure = new ServerFailure(e.getMessage(), now());
+        Throwable rootCause = Throwables.getRootCause(e);
+        ServerFailure failure = new ServerFailure(rootCause.getMessage(), now());
         messagingTemplate.convertAndSend(destination, failure, singletonMap(MESSAGE_TYPE_HEADER, MessageType.FAILURE));
       }
 
@@ -270,21 +272,15 @@ public class WebSocketEventListener {
     // handling composite entries involves iteration over all included paths
     CompositeLogConfigEntry compositeEntry = (CompositeLogConfigEntry) logConfigEntry;
     for (CompositeInclusion inclusion : compositeEntry.getIncludes()) {
-      TrackingRequest request = null;
-      try {
-        request = new TrackingRequest(
-            inclusion.getPath(),
-            inclusion.getTimestamp(),
-            destination,
-            isTailNeeded);
-        log.debug("sending-composite-tracking-request", isOn ? "ON" : "OFF", request);
-        remoteGateway.switchRegistration(request, isOn);
-
-      } catch (Exception e) {
-        log.error(format("Failed to switch %s the registration by included request: %s",
-            isOn ? "ON":"OFF", (request==null) ? "n/a" : request), e);
-        // TODO inform the user about this partial failure by sending ServerFault notification
-      }
+      TrackingRequest request = new TrackingRequest(
+          inclusion.getPath(),
+          inclusion.getTimestamp(),
+          destination,
+          isTailNeeded);
+      log.debug("sending-composite-tracking-request", isOn ? "ON" : "OFF", request);
+      remoteGateway.switchRegistration(request, isOn);
+      // This action may end up with an exception and thus interrupt the whole loop. While it is generally a bad
+      // practice, here it is considered OK as it allows to react on tracking faults in a fail-fast fashion.
     }
   }
 

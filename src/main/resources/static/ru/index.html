@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="AnaLog">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title ng-bind-html="watchingLog">АнаЛ&oacute;г v0.12</title>
+
+    <script type="text/javascript" src="webjars/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="webjars/jquery.scrollto/2.1.2/jquery.scrollTo.min.js"></script>
+    <script type="text/javascript" src="webjars/highlightjs/9.8.0/highlight.min.js"></script>
+    <script type="text/javascript" src="webjars/highlightjs/9.8.0/languages/xml.min.js"></script>
+    <script type="text/javascript" src="webjars/sockjs-client/1.1.2/sockjs.js"></script>
+    <script type="text/javascript" src="webjars/stomp__stompjs/3.1.2/lib/stomp.js"></script>
+    <script type="text/javascript" src="webjars/angularjs/1.5.8/angular.js"></script>
+    <script type="text/javascript" src="webjars/angularjs/1.5.8/angular-sanitize.js"></script>
+    <script type="text/javascript" src="webjars/angularjs/1.5.8/angular-animate.js"></script>
+    <script type="text/javascript" src="webjars/angular-ui-select/0.19.6/select.js"></script>
+    <script type="text/javascript" src="general/js/bootstrap3-dropdown.js"></script>
+
+    <script type="text/javascript" src="general/js/main-controller.js"></script>
+    <script type="text/javascript" src="notification/notification.controller.js"></script>
+    <script type="text/javascript" src="notification/notification.constant.js"></script>
+    <script type="text/javascript" src="general/js/choice-service.js"></script>
+    <script type="text/javascript" src="rendering/rendering.service.js"></script>
+    <script type="text/javascript" src="general/js/watching-service.js"></script>
+    <script type="text/javascript" src="download/download.component.js"></script>
+    <script type="text/javascript" src="general/js/directives.js"></script>
+    <script type="text/javascript" src="general/js/util.js"></script>
+    <script type="text/javascript" src="general/js/config.js"></script>
+
+    <link rel="stylesheet" href="webjars/balloon-css/0.5.0/balloon.css">
+    <link rel="stylesheet" href="webjars/highlightjs/9.8.0/styles/darkula.css">
+    <link rel="stylesheet" href="webjars/angular-ui-select/0.19.6/select.css">
+    <link rel="stylesheet" href="general/css/bootstrap-with-slate-theme.min.css">
+    <link rel="stylesheet" href="general/css/lib-tuning.css" type="text/css"/> <!-- This should go after all the libs -->
+    <link rel="stylesheet" href="general/css/main.css" type="text/css"/>
+    <link rel="stylesheet" href="rendering/composite-record.css" type="text/css"/>
+    <link rel="stylesheet" href="notification/notification.css" type="text/css"/>
+    <link rel="stylesheet" href="download/download.style.css" type="text/css"/>
+</head>
+
+<body ng-controller="mainController as ctrl">
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand -->
+        <div class="navbar-header">
+            <div class="navbar-brand">
+                <img alt="АнаЛ&oacute;г v0.12" title="АнаЛ&oacute;г v0.12" src="general/img/logo-20-20.png">
+            </div>
+        </div>
+        <!-- Watching toggle control -->
+        <label class="checkbox-inline navbar-text"><input type="checkbox" ng-model="ctrl.onAir">
+            Отслеживать лог
+        </label>
+        <!-- Choices field-->
+        <div class="navbar-form navbar-left form-group">
+            <ui-select ng-model="ctrl.selectedLog" on-select="ctrl.onLogChange()">
+                <ui-select-match allow-clear="false" placeholder="Имя лога, путь, группа, ...">
+                    <span ng-bind-html="$select.selected.title"></span>
+                </ui-select-match>
+                <ui-select-choices group-by="'group'"
+                                   repeat="item in choices | filter: $select.search">
+                    <div ng-bind-html="item.title | highlight: $select.search"></div>
+                    <small class="log-choice-detail">
+                        <span ng-bind-html="item.id | highlight: $select.search"></span>
+                    </small>
+                    <div>
+                        <span class="label"
+                              ng-class="item | labelClassPicker"
+                              ng-bind-html="item | logTypeDetector | highlight: $select.search"></span>
+                    </div>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+        <!-- Download link and control check dialog -->
+        <download-dialog class="navbar-left" selected-log="ctrl.selectedLog"></download-dialog>
+        <!-- Right part of the navbar -->
+        <div class="nav navbar-nav navbar-right">
+            <!-- Text wrapping control -->
+            <label class="checkbox-inline navbar-text">
+                <input type="checkbox" ng-model="ctrl.textWrap">Перенос строк
+            </label>
+            <!--<p class="navbar-text">Выбран лог: "{{ctrl.selectedLog.title}}"</p>-->
+            <!-- Clear button -->
+            <button class="btn btn-default navbar-btn navbar-last-item" ng-click="ctrl.clear()">Очистить</button>
+        </div>
+    </div><!-- /.container-fluid -->
+</nav>
+
+<!-- Console -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12" ng-class="{'text-wrap': ctrl.textWrap, 'text-nowrap': !ctrl.textWrap}" id="consolePanel"></div>
+    </div>
+    <!-- cursor showing the active watching process -->
+    <div class="row" ng-class="{'invisible-cursor': !ctrl.onAir}">
+        <div class="col-xs-12 on-air-cursor">
+            <span class="blinking-cursor">&ndash;</span>
+        </div>
+    </div>
+</div>
+
+<!-- Scroll down button (auto-hiding) -->
+<button type="button" class="btn btn-primary scroll-down-btn ng-hide" hide-upon-auto-scroll
+        title="Промотать в самый вниз" ng-click="ctrl.scrollDown()">
+    <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+</button>
+
+<!-- Notification balloon -->
+<div class="alert alert-dismissible"
+     ng-controller="notificationController as notifier"
+     ng-class="'alert-'+notifier.message.level"
+     ng-show="notifier.showing">
+    <button type="button" class="close" ng-click="notifier.close()">&times;</button>
+    <h4>{{notifier.message.title}}</h4>
+    <p ng-bind-html="notifier.message.text"></p>
+</div>
+
+<!-- Substrate -->
+<img id="substrate" src="general/img/magnifier.png" alt="substrate logo"/>
+</body>
+</html>

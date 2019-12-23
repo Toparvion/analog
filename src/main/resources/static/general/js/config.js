@@ -4,7 +4,7 @@
  */
 app.constant('config', {
     general: {
-        appTitle: 'АнаЛ&oacute;г'
+        appTitle: 'AnaL&oacute;g'
     },
 
     rendering: {

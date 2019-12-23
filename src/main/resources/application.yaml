@@ -8,12 +8,20 @@ spring:
   jackson:
     # prevents Jackson mapper from serializing null values, empty arrays and false booleans
     default-property-inclusion: non_default
+  mvc:
+    # provides independence on language requested by client with Accept-Language HTTP header
+    locale-resolver: FIXED
+  messages:
+    # prevents AnaLog from using OS language as it may differ from the one selected in external application.yaml
+    fallback-to-system-locale: false
 server:
   servlet:
     application-display-name: AnaLog
 logging:
+  # path to default logging configuration file; can be overridden in external application.yaml 
   config: classpath:logging/logback-console.xml
 
+# some tuning to improve and ease troubleshooting
 management:
   endpoints:
     web:
@@ -23,10 +31,11 @@ management:
     health:
       show-details: always
 
+# built-in monitoring settings
 javamelody:
   # Enable JavaMelody auto-configuration (optional, default: true)
   enabled: true
-  advisor-auto-proxy-creator-enabled: false     # to prevent BeanNotOfRequiredTypeException when gettting lazy services
+  advisor-auto-proxy-creator-enabled: false     # to prevent BeanNotOfRequiredTypeException when getting lazy services
   # Initialization parameters for JavaMelody (optional)
   # See: https://github.com/javamelody/javamelody/wiki/UserGuide#6-optional-parameters
   init-parameters:
@@ -42,36 +51,51 @@ javamelody:
     # to change the default "/monitoring" path
     #monitoring-path: /admin/performance
 
+# some settings for watching processes on the agent side
 tracking:
   grouping:
-    sizeThreshold: 500
+    size-threshold: 500
     timeout: 500ms
-  tailSize:
+  tail-size:
     flat: 45
     group: 20
-  retryDelay: 5s
+  retry-delay: 5s
 
+# settings for AnaLog's compatibility with various log providers (file, k8s, etc.)
 adapters:
   file:
-    detectionRequest: 'tail --version'
-    tailImplementations:
-      GnuCoreUtils:        # both tail implementations: Linux native and Cygwin Windows port
-        executable:        'tail'
-        followCommand:     '-F -n {0}'
-        detectionResponse: 'tail (GNU coreutils)'
+    detection-request: 'tail --version'
+    tail-implementations:
+      GnuCoreUtils:         # both tail implementations: Linux native and Cygwin Windows port
+        executable:         'tail'
+        follow-command:     '-F -n {0}'
+        detection-response: 'tail (GNU coreutils)'
       Mac:
-        executable:        'tail'
-        followCommand:     '-F -{0}'
-        detectionResponse: 'tail: illegal option --'
+        executable:         'tail'
+        follow-command:     '-F -{0}'
+        detection-response: 'tail: illegal option --'
       Solaris:
-        executable:        'tail'
-        followCommand:     '-{0}f'
-        detectionResponse: 'usage: tail'
+        executable:         'tail'
+        follow-command:     '-{0}f'
+        detection-response: 'usage: tail'
   docker:
-    executable:     'sudo docker'
-    followCommand:  'logs --follow --tail={0}'
-    versionCommand: 'version --format ''{{.Client.Version}}'''
+    executable:      'sudo docker'
+    follow-command:  'logs --follow --tail={0}'
+    version-command: 'version --format ''{{.Client.Version}}'''
   kubernetes:
-    executable:     'kubectl'
-    followCommand:  'logs --follow --tail={0}'
-    versionCommand: 'version --client --short'
+    executable:      'kubectl'
+    follow-command:  'logs --follow --tail={0}'
+    version-command: 'version --client --short'
+
+# AnaLog uses restrictive access control model, i.e. everything that is not explicitly allowed, is denied.
+# The following (default) settings allow access to certain common log locations. These settings can 
+# be overridden by AnaLog administrator as needed via external 'application.yaml' file. 
+allowed-log-locations:
+  file:
+    include:
+      - ${user.home}/**.log         # any logs in current users home directory
+      - ${user.dir}/**.log          # AnaLog's own logs
+    exclude:
+      - ${user.home}/**/.*          # exception for hidden files
+    # - /home/me/audit.log          # just an example of concrete path       
+    symlink-resolution-limit: 1

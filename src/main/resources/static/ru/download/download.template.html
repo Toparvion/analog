@@ -1,0 +1,71 @@
+<div>
+    <button class="btn btn-default navbar-btn navbar-last-item" title="Скачать выбранный лог"
+            ng-click="$ctrl.toggleDialog()" ng-show="$ctrl.isShowingButton">
+        <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+    </button>
+
+    <div class="panel panel-default" ng-show="$ctrl.isShowingDialog">
+        <div class="panel-body">
+            <div class="dialog-header">
+                <h4>Контрольная сводка</h4>
+                <div ng-switch="$ctrl.isLoading">
+                    <div ng-switch-when="true">
+                        <div class="loader"></div>
+                    </div>
+                    <div ng-switch-when="false">
+                        <a href ng-click="$ctrl.fetchDataFromServer()"><span class="glyphicon glyphicon-refresh"
+                                                                             aria-hidden="true"></span></a>
+                    </div>
+                </div>
+            </div>
+            <table class="table-condensed">
+                <tbody>
+                    <tr ng-show="$ctrl.allMembers.length > 1">
+                        <th>Файл</th>
+                        <td>
+                            <select class="node-list" ng-model="$ctrl.file2Download"
+                                    ng-options="('[' + member.node + '] '+ member.file) for member in $ctrl.allMembers">
+                            </select>
+                        </td>
+                    </tr>
+                    <tr ng-show="$ctrl.allMembers.length == 1">
+                        <!-- node may not be specified if selected log is set manually through browser location bar -->
+                        <th scope="row">Узел</th><td>{{$ctrl.file2Download.node || 'текущий'}}</td>
+                    </tr><tr>
+                        <th scope="row">Путь</th><td>{{$ctrl.file2Download.path}}</td>
+                    </tr><tr>
+                        <th scope="row">Изменен</th><td>{{$ctrl.lastModified | dateFormatter}}</td>
+                    </tr><tr>
+                        <th scope="row">Размер</th><td>{{$ctrl.currentSize | sizeFormatter}}</td>
+                    </tr><tr ng-show="$ctrl.lastError">
+                        <th scope="row">Статус</th><td class="text-danger">{{$ctrl.lastError | errorFormatter}}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="btn-group">
+                <a ng-href="{{$ctrl.downloadLink}}"
+                   ng-disabled="$ctrl.lastError || $ctrl.isLoading"
+                   ng-click="$ctrl.onDownloadClick()"
+                   class="btn btn-primary" download>Скачать целиком</a>
+                <a href ng-disabled="$ctrl.lastError || $ctrl.isLoading || ($ctrl.currentSize < 1024*50)"
+                   class="btn btn-primary dropdown-toggle"
+                   data-toggle="dropdown"><span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li ng-show="$ctrl.currentSize>1024*50" ng-click="$ctrl.closeDialog()">
+                        <a ng-href="{{$ctrl.downloadLink+'&last-kbytes=50'}}" download>Последние 50 КБ</a></li>
+                    <li ng-show="$ctrl.currentSize>1024*500" ng-click="$ctrl.closeDialog()">
+                        <a ng-href="{{$ctrl.downloadLink+'&last-kbytes=500'}}" download>Последние 500 КБ</a></li>
+                    <li ng-show="$ctrl.currentSize>1024*5120" ng-click="$ctrl.closeDialog()">
+                        <a ng-href="{{$ctrl.downloadLink+'&last-kbytes=5120'}}" download>Последние 5 МБ</a></li>
+                    <li ng-show="$ctrl.currentSize>1024*51200" ng-click="$ctrl.closeDialog()">
+                        <a ng-href="{{$ctrl.downloadLink+'&last-kbytes=51200'}}" download>Последние 50 МБ</a></li>
+                    <li class="divider" ng-show="$ctrl.currentSize>1024*204800"></li>
+                    <li ng-show="$ctrl.currentSize>1024*204800" ng-click="$ctrl.closeDialog()">
+                        <a ng-href="{{$ctrl.downloadLink+'&last-kbytes=204800'}}" download>Последние 200 МБ</a></li>
+                </ul>
+            </div>
+            <a ng-click="$ctrl.closeDialog()" href class="card-link cancel">Отмена</a>
+        </div>
+    </div>
+</div>

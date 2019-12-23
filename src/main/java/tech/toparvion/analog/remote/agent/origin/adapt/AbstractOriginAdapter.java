@@ -38,7 +38,7 @@ public abstract class AbstractOriginAdapter implements OriginAdapter {
                 " spelled and accessible for AnaLog. If command contains non-absolute path to executable, please make" +
                 " sure it can be either resolved from current directory or its path is contained in PATH environment" +
                 " variable. Original error message: %s", checkingCommand, e.getMessage());
-        throw new IllegalStateException(explanationMessage, e);
+        throw new IllegalStateException(explanationMessage);
       } else {
         throw e;
       }

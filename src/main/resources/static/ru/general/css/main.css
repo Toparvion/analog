@@ -1,0 +1,97 @@
+/*<editor-fold desc="General rules">*/
+html {
+    overflow: -moz-scrollbars-vertical;
+    overflow-y: scroll;
+}   /* in order to avoid page re-layout on scroll bar appearance */
+body {
+    background-color: #282727;
+    padding-top: 70px;          /* an offset for navbar */
+}
+.navbar-last-item {
+    margin-right: 10px;
+}
+#substrate {
+    bottom: 0;
+    max-height: 35%;
+    opacity: 0.25;
+    position: fixed;
+    right: 0;
+    z-index: -10;
+}
+/*</editor-fold>*/
+
+#consolePanel {
+    font-family: Courier New, monospace;
+    font-size: 13px;
+}
+.text-nowrap {
+    white-space: pre;
+}
+.text-wrap {
+    white-space: pre-wrap;
+}
+
+/*<editor-fold desc="Log levels">*/
+.TRACE {
+    color: #848484;
+    /*color: #bcbbba;*/
+}
+.DEBUG {
+    color: #bcbbba;
+}
+.INFO {
+    color: #3a9546;
+}
+.WARN {
+    color: #de891b;
+}
+.ERROR {
+    color: #de0000;
+}
+.FATAL {
+    color: rgb(255, 7, 0);
+    font-weight: bold;
+}
+.PLAIN {
+    color: #808080;
+    font-style: italic;
+}
+/*</editor-fold>*/
+
+/*<editor-fold desc="Scroll down button">*/
+.scroll-down-btn {
+    position: fixed;
+    right: 25px;
+    bottom: 43%;
+    height: 15%;
+    opacity: 0.3;
+    z-index: 2;
+}
+.scroll-down-btn:hover {
+    opacity: 1;
+}
+/*</editor-fold>*/
+
+/*<editor-fold desc="Blinking cursor">*/
+.invisible-cursor {
+    visibility: hidden;
+}
+.on-air-cursor {
+    color: #3a9546;
+    font-weight: bolder;
+    font-family: fantasy, monospace;
+    font-size: large;
+}
+.blinking-cursor {
+    animation: 1s blink step-end infinite;
+}
+@keyframes blink {
+    from, to {
+        color: transparent;
+    }
+    50% {
+        color: #3a9546;
+    }
+}
+/*</editor-fold>*/
+

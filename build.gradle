@@ -5,7 +5,7 @@ import com.bmuschko.gradle.docker.tasks.image.Dockerfile
 
 buildscript {
     ext {
-        springBootVersion = '2.1.1.RELEASE'
+        springBootVersion = '2.2.0.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -19,8 +19,8 @@ buildscript {
 }
 
 apply plugin: 'java'
+apply plugin: 'jacoco'
 apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'application'
 apply plugin: 'com.bmuschko.docker-remote-api'
@@ -33,77 +33,10 @@ bootJar {
     manifest {
         attributes(
                 "Implementation-Title": "AnaLog",
-                "Implementation-Version": version,
+                "Implementation-Version": archiveVersion.get(),
                 "Implementation-Vendor": "Toparvion"
         )
     }
-}
-
-//<editor-fold desc="Tasks for working with Docker images">
-docker {
-    url = project['docker.url']
-    registryCredentials {
-        url = project['docker.registry.url']
-        username = project['docker.registry.username']
-        password = project['docker.registry.password']
-        email = project['docker.registry.email']
-    }
-}
-task createDockerfile(type: Dockerfile) {
-    description 'Generates Dockerfile for building an image of the application'
-    group 'docker'
-
-    from project['docker.base-image']
-    // all the consequent command will resolve their path relative to the followin:
-    workingDir "/analog"
-    // copy main executable file of the application:
-    copyFile bootJar.archiveFileName.get(), bootJar.archiveFileName.get()
-    // copy config files:
-    copyFile 'config/', 'config/'
-    // mount dirs to store data between restarts (if needed):
-    // volume "/microservice/work", "/microservice/log"
-    environmentVariable 'APP_NAME', project.name
-    // conform the launch command:
-    entryPoint 'java'
-    // the command at whole will look like 'java -X... -jar analog.jar'
-    defaultCommand '-Xmx256M', '-XX:MaxMetaspaceSize=256M', '-XX:+HeapDumpOnOutOfMemoryError',
-                   '-jar', "${bootJar.archiveFileName.get()}"
-}
-
-task syncImageFiles(type: Sync) {
-    description 'Copies to build/docker all the files for build the image'
-    group 'docker'
-
-    dependsOn assemble
-    from bootJar.archiveFile.get().getAsFile()
-    into createDockerfile.destFile.getAsFile().get().parentFile
-    into 'config/', {
-        from 'config/'              // point the config dir apart from others
-    }
-    preserve {
-        include 'Dockerfile'
-    }
-}
-createDockerfile.dependsOn syncImageFiles
-
-task buildImage(type: DockerBuildImage) {
-    description 'Builds and uploads Docker image of the application'
-
-    dependsOn createDockerfile
-    inputDir = createDockerfile.destFile.getAsFile().get().parentFile
-    tags = ["${project.name}:${project.version}"]
-}
-
-task dockerVersion(type: DockerVersion) {
-    description 'Prints Docker version info'
-}
-task dockerInfo(type: DockerInfo) {
-    description 'Prints Docker instance info'
-}
-//</editor-fold>
-
-test {
-    useJUnitPlatform()
 }
 
 repositories {
@@ -116,10 +49,11 @@ repositories {
 dependencies {
     // Backend compile deps
 //    compile("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
+    implementation platform (group: 'org.springframework.boot', name: 'spring-boot-dependencies', version: springBootVersion)
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot' , name: 'spring-boot-starter-websocket'
-    implementation group: 'net.bull.javamelody', name: 'javamelody-spring-boot-starter', version: '1.75.0'
+    implementation group: 'net.bull.javamelody', name: 'javamelody-spring-boot-starter', version: '1.78.0'
 
     implementation group: 'org.springframework.integration', name: 'spring-integration-file'
     implementation group: 'org.springframework.integration', name: 'spring-integration-rmi'
@@ -156,7 +90,94 @@ dependencies {
 junitPlatform {
     enableStandardTestTask = true
 }
-
-startScripts {
-    enabled = false
+test {
+    useJUnitPlatform()
+    jvmArgs(['--enable-preview'])
 }
+
+startScripts { enabled = false }        // to avoid build fails because of Gradle application plugin 
+
+distributions {
+    boot {
+        contents {
+            into 'config/', { from 'config/' }
+            into 'tail-win', { from 'tail/win' }
+            into('') {   // add empty dirs for logs and work files as per https://stackoverflow.com/a/48901794/3507435
+                File.createTempDir().with {
+                    def tmpLog = new File(absolutePath, 'log')
+                    tmpLog.mkdirs()
+                    from(absolutePath) { includeEmptyDirs = true }
+                }
+                File.createTempDir().with {
+                    def tmpLog = new File(absolutePath, 'work')
+                    tmpLog.mkdirs()
+                    from(absolutePath) { includeEmptyDirs = true }
+                }
+            }
+        }
+    }
+}
+
+//<editor-fold desc="Tasks for working with Docker images">
+docker {
+    url = project['docker.url']
+    registryCredentials {
+        url = project['docker.registry.url']
+        username = project['docker.registry.username']
+        password = project['docker.registry.password']
+        email = project['docker.registry.email']
+    }
+}
+task createDockerfile(type: Dockerfile) {
+    description 'Generates Dockerfile for building an image of the application'
+    group 'docker'
+
+    from project['docker.base-image']
+    // all the consequent command will resolve their path relative to the following:
+    workingDir "/analog"
+    // copy main executable file of the application:
+    copyFile bootJar.archiveFileName.get(), bootJar.archiveFileName.get()
+    // copy config files:
+    copyFile 'config/', 'config/'
+    // mount dirs to store data between restarts (if needed):
+    // volume "/microservice/work", "/microservice/log"
+    environmentVariable 'APP_NAME', project.name
+    exposePort 8083
+    // conform the launch command:
+    entryPoint 'java'
+    // the command at whole will look like 'java -X... -jar analog.jar'
+    defaultCommand '-Xmx256M', '-XX:MaxMetaspaceSize=256M', '-XX:+HeapDumpOnOutOfMemoryError', '--enable-preview',
+                   '-jar', "${bootJar.archiveFileName.get()}"
+}
+
+task syncImageFiles(type: Sync) {
+    description 'Copies to build/docker all the files for build the image'
+    group 'docker'
+
+    dependsOn assemble
+    from bootJar.archiveFile.get().getAsFile()
+    into createDockerfile.destFile.getAsFile().get().parentFile
+    into 'config/', {
+        from 'config/'              // point the config dir apart from others
+    }
+    preserve {
+        include 'Dockerfile'
+    }
+}
+createDockerfile.dependsOn syncImageFiles
+
+task buildImage(type: DockerBuildImage) {
+    description 'Builds and uploads Docker image of the application'
+
+    dependsOn createDockerfile
+    inputDir = createDockerfile.destFile.getAsFile().get().parentFile
+    tags = ["${project.name}:${project.version}"]
+}
+
+task dockerVersion(type: DockerVersion) {
+    description 'Prints Docker version info'
+}
+task dockerInfo(type: DockerInfo) {
+    description 'Prints Docker instance info'
+}
+//</editor-fold>

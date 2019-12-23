@@ -3,27 +3,21 @@ package tech.toparvion.analog.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
-
-import java.util.Locale;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 public class LocalizedLogger {
 
   private final Logger log;
   private final MessageSource messageSource;
-  private final Locale locale;
+
 
   public LocalizedLogger(Object caller, MessageSource messageSource) {
-    this(caller, messageSource, new Locale("ru", "RU"));
-  }
-
-  public LocalizedLogger(Object caller, MessageSource messageSource, Locale locale) {
     this.log = LoggerFactory.getLogger(caller.getClass());
     this.messageSource = messageSource;
-    this.locale = locale;
   }
 
   private String resolveTemplate(String key) {
-    return messageSource.getMessage(key, null, key, locale);
+    return messageSource.getMessage(key, null, key, LocaleContextHolder.getLocale());
   }
 
   public void trace(String key, Object... args) {

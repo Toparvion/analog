@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title ng-bind-html="watchingLog">АнаЛ&oacute;г v0.11</title>
+    <title ng-bind-html="watchingLog">AnaL&oacute;g v0.12</title>
 
     <script type="text/javascript" src="webjars/jquery/1.11.1/jquery.min.js"></script>
     <script type="text/javascript" src="webjars/jquery.scrollto/2.1.2/jquery.scrollTo.min.js"></script>
@@ -47,17 +47,17 @@
         <!-- Brand -->
         <div class="navbar-header">
             <div class="navbar-brand">
-                <img alt="АнаЛ&oacute;г v0.11" title="АнаЛ&oacute;г v0.11" src="general/img/logo-20-20.png">
+                <img alt="AnaL&oacute;g v0.12" title="AnaL&oacute;g v0.12" src="general/img/logo-20-20.png">
             </div>
         </div>
         <!-- Watching toggle control -->
         <label class="checkbox-inline navbar-text"><input type="checkbox" ng-model="ctrl.onAir">
-            Отслеживать лог
+            Follow
         </label>
         <!-- Choices field-->
         <div class="navbar-form navbar-left form-group">
             <ui-select ng-model="ctrl.selectedLog" on-select="ctrl.onLogChange()">
-                <ui-select-match allow-clear="false" placeholder="Имя лога, путь, группа, ...">
+                <ui-select-match allow-clear="false" placeholder="Log name, path, group, etc.">
                     <span ng-bind-html="$select.selected.title"></span>
                 </ui-select-match>
                 <ui-select-choices group-by="'group'"
@@ -80,11 +80,11 @@
         <div class="nav navbar-nav navbar-right">
             <!-- Text wrapping control -->
             <label class="checkbox-inline navbar-text">
-                <input type="checkbox" ng-model="ctrl.textWrap">Перенос строк
+                <input type="checkbox" ng-model="ctrl.textWrap">Wrap Lines
             </label>
-            <!--<p class="navbar-text">Выбран лог: "{{ctrl.selectedLog.title}}"</p>-->
+            <!--<p class="navbar-text">Selected Log: "{{ctrl.selectedLog.title}}"</p>-->
             <!-- Clear button -->
-            <button class="btn btn-default navbar-btn navbar-last-item" ng-click="ctrl.clear()">Очистить</button>
+            <button class="btn btn-default navbar-btn navbar-last-item" ng-click="ctrl.clear()">Clear</button>
         </div>
     </div><!-- /.container-fluid -->
 </nav>
@@ -104,7 +104,7 @@
 
 <!-- Scroll down button (auto-hiding) -->
 <button type="button" class="btn btn-primary scroll-down-btn ng-hide" hide-upon-auto-scroll
-        title="Промотать в самый вниз" ng-click="ctrl.scrollDown()">
+        title="Scroll to bottom" ng-click="ctrl.scrollDown()">
     <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
 </button>
 

@@ -26,7 +26,7 @@ function ChoicesService($http, $location, $log, $rootScope) {
                     $log.log("Proposed log is unknown among server choices and hence will be added as separate group.");
                     let logType = detectLogType(proposedLogId);
                     selectedChoice = {
-                        group: "Указан через URL",
+                        group: "Specified via URL",
                         title: extractFileName(proposedLogId),
                         type: logType,
                         id: proposedLogId

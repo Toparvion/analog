@@ -1,7 +1,7 @@
 app = angular.module("AnaLog", ['ngSanitize', 'ngAnimate', 'ui.select']);
 
 app.run(function ($rootScope, watchingService) {
-    $rootScope.watchingLog = "АнаЛ&oacute;г v0.11 (загрузка...)";
+    $rootScope.watchingLog = "AnaL&oacute;g v0.12 (loading...)";
     watchingService.connect();
 });
 
@@ -102,19 +102,19 @@ app.filter('logTypeDetector', function () {
     return function (logChoice) {
         switch (logChoice.type) {
             case 'LOCAL_FILE':
-                return 'локальный файл';
+                return 'local file';
             case 'NODE':
-                return 'удалённый файл на узле {node}'.format(logChoice);
+                return 'remote file on {node} node'.format(logChoice);
             case 'COMPOSITE':
-                return 'композит из {size} {logs}'.format({size: logChoice.includes.length,
+                return 'composite of {size} {logs}'.format({size: logChoice.includes.length,
                                                            logs: quantify(logChoice.includes.length)});
             case 'DOCKER':
-                return 'контейнер в Docker';
+                return 'Docker container';
             case 'KUBERNETES':
             case 'K8S':
-                return 'ресурс в Kubernetes';
+                return 'Kubernetes resource';
             default:
-                return '[неизвестный тип лога]';
+                return '[unknown log type]';
         }
     }
 });

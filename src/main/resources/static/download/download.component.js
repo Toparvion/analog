@@ -119,12 +119,12 @@ function DownloadController($scope, $element, $attrs, $log, $http) {
 app.filter('sizeFormatter', function() {
     return function(bytes) {
         if (!bytes)
-            return '[н/д]';
+            return '[n/a]';
         if (bytes === 0)
-            return '0 Байт';
-        var k = 1024,
+            return '0 Bytes';
+        let k = 1024,
             dm = /*decimals ||*/ 2,
-            sizes = ['Байт', 'КБ', 'МБ', 'ГБ', 'ТБ', 'ПБ', 'ЭБ', 'ЗБ', 'YB'],
+            sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
             i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
     };
@@ -133,9 +133,9 @@ app.filter('sizeFormatter', function() {
 app.filter('dateFormatter', function () {
    return function (utcDateString) {
        if (!utcDateString)
-           return '[н/д]';
-       var parsedDate = new Date(Date.parse(utcDateString));
-       return parsedDate.toLocaleString("ru-RU");
+           return '[n/a]';
+       let parsedDate = new Date(Date.parse(utcDateString));
+       return parsedDate.toLocaleString("en-US");
    }
 });
 
@@ -143,16 +143,19 @@ app.filter('errorFormatter', function () {
    return function (error) {
        if (!error)
            return 'OK';
-       var text;
+       let text;
        switch (error.status) {
            case 404:
-               text = 'не найден';
+               text = 'not found';
+               break;
+           case 403:
+               text = 'access denied';
                break;
            case 503:
-               text = 'временно не доступен';
+               text = 'temporarily unavailable';
                break;
            default:
-               text = 'не может быть получен';
+               text = 'can not be downloaded';
        }
        text += (' ' + '(HTTP ' + error.status);
        if (error.message)

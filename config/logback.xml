@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!--<editor-fold desc="File appender">-->
+    <property name="FILE_LOG_PATTERN"
+              value="%d{ISO8601} ${LOG_LEVEL_PATTERN:-%5p} [%t] - %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>log/analog.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- daily rollover. Make sure the path matches the one in the file element or else
+             the rollover logs are placed in the working directory. -->
+            <fileNamePattern>log/analog_%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+    <!--</editor-fold>-->
+
+    <!--<editor-fold desc="Console appender">-->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%clr(%d{HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(%15.15t){faint} - %clr(%-40.40logger{39}){cyan} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+    <!--</editor-fold>-->
+
+    <!-- Default (root) log level and appender -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+    <!-- =============================== Application loggers (from business logic) ============================== -->
+    <logger name="tech.toparvion.analog" level="TRACE"/>
+    <logger name="tech.toparvion.analog.remote.server.RecordSender" level="DEBUG"/>
+    <logger name="tech.toparvion.analog.util.dev.LogFileGenerator" level="INFO"/>
+    <!-- ===================================== System loggers (from libraries) ================================== -->
+    <logger name="org.springframework.integration.file.tail.OSDelegatingFileTailingMessageProducer" level="DEBUG"/>
+
+</configuration>

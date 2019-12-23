@@ -24,5 +24,6 @@
     <logger name="tech.toparvion.analog.util.dev.LogFileGenerator" level="INFO"/>
     <!-- ===================================== System loggers (from libraries) ================================== -->
     <logger name="org.springframework.integration.file.tail.OSDelegatingFileTailingMessageProducer" level="DEBUG"/>
+    <!-- <logger name="org.springframework.integration" level="DEBUG"/>-->
 
 </configuration>
