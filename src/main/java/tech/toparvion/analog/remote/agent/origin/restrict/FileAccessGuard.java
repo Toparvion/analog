@@ -8,10 +8,7 @@ import tech.toparvion.analog.model.config.access.AllowedLogLocations;
 import tech.toparvion.analog.model.config.access.FileAllowedLogLocations;
 
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.security.AccessControlException;
 import java.util.List;
 
@@ -106,7 +103,7 @@ public class FileAccessGuard {
       hop++;
     }
     if (hop == symlinkResolutionLimit && Files.isSymbolicLink(path)) {
-      var message = (symlinkResolutionLimit == 0)
+      String message = (symlinkResolutionLimit == 0)
               ? "Symbolic links to logs are not allowed."
               : format("Symbolic links resolution limit (%d) has been reached.", symlinkResolutionLimit);
       throw new AccessControlException(message);
@@ -118,7 +115,7 @@ public class FileAccessGuard {
     log.trace("Checking log path '{}' against {} INCLUDING pattern(s)...", path, includingGlobs.size());
     boolean anyMatch = false;
     for (String includingGlob : includingGlobs) {
-      var includingMatcher = FileSystems.getDefault().getPathMatcher("glob:" + includingGlob);
+      PathMatcher includingMatcher = FileSystems.getDefault().getPathMatcher("glob:" + includingGlob);
       if (includingMatcher.matches(path)) {
         anyMatch = true;
         log.info("Log path '{}' is allowed according to '{}' including pattern. Will be also checked for exclusion.",
@@ -133,7 +130,7 @@ public class FileAccessGuard {
     if (!excludingGlobs.isEmpty()) {
       log.trace("Checking log path '{}' against {} EXCLUDING pattern(s)...", path2check, excludingGlobs.size());
       for (String excludingGlob : excludingGlobs) {
-        var excludingMatcher = FileSystems.getDefault().getPathMatcher("glob:" + excludingGlob);
+        PathMatcher excludingMatcher = FileSystems.getDefault().getPathMatcher("glob:" + excludingGlob);
         if (excludingMatcher.matches(path)) {
           log.info("Log path '{}' is denied according to excluding pattern: {}", path2check, excludingGlob);
           throw new AccessControlException(format("Access denied: Path '%s' is excluded from " +
