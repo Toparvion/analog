@@ -1,7 +1,7 @@
 app = angular.module("AnaLog", ['ngSanitize', 'ngAnimate', 'ui.select']);
 
 app.run(function ($rootScope, watchingService) {
-    $rootScope.watchingLog = "АнаЛ&oacute;г v0.12 (загрузка...)";
+    $rootScope.watchingLog = "АнаЛ&oacute;г v0.13 (загрузка...)";
     watchingService.connect();
 });
 
