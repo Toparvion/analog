@@ -1,6 +1,10 @@
 language: java
 jdk:
   - openjdk13
+
+git:
+  depth: false    # see https://docs.travis-ci.com/user/sonarcloud/#accessing-full-scm-history 
+    
 addons:
   sonarcloud:
     organization: "toparvion"
