@@ -14,6 +14,7 @@ buildscript {
     dependencies {
         classpath group: 'org.springframework.boot', name: 'spring-boot-gradle-plugin', version: springBootVersion
         classpath group: 'com.bmuschko', name: 'gradle-docker-plugin', version: '6.1.4'
+        classpath group: 'org.sonarsource.scanner.gradle', name: 'sonarqube-gradle-plugin', version: '2.8'
     }
 }
 
@@ -22,6 +23,7 @@ apply plugin: 'jacoco'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'application'
 apply plugin: 'com.bmuschko.docker-remote-api'
+apply plugin: 'org.sonarqube'
 
 sourceCompatibility = JavaVersion.VERSION_13
 targetCompatibility = JavaVersion.VERSION_13
@@ -180,3 +182,9 @@ task dockerInfo(type: DockerInfo) {
     description 'Prints Docker instance info'
 }
 //</editor-fold>
+
+sonarqube {
+  properties {
+    property "sonar.projectKey", "Toparvion_analog"
+  }
+}

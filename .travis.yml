@@ -1,3 +1,11 @@
 language: java
 jdk:
   - openjdk13
+addons:
+  sonarcloud:
+    organization: "toparvion"
+    token:
+      secure: "h+AFXSMPWbOe+uBiNEVsjUobVpx9V3SjI+cNPisO984jl79VpJ8AqJFzI9sLs56tWiBWNhPe0ffN89zpdSrsWQyhDcOudUuUEprMHEYh+f5ZH/zu/JPGKv+4tCdu8jtq2gSdOwQQMzeuW3lByjYzLrEN20m+Kvvo5HhFEsAqoMby9ZjbXLWOOC7zOouAb8+H37J3j3o7NTPnEK1ittAJOPyzHKYEaTbOqcQsyhmomDEjo+JF7yJ+cCw0C98lLjuC/L9ooVOYO7hjv/wjejNGPEFWzc8QNRHWo4xH+MdkV5McHiNz4+fXyyePm63qQBBh2KwYrBmS8eC0wnSNH0pMAYc8FuoIo/lNFj6l9UF0mYXM7KGdz+54sQkxvNpIuicu56Jl4GQRgIhOS+Z/zAx1JKVy1uzXUfpGJGs/4+kaEohElkUHUknqW6fSFjVkYmWxQVxIJUBDx3kg1nQIoE6ip7xkYqixZIhusWELrqLWQU3XlWLG1tKAZtSa1CUTCMfb+3DeCUXEdyE0p1Ye+CdNMpRWPgXs5p+LgrPIxgr5m1LV8Vbuo16llt/ewpnehwJ0vF+xJyRA+yu7l/QYYBdB8tqxlTgbfCB1lNZZSyhTu0DVw7VQMQT1YOBgEDYRy0gTNYn7s1XeRlEDScUCyjRK3IBGE6f0hJZHp7BzUHsgDvA="
+
+script:
+  - ./gradlew sonarqube
