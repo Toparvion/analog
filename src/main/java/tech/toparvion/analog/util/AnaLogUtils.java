@@ -25,7 +25,7 @@ public class AnaLogUtils {
   private static final Logger log = LoggerFactory.getLogger(AnaLogUtils.class);
   private static final Logger tidyLog = LoggerFactory.getLogger(Tidy.class);
   // шаблоны разбора
-  private static final Pattern MESSAGE_LEVEL_EXTRACTOR = Pattern.compile("^[\\S ]*(TRACE|DEBUG|INFO|WARN|ERROR|FATAL)");
+  private static final Pattern MESSAGE_LEVEL_EXTRACTOR = Pattern.compile("^[\\S ]*(FINE|TRACE|DEBUG|INFO|WARN|ERROR|FATAL)");
   private static final Pattern XML_OPEN_EXTRACTOR = Pattern.compile("<((?:\\w[\\w-]*:)?\\w[\\w-]*).*>");
   private static final Pattern WHOLE_XML_EXTRACTOR = Pattern.compile("^<((?:\\w[\\w-]*:)?\\w[\\w-]*).*>.*</\\1>$", Pattern.DOTALL);
 
@@ -253,11 +253,7 @@ public class AnaLogUtils {
     else return prettyPrintedSourceXml;
   }
 
-  public static String detectMessageType(String curLine) {
-    Matcher levelMatcher = MESSAGE_LEVEL_EXTRACTOR.matcher(curLine);
-    if (levelMatcher.find()) {
-      return levelMatcher.group(1);
-    }
+  public static String checkIfXml(String curLine) {
     Matcher xmlMatcher = WHOLE_XML_EXTRACTOR.matcher(curLine);
     if (xmlMatcher.find()) {
       return "XML";
