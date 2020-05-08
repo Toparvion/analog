@@ -88,12 +88,10 @@ dependencies {
     // JUnit family
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api'
     testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
-    testRuntimeOnly group: 'org.junit.vintage', name: 'junit-vintage-engine'
 }
 
 test {
     useJUnitPlatform()
-    jvmArgs(['--enable-preview'])
 }
 
 startScripts { enabled = false }        // to avoid build fails because of Gradle application plugin 
