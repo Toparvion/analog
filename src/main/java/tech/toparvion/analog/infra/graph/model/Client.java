@@ -5,8 +5,6 @@ import org.neo4j.ogm.annotation.Id;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.Property;
 
-import java.time.Instant;
-
 /**
  * AnaLog client (usually a web browser). Because there are no browser unique ID, the client is identified with its 
  * IP address. It means that there can be multiple watching sessions from the same client if the client runs multiple 
@@ -23,13 +21,9 @@ public class Client {
   
   @Property("ip")
   private String ip;
-  
-  @Property("since")
-  private Instant since;
 
-  public Client(String ip, Instant since) {
+  public Client(String ip) {
     this.ip = ip;
-    this.since = since;
   }
 
   public String getIp() {
@@ -38,17 +32,5 @@ public class Client {
 
   public void setIp(String ip) {
     this.ip = ip;
-  }
-
-  public Instant getSince() {
-    return since;
-  }
-
-  public void setSince(Instant since) {
-    this.since = since;
-  }
-
-  public Long getId() {
-    return id;
   }
 }

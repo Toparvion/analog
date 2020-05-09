@@ -14,19 +14,6 @@ spring:
   messages:
     # prevents AnaLog from using OS language as it may differ from the one selected in external application.yaml
     fallback-to-system-locale: false
-    
-  data:
-    neo4j:
-      uri: 'neo4j://localhost'
-      username: neo4j
-      password: analog
-      #does not open a session when a request comes in
-      #SpringBoot defaults this to true, opens a read/write session for OGM
-      # which makes all transactions read/write, even on queries marked as read-only
-      # That can cause issues in a Neo4j cluster because writes are sent only to the leader in the cluster
-      #With this property set to false, recognizes read-only requests and can send to read replicas
-      open-in-view: false
-    
 server:
   servlet:
     application-display-name: AnaLog
@@ -112,4 +99,3 @@ allowed-log-locations:
       - ${user.home}/**/.*          # exception for hidden files
     # - /home/me/audit.log          # just an example of concrete path       
     symlink-resolution-limit: 1
-
