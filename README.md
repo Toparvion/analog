@@ -1,6 +1,6 @@
 # :mag_right: ​AnaL&oacute;g
 
-[![Travis (.com)](https://img.shields.io/travis/com/toparvion/analog?style=plastic)](https://travis-ci.com/github/Toparvion/analog) ![GitHub](https://img.shields.io/github/license/toparvion/analog?style=plastic) 
+[![Travis (.com)](https://img.shields.io/travis/com/toparvion/analog?style=plastic)](https://travis-ci.com/github/Toparvion/analog) ![Sonar Coverage](https://img.shields.io/sonar/coverage/Toparvion_analog?server=https%3A%2F%2Fsonarcloud.io&style=plastic) ![Sonar Quality Gate](https://img.shields.io/sonar/quality_gate/Toparvion_analog?server=https%3A%2F%2Fsonarcloud.io&style=plastic) ![GitHub](https://img.shields.io/github/license/toparvion/analog?style=plastic) 
 
 AnaL&oacute;g (pronounced with stressed “*o*”) is a tool for convenient real-time displaying of various logs in your browser.  
 
