@@ -94,6 +94,18 @@ test {
     useJUnitPlatform()
 }
 
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "Toparvion_analog"
+    }
+}
+
 startScripts { enabled = false }        // to avoid build fails because of Gradle application plugin 
 
 distributions {
@@ -180,9 +192,3 @@ task dockerInfo(type: DockerInfo) {
     description 'Prints Docker instance info'
 }
 //</editor-fold>
-
-sonarqube {
-  properties {
-    property "sonar.projectKey", "Toparvion_analog"
-  }
-}
