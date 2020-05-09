@@ -39,7 +39,6 @@ import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
 import static org.springframework.util.StringUtils.hasText;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 
 /**
@@ -76,7 +75,8 @@ public class DownloadController {
       throws IOException {
     Node node = getNodeByName(nodeName);
     boolean isRemote = !node.equals(nodesProperties.getThis());
-    long size, lastModified;
+    long size;
+    long lastModified;
     String extendedPath;
     if (!isRemote) {
       Path path = Paths.get(denormalize(pathParam));
@@ -116,7 +116,7 @@ public class DownloadController {
     return answerHeaders;
   }
 
-  @RequestMapping(value = DOWNLOAD_URI_PATH, method = GET)
+  @GetMapping(value = DOWNLOAD_URI_PATH)
   public ResponseEntity<? extends Resource> downloadLog(
       @RequestParam("path") String pathParam,
       @RequestParam(value = "node", required = false) String nodeName,
@@ -193,7 +193,7 @@ public class DownloadController {
   }
 
   @ExceptionHandler(HttpClientErrorException.class)
-  public ResponseEntity handleRemote4xxError(HttpClientErrorException remoteException) {
+  public ResponseEntity<?> handleRemote4xxError(HttpClientErrorException remoteException) {
     log.error("Failed to retrieve size of remote file because of HTTP error {} ({})", remoteException.getStatusCode(),
         hasText(remoteException.getStatusText()) ? remoteException.getStatusText() : "[no status text]");
     return ResponseEntity
