@@ -1,6 +1,6 @@
 # :mag_right: ​AnaL&oacute;g
 
-![Travis (.com) branch](https://img.shields.io/travis/com/toparvion/analog/tail-vis) 
+[![Travis (.com)](https://img.shields.io/travis/com/toparvion/analog?style=plastic)](https://travis-ci.com/github/Toparvion/analog) 
 
 AnaL&oacute;g (pronounced with stressed “*o*”) is a tool for convenient real-time displaying of various logs in your browser.  
 
@@ -52,7 +52,7 @@ From the administrator's perspective AnaLog:
 * has its own access control layer basing on Glob path patterns to log files
 
 ## Installation & Usage
-1. Download `analog.tar.gz` or `analog.zip` from [latest release](https://github.com/Toparvion/analog/releases/latest) page
+1. Download `analog.tar.gz` or `analog.zip` from the [latest release](https://github.com/Toparvion/analog/releases/latest) page
 2. Unpack it and give execution permission to `bin/analog` script (in case of *nix OS)
 3. *[optional]* Configure `config/application.yaml` and `config/choices.yaml` by [examples](https://github.com/Toparvion/analog/wiki)
 4. Run `bin/analog` (*nix OS) or `bin/analog.bat` (Windows)
