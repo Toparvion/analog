@@ -8,6 +8,8 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import javax.annotation.Nonnull;
+
 import static tech.toparvion.analog.remote.RemotingConstants.*;
 
 @Configuration
@@ -24,14 +26,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
   }
 
   @Override
-  public void configureMessageBroker(MessageBrokerRegistry config) {
+  public void configureMessageBroker(@Nonnull MessageBrokerRegistry config) {
     config.enableSimpleBroker(WEBSOCKET_TOPIC_PREFIX)
           .setTaskScheduler(heartbeatTaskScheduler());
     config.setApplicationDestinationPrefixes(WEBSOCKET_APP_PREFIX);
   }
 
   @Override
-  public void registerStompEndpoints(@SuppressWarnings("NullableProblems") StompEndpointRegistry registry) {
+  public void registerStompEndpoints(@Nonnull StompEndpointRegistry registry) {
     registry.addEndpoint(WEBSOCKET_ENDPOINT)
             .withSockJS();
   }

@@ -5,7 +5,7 @@ import com.bmuschko.gradle.docker.tasks.image.Dockerfile
 
 buildscript {
     ext {
-        springBootVersion = '2.2.0.RELEASE'
+        springBootVersion = '2.2.5.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -13,20 +13,20 @@ buildscript {
     }
     dependencies {
         classpath group: 'org.springframework.boot', name: 'spring-boot-gradle-plugin', version: springBootVersion
-        classpath group: 'org.junit.platform', name: 'junit-platform-gradle-plugin', version:  '1.0.1'
-        classpath group: 'com.bmuschko', name: 'gradle-docker-plugin', version: '4.3.0'
+        classpath group: 'com.bmuschko', name: 'gradle-docker-plugin', version: '6.1.4'
+        classpath group: 'org.sonarsource.scanner.gradle', name: 'sonarqube-gradle-plugin', version: '2.8'
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'jacoco'
 apply plugin: 'org.springframework.boot'
-apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'application'
 apply plugin: 'com.bmuschko.docker-remote-api'
+apply plugin: 'org.sonarqube'
 
-sourceCompatibility = JavaVersion.VERSION_12
-targetCompatibility = JavaVersion.VERSION_12
+sourceCompatibility = JavaVersion.VERSION_13
+targetCompatibility = JavaVersion.VERSION_13
 //tasks.withType(JavaCompile).each {
 //    it.options.compilerArgs.add('--enable-preview')     // to support Java new language features;
 //}                                                       // disabled to keep the app compatible with future JDK versions
@@ -56,7 +56,8 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot' , name: 'spring-boot-starter-websocket'
-    implementation group: 'net.bull.javamelody', name: 'javamelody-spring-boot-starter', version: '1.78.0'
+    implementation group: 'org.springframework.boot' , name: 'spring-boot-starter-data-neo4j'
+    implementation group: 'net.bull.javamelody', name: 'javamelody-spring-boot-starter', version: '1.82.0'
 
     implementation group: 'org.springframework.integration', name: 'spring-integration-file'
     implementation group: 'org.springframework.integration', name: 'spring-integration-rmi'
@@ -87,15 +88,10 @@ dependencies {
     // JUnit family
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api'
     testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine'
-    testRuntimeOnly group: 'org.junit.vintage', name: 'junit-vintage-engine'
 }
 
-junitPlatform {
-    enableStandardTestTask = true
-}
 test {
     useJUnitPlatform()
-    jvmArgs(['--enable-preview'])
 }
 
 startScripts { enabled = false }        // to avoid build fails because of Gradle application plugin 
@@ -174,7 +170,7 @@ task buildImage(type: DockerBuildImage) {
 
     dependsOn createDockerfile
     inputDir = createDockerfile.destFile.getAsFile().get().parentFile
-    tags = ["${project.name}:${project.version}"]
+//    tags = ["${project.name}:${project.version}"]
 }
 
 task dockerVersion(type: DockerVersion) {
@@ -184,3 +180,9 @@ task dockerInfo(type: DockerInfo) {
     description 'Prints Docker instance info'
 }
 //</editor-fold>
+
+sonarqube {
+  properties {
+    property "sonar.projectKey", "Toparvion_analog"
+  }
+}

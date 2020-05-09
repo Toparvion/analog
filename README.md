@@ -1,5 +1,7 @@
 # :mag_right: ​AnaL&oacute;g
 
+![Travis (.com) branch](https://img.shields.io/travis/com/toparvion/analog/tail-vis) 
+
 AnaL&oacute;g (pronounced with stressed “*o*”) is a tool for convenient real-time displaying of various logs in your browser.  
 
 Think of it as of web interface to traditional [tail](https://en.wikipedia.org/wiki/Tail_(Unix)) utility, armed with a bunch of features.  To catch the idea, just take a look at a log displayed both with vanilla `tail` and with AnaLog (click to enlarge):
