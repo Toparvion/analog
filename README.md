@@ -1,6 +1,6 @@
 # :mag_right: ​AnaL&oacute;g
 
-[![Travis (.com)](https://img.shields.io/travis/com/toparvion/analog?style=plastic)](https://travis-ci.com/github/Toparvion/analog) [![Sonar Coverage](https://img.shields.io/sonar/coverage/Toparvion_analog?server=https%3A%2F%2Fsonarcloud.io&style=plastic)](https://sonarcloud.io/dashboard?id=Toparvion_analog) [![Sonar Quality Gate](https://img.shields.io/sonar/quality_gate/Toparvion_analog?server=https%3A%2F%2Fsonarcloud.io&style=plastic)](https://sonarcloud.io/dashboard?id=Toparvion_analog) [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/toparvion/analog?color=green&sort=semver&style=plastic)](https://github.com/Toparvion/analog/releases/latest) [![GitHub](https://img.shields.io/github/license/toparvion/analog?style=plastic)](https://github.com/Toparvion/analog/blob/master/LICENSE) 
+[![Travis (.com)](https://img.shields.io/travis/com/toparvion/analog/jdk14?style=plastic)](https://travis-ci.com/github/Toparvion/analog) [![Sonar Coverage](https://img.shields.io/sonar/coverage/Toparvion_analog?server=https%3A%2F%2Fsonarcloud.io&style=plastic)](https://sonarcloud.io/dashboard?id=Toparvion_analog) [![Sonar Quality Gate](https://img.shields.io/sonar/quality_gate/Toparvion_analog?server=https%3A%2F%2Fsonarcloud.io&style=plastic)](https://sonarcloud.io/dashboard?id=Toparvion_analog) [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/toparvion/analog?color=green&sort=semver&style=plastic)](https://github.com/Toparvion/analog/releases/latest) [![GitHub](https://img.shields.io/github/license/toparvion/analog?style=plastic)](https://github.com/Toparvion/analog/blob/master/LICENSE) 
 
 AnaL&oacute;g (pronounced with stressed “*o*”) is a tool for convenient real-time displaying of various logs in your browser.  
 
@@ -45,7 +45,7 @@ In AnaLog terms the *administrator* is a person who installs and configures AnaL
 From the administrator's perspective AnaLog:
 
 * is standalone Java application with built-in web server (based on [Spring Boot](https://spring.io/projects/spring-boot) framework)
-* works on [Java 12](http://jdk.java.net/12/) and above
+* works on [Java 13](http://jdk.java.net/13/) and above
 * has flexible configuration in 2 YAML files: for system settings and log choices (see [examples](https://github.com/Toparvion/analog/wiki))
 * must be installed on every server where the file logs must be fetched from
 * relies on `tail`, `docker` and `kubectl` binaries to fetch logs from corresponding sources
