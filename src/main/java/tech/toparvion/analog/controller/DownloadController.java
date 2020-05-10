@@ -193,7 +193,7 @@ public class DownloadController {
   }
 
   @ExceptionHandler(HttpClientErrorException.class)
-  public ResponseEntity<?> handleRemote4xxError(HttpClientErrorException remoteException) {
+  public ResponseEntity<Void> handleRemote4xxError(HttpClientErrorException remoteException) {
     log.error("Failed to retrieve size of remote file because of HTTP error {} ({})", remoteException.getStatusCode(),
         hasText(remoteException.getStatusText()) ? remoteException.getStatusText() : "[no status text]");
     return ResponseEntity
