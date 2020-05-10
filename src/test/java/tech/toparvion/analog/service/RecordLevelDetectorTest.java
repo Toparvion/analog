@@ -236,4 +236,16 @@ class RecordLevelDetectorTest {
     assertFalse(levelOpt.isPresent());
   }
 
+  @Test
+  @DisplayName("A proof-of-concept for issue with TRACE_ID")
+  void detectLevel_28() {
+    String record = "[2019-11-07 10:45:00,000][INFO ][asyncTaskThread-1][BRAND:, TRACE_ID:, SESSION_KEY:, RID:, USER_ID:, PHONE:, FEE:, PROCESS:] [ftc.feeonline.shared.async.task.AsyncTaskAspect] [Task PREFILL_ERROR_EMAIL_SEND started]";
+    RecordLevelDetector sut = new RecordLevelDetector(
+        getPropsFor("TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"), true);
+    Optional<String> levelOpt = sut.detectLevel(record);
+    assertTrue(levelOpt.isPresent());
+    assertEquals("INFO", levelOpt.get());
+  }
+  
+  
 }
