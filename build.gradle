@@ -25,8 +25,8 @@ apply plugin: 'application'
 apply plugin: 'com.bmuschko.docker-remote-api'
 apply plugin: 'org.sonarqube'
 
-sourceCompatibility = JavaVersion.VERSION_14
-targetCompatibility = JavaVersion.VERSION_14
+sourceCompatibility = JavaVersion.VERSION_13
+targetCompatibility = JavaVersion.VERSION_13
 //tasks.withType(JavaCompile).each {
 //    it.options.compilerArgs.add('--enable-preview')     // to support Java new language features;
 //}                                                       // disabled to keep the app compatible with future JDK versions

@@ -1,6 +1,6 @@
 language: java
 jdk:
-  - openjdk14
+  - openjdk13
 
 git:
   depth: false    # see https://docs.travis-ci.com/user/sonarcloud/#accessing-full-scm-history 
@@ -12,4 +12,4 @@ addons:
       secure: "r6YbLdXaJ25cB7K8Ene2//Bu46DEdUPt55Nit8YNXPn6eHNzx9eH1f2o5BDQgNIwbQmomfyzqvEcoFuSg85V7viLeL2U0gKFQcvZRm8PMdkE3hMncxfXC1PdB+VIOBgqvTV7BvpnvPEqBUIeLLhToyC0/ull9pjgdlyRqhMch1MMuTkfLrvuuiAfX+Yu8yF/iAjw5J0ka5UXVRexXbLZQbzt4P98w0L0ciUaHTxHaPBuXUtqBsdMpM21pPm+dKoVHnEUctLy5BoypkZCTJfhGhVTL/iCp1YvDXUV7uiBGO5IYD0QYdncWKh5N6rlPtBmnuop6GyHHkppGYR3Dd3abH777vG72ucfT3b6yAphZvVTJ5sQ4H7kxqAkreKcEWMLhcFi5cTgx5cNFxJZIQwLp7eYvk6mSIj8QDzG3cJML76F19f5kf6/qDTZrv9RpwZh7QnRx4T3fWGlh3PYxoGY9X3G3HE8ooAgBty7Nl9vZ6k9ljSGAlBM3fm1zF3e19pYZcg9IhvIpIzTTx2PFSL7HQR2morLAI5J0VwE1kqCJ1wfCCrth3tQepqSnSmZe8ULL2IFbS/FQ09++tUzCz9KuZXWw14AqquLSHv83qirOl89/owrKraJq3b49KaG+XM18JIsmInOfHhQr2IdEknAFZaer3FhCmrRELRFVkRU38w="
 
 script:
-  - ./gradlew jacocoTestReport sonarqube --no-daemon
+  - ./gradlew jacocoTestReport sonarqube
