@@ -56,7 +56,6 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot' , name: 'spring-boot-starter-websocket'
-    implementation group: 'org.springframework.boot' , name: 'spring-boot-starter-data-neo4j'
     implementation group: 'net.bull.javamelody', name: 'javamelody-spring-boot-starter', version: '1.82.0'
 
     implementation group: 'org.springframework.integration', name: 'spring-integration-file'
