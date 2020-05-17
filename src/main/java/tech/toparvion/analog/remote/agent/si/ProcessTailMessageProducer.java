@@ -24,6 +24,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Date;
+import java.util.Objects;
 
 import static java.lang.String.format;
 
@@ -55,11 +56,7 @@ public class ProcessTailMessageProducer extends FileTailingMessageProducerSuppor
 
 
   public void setOptions(String options) {
-    if (options == null) {
-      this.options = "";
-    } else {
-      this.options = options;
-    }
+    this.options = Objects.requireNonNullElse(options, "");
   }
 
   public void setExecutable(String executable) {

@@ -11,6 +11,10 @@ nodes:
     agentPort: 7801
 
 choices:
+  custom:
+    location: ./config/choices.yaml
+    autoReloadEnabled: true
+  list:
   - group: AnaLog
     plainLogs:
       - path: ${user.dir}/log/${spring.application.name}.log

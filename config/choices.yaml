@@ -1,4 +1,5 @@
 choices:
+  list:
   - group: Примеры
     localPlainLogsBase: E:\Issues\Testing\incubator\analog\log-samples
     plainLogs:

@@ -19,7 +19,7 @@ server:
     application-display-name: AnaLog
 logging:
   # path to default logging configuration file; can be overridden in external application.yaml 
-  config: classpath:logging/logback-console.xml
+  config: config/logback.xml
 
 # some tuning to improve and ease troubleshooting
 management:

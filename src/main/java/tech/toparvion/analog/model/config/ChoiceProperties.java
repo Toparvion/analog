@@ -1,6 +1,7 @@
 package tech.toparvion.analog.model.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import tech.toparvion.analog.util.config.ChoiceValidator;
 
@@ -13,28 +14,29 @@ import java.util.List;
  */
 @SuppressWarnings({"unused"})     // setters presence are required by Spring Boot
 @Component
-@ConfigurationProperties
+@RefreshScope
+@ConfigurationProperties(prefix = "choices")
 public class ChoiceProperties {
-  private List<ChoiceGroup> choices = new ArrayList<>();
+  private List<ChoiceGroup> list = new ArrayList<>();
 
-  public List<ChoiceGroup> getChoices() {
-    return choices;
+  public List<ChoiceGroup> getList() {
+    return list;
   }
 
-  public void setChoices(List<ChoiceGroup> choices) {
-    this.choices = choices;
+  public void setList(List<ChoiceGroup> list) {
+    this.list = list;
   }
 
   @PostConstruct
   public void tuneProperties() {
-    ChoiceValidator.applyPathBase(choices);
-    ChoiceValidator.checkAndFixSelectedEntry(choices);
+    ChoiceValidator.applyPathBase(list);
+    ChoiceValidator.checkAndFixSelectedEntry(list);
   }
 
   @Override
   public String toString() {
     return "ChoiceProperties{" +
-        "groupsCount=" + choices.size() +
+        "groupsCount=" + list.size() +
         '}';
   }
 }
