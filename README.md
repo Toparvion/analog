@@ -45,7 +45,7 @@ In AnaLog terms the *administrator* is a person who installs and configures AnaL
 From the administrator's perspective AnaLog:
 
 * is standalone Java application with built-in web server (based on [Spring Boot](https://spring.io/projects/spring-boot) framework)
-* works on [Java 13](http://jdk.java.net/13/) and above
+* works on [Java 14](http://jdk.java.net/14/) and above
 * has flexible configuration in 2 YAML files: for system settings and log choices (see [examples](https://github.com/Toparvion/analog/wiki))
 * must be installed on every server where the file logs must be fetched from
 * relies on `tail`, `docker` and `kubectl` binaries to fetch logs from corresponding sources
