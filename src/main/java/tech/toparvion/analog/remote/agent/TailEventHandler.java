@@ -26,6 +26,7 @@ import static tech.toparvion.analog.remote.agent.AgentConstants.*;
 import static tech.toparvion.analog.remote.agent.AgentUtils.composeTrackingFlowId;
 import static tech.toparvion.analog.remote.agent.AgentUtils.extractOutChannel;
 import static tech.toparvion.analog.util.AnaLogUtils.doSafely;
+import static tech.toparvion.analog.util.PathUtils.convertToUnixStyle;
 
 /**
  * @author Toparvion
@@ -58,9 +59,7 @@ public class TailEventHandler {
   @EventListener
   public void processFileTailingEvent(FileTailingEvent tailingEvent) {
     log.debug("received-tailing-event", tailingEvent.toString());
-    String sourceString = tailingEvent.getSource().toString();
-    // sourceString is tracking flow component name e.g. tailProcess_k8s://namespace/fee/deployment/backend
-    String logPath = sourceString.substring(TAIL_PROCESS_ADAPTER_PREFIX.length());
+    String logPath = convertToUnixStyle(tailingEvent.getFile().getPath());
 
     // in case of log appearing we must additionally check its path against access restrictions as the log may be 
     // a symlink to some real file that in turn is located in denied location
