@@ -59,7 +59,7 @@ public class TailEventHandler {
   @EventListener
   public void processFileTailingEvent(FileTailingEvent tailingEvent) {
     log.debug("received-tailing-event", tailingEvent.toString());
-    String logPath = convertToUnixStyle(tailingEvent.getFile().getPath());
+    String logPath = convertToUnixStyle(tailingEvent.getFile().getAbsolutePath());    // see ContainerTargetFile
 
     // in case of log appearing we must additionally check its path against access restrictions as the log may be 
     // a symlink to some real file that in turn is located in denied location
