@@ -57,7 +57,7 @@ class ChoicesAutoReloadConfiguration {
         return null;
       }
       if (isDirectory(choicesPropertiesPath)) {
-        log.warn("'choices.auto-reload.path' ('{}') is a directory", choicesPropertiesLocation);
+        log.warn("'choices.auto-reload.path' ('{}') is a directory. Please specify a path to a regular file to enable choices hot reloading.", choicesPropertiesLocation);
         return null;
       }
       return new FileWatcherProvider(choicesPropertiesPath);
