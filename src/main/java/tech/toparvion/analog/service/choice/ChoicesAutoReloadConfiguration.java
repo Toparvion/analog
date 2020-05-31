@@ -1,10 +1,10 @@
 package tech.toparvion.analog.service.choice;
 
-import io.micrometer.core.instrument.util.NamedThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import tech.toparvion.analog.model.config.ChoicesAutoReloadProperties;
 
 import javax.annotation.Nullable;
@@ -36,8 +36,8 @@ class ChoicesAutoReloadConfiguration {
   static final String CHOICES_HOT_RELOAD_EXECUTOR = "choicesAutoReloadExecutor";
 
   @Bean(CHOICES_HOT_RELOAD_EXECUTOR)
-  Executor forthcomingExecutor() {
-    return newSingleThreadExecutor(new NamedThreadFactory("auto-reload"));
+  Executor choicesHotReloadExecutor() {
+    return newSingleThreadExecutor(new CustomizableThreadFactory("hot-reload"));
   }
 
   @Bean
