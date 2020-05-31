@@ -22,7 +22,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
  *
  * @author Polyudov
  * @implNote <ul>
- * <li>There are no logs because of logging subsystem is not initialized yet</li>
+ * <li>There are no logs because the logging subsystem is not initialized yet</li>
  * <li>Works only with <code>.yaml/.yml</code> files</li>
  * </ul>
  * @since 0.14
