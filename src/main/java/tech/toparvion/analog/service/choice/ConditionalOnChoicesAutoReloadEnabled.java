@@ -6,7 +6,7 @@ import java.lang.annotation.*;
 
 /**
  * @author Polyudov
- * @since 0.14
+ * @since v0.14
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
