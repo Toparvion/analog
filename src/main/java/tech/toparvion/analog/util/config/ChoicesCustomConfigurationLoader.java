@@ -18,7 +18,7 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 /**
- * Environment post processor capable of loading choices list property from custom file.<br/>
+ * Environment post processor capable of loading choices list from a custom file.<br/>
  *
  * @author Polyudov
  * @implNote <ul>
