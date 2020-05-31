@@ -17,8 +17,8 @@ import java.util.Objects;
 import java.util.concurrent.Executor;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.nio.file.Files.exists;
 import static java.nio.file.Files.isDirectory;
+import static java.nio.file.Files.isReadable;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import static java.util.Objects.requireNonNullElse;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
@@ -37,7 +37,7 @@ class ChoicesAutoReloadConfiguration {
 
   @Bean(CHOICES_HOT_RELOAD_EXECUTOR)
   Executor choicesHotReloadExecutor() {
-    return newSingleThreadExecutor(new CustomizableThreadFactory("hot-reload"));
+    return newSingleThreadExecutor(new CustomizableThreadFactory("hot-reload-"));
   }
 
   @Bean
@@ -52,8 +52,8 @@ class ChoicesAutoReloadConfiguration {
     try {
       Path choicesPropertiesPath = Paths.get(choicesPropertiesLocation); //check exception
 
-      if (!exists(choicesPropertiesPath)) {
-        log.warn("File '{}' does not exist", choicesPropertiesLocation);
+      if (!isReadable(choicesPropertiesPath)) {
+        log.warn("File '{}' does not exist or there is no read access to this file", choicesPropertiesLocation);
         return null;
       }
       if (isDirectory(choicesPropertiesPath)) {
@@ -74,10 +74,18 @@ class ChoicesAutoReloadConfiguration {
 
     FileWatcherProvider(Path choicesPropertiesPath) throws IOException {
       this.choicesPropertiesPath = choicesPropertiesPath;
-      this.watchDir = getParent(choicesPropertiesPath);
+      this.watchDir = fetchParent(choicesPropertiesPath);
       this.watchService = FileSystems.getDefault().newWatchService();
 
       watchDir.register(watchService, ENTRY_MODIFY);
+    }
+
+    public WatchService getWatchService() {
+      return watchService;
+    }
+
+    public Path getChoicesPropertiesPath() {
+      return choicesPropertiesPath;
     }
 
     public boolean isChoicesPropertiesFileEvent(Path eventPath) {
@@ -85,11 +93,7 @@ class ChoicesAutoReloadConfiguration {
       return Objects.equals(choicesPropertiesPath, eventResolvedPath);
     }
 
-    public WatchService getWatchService() {
-      return watchService;
-    }
-
-    private Path getParent(Path path) {
+    private Path fetchParent(Path path) {
       return requireNonNullElse(path.getParent(), path);
     }
   }

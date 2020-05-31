@@ -44,7 +44,7 @@ class ChoicesPropertiesChangesListener {
       return;
     }
     try {
-      log.info("Start watching for the choices properties file");
+      log.info("Start watching for the choices properties file: '{}'", fileWatcherProvider.getChoicesPropertiesPath().toAbsolutePath());
       WatchService watchService = fileWatcherProvider.getWatchService();
       WatchKey key;
       while ((key = watchService.take()) != null) {
