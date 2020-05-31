@@ -54,7 +54,7 @@ public class ChoicesCustomConfigurationLoader implements EnvironmentPostProcesso
         .ifPresent(propertySource -> environment.getPropertySources().addFirst(propertySource));
   }
 
-  private boolean extensionIsCorrect(String fileName) {
+  private boolean isExtensionCorrect(String fileName) {
     String extension = FilenameUtils.getExtension(fileName);
     if (isNullOrEmpty(extension)) {
       return false;
