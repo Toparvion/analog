@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author Polyudov
- * @since 0.14
+ * @since v0.14
  */
 @Component
 @ConfigurationProperties(prefix = "choices.custom")

@@ -27,7 +27,7 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
  * Configuration for choices list auto reloading
  *
  * @author Polyudov
- * @since 0.14
+ * @since v0.14
  */
 @Configuration
 @ConditionalOnChoicesAutoReloadEnabled

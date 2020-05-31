@@ -25,7 +25,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
  * <li>There are no logs because the logging subsystem is not initialized yet</li>
  * <li>Works only with <code>.yaml/.yml</code> files</li>
  * </ul>
- * @since 0.14
+ * @since v0.14
  */
 public class ChoicesCustomConfigurationLoader implements EnvironmentPostProcessor {
   private static final String CHOICES_RESOURCE_NAME = "choicesCustomResource";

@@ -19,7 +19,7 @@ import static tech.toparvion.analog.service.choice.ChoicesAutoReloadConfiguratio
 
 /**
  * @author Polyudov
- * @since 0.14
+ * @since v0.14
  */
 @Service
 @EnableAsync
