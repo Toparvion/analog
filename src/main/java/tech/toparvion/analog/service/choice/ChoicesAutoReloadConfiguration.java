@@ -45,7 +45,7 @@ class ChoicesAutoReloadConfiguration {
   FileWatcherProvider fileWatcherProvider(ChoicesAutoReloadProperties choiceProperties) {
     String choicesPropertiesLocation = choiceProperties.getLocation();
     if (isNullOrEmpty(choicesPropertiesLocation)) {
-      log.info("Custom path for choices list is not present");
+      log.info("Custom path for choices list is not present in 'choices.auto-reload.path' property. Hot reload logic won't be applied.");
       return null;
     }
 
