@@ -62,7 +62,7 @@ class ChoicesAutoReloadConfiguration {
       }
       return new FileWatcherProvider(choicesPropertiesPath);
     } catch (Exception e) {
-      log.warn("Can`t create choices list watcher because of error: {}", e.getMessage());
+      log.warn("Can`t create choices list watcher", e);
       return null;
     }
   }
