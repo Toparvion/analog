@@ -44,7 +44,7 @@ public class ChoicesCustomConfigurationLoader implements EnvironmentPostProcesso
     }
 
     FileSystemResource resource = new FileSystemResource(choicesPath);
-    if (!resource.isFile() || !resource.isReadable() || !extensionIsCorrect(resource.getFilename())) {
+    if (!resource.isFile() || !resource.isReadable() || !isExtensionCorrect(resource.getFilename())) {
       return;
     }
 
