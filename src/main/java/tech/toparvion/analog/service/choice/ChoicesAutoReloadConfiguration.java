@@ -53,7 +53,7 @@ class ChoicesAutoReloadConfiguration {
       Path choicesPropertiesPath = Paths.get(choicesPropertiesLocation); //check exception
 
       if (!exists(choicesPropertiesPath)) {
-        log.warn("File '{}' does not exists", choicesPropertiesLocation);
+        log.warn("File '{}' does not exist", choicesPropertiesLocation);
         return null;
       }
       if (isDirectory(choicesPropertiesPath)) {
