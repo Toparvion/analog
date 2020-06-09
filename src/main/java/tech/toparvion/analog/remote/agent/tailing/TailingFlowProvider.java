@@ -309,7 +309,7 @@ public class TailingFlowProvider {
     var fullPrefix = logPath.getType().getPrefix() + CUSTOM_SCHEMA_SEPARATOR;
     return new ProcessTailAdapterSpec()
         .executable(adapterParams.getExecutable())
-        .file(new ContainerTargetFile(fullPrefix, resource))
+        .file(new ContainerTargetFile(fullPrefix, resource, logPath.getFullPath()))
         .id(adapterId)
         .nativeOptions(k8sLogsOptions)
         .fileDelay(trackingProperties.getRetryDelay().toMillis())

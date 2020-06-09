@@ -36,7 +36,8 @@ public enum LogType {
   }
 
   /**
-   * Checks if given log path is of current log type, e.g. {@code docker://my-container} is of type {@link #DOCKER}.<br/>
+   * Checks if given log path is of current log type, e.g. whether {@code docker://my-container} is
+   * of type {@link #DOCKER}.<br/>
    * The checking takes aliases in count therefore both {@link #KUBERNETES} and {@link #K8S} types match
    * path {@code k8s://my-deploy/my-pod}.<br/>
    * The checking is case <em>in</em>sensitive.
