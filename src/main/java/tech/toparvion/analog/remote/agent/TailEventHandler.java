@@ -6,6 +6,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.dsl.StandardIntegrationFlow;
 import org.springframework.integration.dsl.context.IntegrationFlowContext;
+import org.springframework.integration.dsl.context.IntegrationFlowContext.IntegrationFlowRegistration;
 import org.springframework.integration.file.tail.FileTailingMessageProducerSupport.FileTailingEvent;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
@@ -40,18 +41,18 @@ public class TailEventHandler {
   private static final List<LogEventType> SPECIAL_EVENT_TYPES = List.of(LOG_APPEARED, LOG_TRUNCATED, LOG_ROTATED);
 
   private final IntegrationFlowContext flowContext;
-  private final LogEventTypeDetector dispatcher;
+  private final LogEventTypeDetector eventTypeDetector;
   private final FileAccessGuard fileAccessGuard;
 
   private final LocalizedLogger log;
 
   @Autowired
   public TailEventHandler(IntegrationFlowContext flowContext,
-                          LogEventTypeDetector dispatcher,
+                          LogEventTypeDetector eventTypeDetector,
                           FileAccessGuard fileAccessGuard,
                           MessageSource messageSource) {
     this.flowContext = flowContext;
-    this.dispatcher = dispatcher;
+    this.eventTypeDetector = eventTypeDetector;
     this.fileAccessGuard = fileAccessGuard;
     log = new LocalizedLogger(this, messageSource);
   }
@@ -63,7 +64,7 @@ public class TailEventHandler {
 
     // in case of log appearing we must additionally check its path against access restrictions as the log may be 
     // a symlink to some real file that in turn is located in denied location
-    LogEventType eventType = dispatcher.detectEventType(tailingEvent);
+    LogEventType eventType = eventTypeDetector.detectEventType(tailingEvent);
     if (SPECIAL_EVENT_TYPES.contains(eventType)) {
       // the following call will throw AccessControlException in case of violation
       try {
@@ -83,7 +84,7 @@ public class TailEventHandler {
     for (String prefix : new String[]{FLAT_PREFIX, GROUP_PREFIX}) {
       String trackingFlowId = composeTrackingFlowId(prefix, logPath);
       log.trace("trying-to-find-tracking-flow", trackingFlowId);
-      IntegrationFlowContext.IntegrationFlowRegistration trackingRegistration = flowContext.getRegistrationById(trackingFlowId);
+      IntegrationFlowRegistration trackingRegistration = flowContext.getRegistrationById(trackingFlowId);
       if (trackingRegistration == null) {
         log.trace("not-found-tracking-registration-by-id", trackingFlowId);
         continue;
@@ -110,7 +111,7 @@ public class TailEventHandler {
    */
   private void interruptTailFlow(String logPath) {
     String tailFlowId = TAIL_FLOW_PREFIX + logPath;
-    IntegrationFlowContext.IntegrationFlowRegistration tailFlowRegistration = flowContext.getRegistrationById(tailFlowId);
+    IntegrationFlowRegistration tailFlowRegistration = flowContext.getRegistrationById(tailFlowId);
     if (tailFlowRegistration == null) {
       log.error("not-found-tail-registration", tailFlowId);
       return;
