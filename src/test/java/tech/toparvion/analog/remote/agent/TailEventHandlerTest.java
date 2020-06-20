@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.springframework.context.MessageSource;
 import org.springframework.integration.channel.PublishSubscribeChannel;
@@ -40,6 +41,7 @@ class TailEventHandlerTest {
   @Mock LogEventTypeDetector logTypeEventDetectorMock;
   @Mock FileAccessGuard fileAccessGuardMock;
   @Mock MessageSource messageSourceMock;
+  @Captor ArgumentCaptor<Message<?>> messageCaptor;
 
   TailEventHandler sut;
 
@@ -56,7 +58,7 @@ class TailEventHandlerTest {
     // given
     var logFileName = "app.log";
     var logFile = new File(logFileName);
-    String logPath = convertToUnixStyle(logFile.getAbsolutePath());
+    var logPath = convertToUnixStyle(logFile.getAbsolutePath());
     var tailingFlowId = TAIL_FLOW_PREFIX + logPath;
     var trackingFlowId = composeTrackingFlowId(FLAT_PREFIX, logPath);
     var eventSource = new Object();
@@ -89,8 +91,6 @@ class TailEventHandlerTest {
     verify(flatTrackingFlowRegMock).getIntegrationFlow();
     verify(trackingFlowMock).getIntegrationComponents();
 
-    @SuppressWarnings("unchecked")
-    ArgumentCaptor<Message<?>> messageCaptor = ArgumentCaptor.forClass(Message.class);
     verify(trackingFlowOutChannel).send(messageCaptor.capture());
 
     Message<?> message = messageCaptor.getValue();
@@ -141,8 +141,6 @@ class TailEventHandlerTest {
     verify(flatTrackingFlowRegMock).getIntegrationFlow();
     verify(trackingFlowMock).getIntegrationComponents();
 
-    @SuppressWarnings("unchecked")
-    ArgumentCaptor<Message<?>> messageCaptor = ArgumentCaptor.forClass(Message.class);
     verify(trackingFlowOutChannel).send(messageCaptor.capture());
 
     Message<?> message = messageCaptor.getValue();

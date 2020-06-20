@@ -10,7 +10,7 @@
 out/
 
 ### Custom ###
-memo.txt
+memo.md
 log-samples/
 work/
 /dist/

@@ -1,4 +1,4 @@
-package tech.toparvion.analog.service;
+package tech.toparvion.analog.service.choice;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,10 +9,8 @@ import tech.toparvion.analog.model.api.LogChoiceBuilder;
 import tech.toparvion.analog.model.config.ChoiceGroup;
 import tech.toparvion.analog.model.config.ChoiceProperties;
 import tech.toparvion.analog.model.config.entry.*;
-import tech.toparvion.analog.util.PathUtils;
+import tech.toparvion.analog.service.choice.provider.FileSystemScanner;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedHashSet;
@@ -20,10 +18,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static java.lang.String.format;
 import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
+import static tech.toparvion.analog.service.choice.LogChoiceUtils.expandTitle;
 import static tech.toparvion.analog.util.AnaLogUtils.nvls;
 import static tech.toparvion.analog.util.PathUtils.convertToUnixStyle;
 
@@ -32,14 +29,16 @@ import static tech.toparvion.analog.util.PathUtils.convertToUnixStyle;
  * @since v0.7
  */
 @Service
-public class LogChoicesProvider {
-  private static final Logger log = LoggerFactory.getLogger(LogChoicesProvider.class);
+public class LogChoicesComposer {
+  private static final Logger log = LoggerFactory.getLogger(LogChoicesComposer.class);
 
   private final List<ChoiceGroup> choices;
+  private final FileSystemScanner fileSystemScanner;
 
   @Autowired
-  public LogChoicesProvider(ChoiceProperties choiceProperties) {
+  public LogChoicesComposer(ChoiceProperties choiceProperties, FileSystemScanner fileSystemScanner) {
     this.choices = choiceProperties.getChoices();
+    this.fileSystemScanner = fileSystemScanner;
   }
 
   public List<LogChoice> provideLogChoices() {
@@ -119,37 +118,7 @@ public class LogChoicesProvider {
       log.warn("Kubernetes resources scanning is not supported yet. Please contact @toparvion to implement it. " +
           "Thank you for your interest!");
     }
-    Set<LogChoice> choices = new LinkedHashSet<>();
-    String groupName = group.getGroup();
-    for (String dir : scanLocations.getDirectories()) {
-      Path scanDirPath = Paths.get(dir);
-      if (!Files.isDirectory(scanDirPath)) {
-        log.warn("Path '{}' is not a directory. Won't be scanned for logs.", scanDirPath);
-        continue;
-      }
-      try (Stream<Path> scannedPaths = Files.list(scanDirPath)) {
-        choices.addAll(scannedPaths   // such sets merging allows to exclude duplicates while preserving explicit paths
-            .filter(Files::isRegularFile)   // the scanning is not recursive so we bypass nested directories
-            .map(logPath -> new LogChoiceBuilder()
-                .setGroup(groupName)
-                .setId(convertToUnixStyle(logPath.toAbsolutePath().toString()))
-                .setType(LogType.LOCAL_FILE.toString())
-                .setTitle(expandTitle("$f ($g)", logPath.toString(), groupName))
-                .createLogChoice())
-            .collect(toSet()));
-
-      } catch (IOException e) {
-        log.error(format("Failed to scan directory '%s'; will be ignored.", dir), e);
-      }
-    }
-    return choices;
-  }
-
-  private String expandTitle(String pureTitle, String purePath, String groupName) {
-    String fileName = PathUtils.extractFileName(purePath);
-    return pureTitle.replaceAll("(?i)\\$f", fileName)
-        .replaceAll("(?i)\\$g", groupName)
-        .replaceAll("(^\")|(\"$)", "");
+    return fileSystemScanner.scanForChoices(scanLocations.getDirectories(), group.getGroup());
   }
 
   private List<String> getInclusions(CompositeLogConfigEntry logConfigEntry) {
