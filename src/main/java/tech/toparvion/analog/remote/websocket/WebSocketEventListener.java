@@ -193,7 +193,7 @@ public class WebSocketEventListener {
    * to watch arbitrary plain logs independently of its configuration. Particularly, it means that a user can set any
    * path into AnaLog's address line and start to watch it the same way as if it was pre-configured as a choice
    * variant in configuration file.
-   * <p>This logic doesn't apply to composite logs (yet), but it would be great to implement it.
+   * <p>This logic doesn't apply to composite logs (yet), but it would be great to implement it someday.
    *
    * @param path full path of log file to watch for
    * @return newly created log config entry for the specified path

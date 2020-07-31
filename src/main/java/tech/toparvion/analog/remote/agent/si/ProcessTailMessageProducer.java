@@ -28,9 +28,11 @@ import java.util.Date;
 import static java.lang.String.format;
 
 /**
+ * <code><pre>
  * sudo docker logs --follow --tail=0 b181bbb05d49
  * kubectl logs --follow --tail=1 deployment/devrel-restorun
  * kubectl logs --follow --tail=1 devrel-restorun-cbfc8b84f-fch4h
+ * </pre></code>
  *
  * @author Gary Russell
  * @author Gavin Gray
