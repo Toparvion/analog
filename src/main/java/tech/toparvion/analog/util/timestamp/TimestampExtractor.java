@@ -12,6 +12,7 @@ import java.io.File;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,7 +31,16 @@ import static tech.toparvion.analog.util.PathUtils.convertToUnixStyle;
 @Service
 public class TimestampExtractor {
   private static final Logger log = LoggerFactory.getLogger(TimestampExtractor.class);
-
+  /**
+   * By default, AnaLog parses log lines' timestamp with English locale because otherwise it may fail parsing. For
+   * instance, if current system locale is 'ru' and the application tries to parse "{@code 23/Jun/2020:00:29:42}"
+   * timestamp, then it will fail with the following exception:<pre><code>
+   * java.time.format.DateTimeParseException: Text '23/Jun/2020:00:29:42' could not be parsed at index 3
+   * </code></pre>
+   * This is generally not a good idea to hard-code the locale, but it seems acceptable so far as there is no
+   * localized logs in production environments (AFAIK).
+   */
+  public static final Locale DEFAULT_TIMESTAMP_PARSER_LOCALE = Locale.ENGLISH;
   private final DateFormat2RegexConverter converter;
   /**
    * Registry of compiled regex patterns and pre-built dateTime formatters for known logs. Registry records aren't
@@ -58,7 +68,8 @@ public class TimestampExtractor {
       return;
     }
     Pattern pattern = converter.convertToRegex(format);
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format)
+                                                   .withLocale(DEFAULT_TIMESTAMP_PARSER_LOCALE);
     log.info("For logPath='{}' and its format='{}' new registry record was created: pattern='{}', formatter='{}'",
         logPath, format, pattern, formatter);
     registry.put(logPath, new PatternAndFormatter(pattern, formatter));
@@ -76,7 +87,7 @@ public class TimestampExtractor {
   public LocalDateTime extractTimestamp(Message<String> lineMessage) {
     String line = lineMessage.getPayload();
     if (line.startsWith("\tat ")) {
-      // a kind of short-hand way to avoid wasting time on analyzing lines of java stacktraces
+      // a kind of short-hand way to avoid wasting time on analyzing lines of java stack traces
       return null;
     }
 
@@ -91,8 +102,8 @@ public class TimestampExtractor {
     if (!timestampMatcher.find()) {
       return null;
       // TODO есть проблема: если число таких записей без метки будет слишком велико, то выделяющий записи агрегатор
-      // выпустит их без "головы", то есть без предшествующей записи с меткой. Из-за этого на принимающей стороне их,
-      // возможно, будет трудно куда-либо определить. Нужно подумать, как это победить, и есть ли такая проблема.
+      //  выпустит их без "головы", то есть без предшествующей записи с меткой. Из-за этого на принимающей стороне их,
+      //  возможно, будет трудно куда-либо определить. Нужно подумать, как это победить, и есть ли такая проблема.
     }
 
     String tsString = timestampMatcher.group();
@@ -101,7 +112,8 @@ public class TimestampExtractor {
     try {
       parsedTimestamp = formatter.parse(tsString, LocalDateTime::from);
     } catch (DateTimeException e) {
-      // in case no date specified in timestamp format, AnaLog supposes the date to be equal today
+      log.debug("Unable to parse timestamp string '{}' with formatter '{}'.", tsString, formatter, e);
+      // in case no date specified in timestamp format, AnaLog supposes the date to be equal current time
       LocalTime parsedTime = formatter.parse(tsString, LocalTime::from);
       parsedTimestamp = LocalDateTime.of(LocalDate.now(Clock.systemDefaultZone()), parsedTime);
     }
