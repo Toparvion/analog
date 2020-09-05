@@ -277,6 +277,7 @@ public class TailingFlowProvider {
       String token = tokens[i];
       switch (token.toLowerCase()) {
         case "namespace":
+        case "ns":
           var namespace = tokens[i + 1];
           optsBuilder.append(" --namespace=").append(namespace);
           // (!) Caution: namespace might be already specified in adapters.kubernetes.followCommand (application.yaml)

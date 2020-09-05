@@ -272,6 +272,8 @@ public class WebSocketEventListener {
     // handling composite entries involves iteration over all included paths
     CompositeLogConfigEntry compositeEntry = (CompositeLogConfigEntry) logConfigEntry;
     for (CompositeInclusion inclusion : compositeEntry.getIncludes()) {
+      // TODO Вот здесь и нужен expander путей в k8s, а из logChoicesProvider'а его можно убрать, обеспечив на клиенте
+      //  вывод подписи типа "композит из 2+ логов"
       TrackingRequest request = new TrackingRequest(
           inclusion.getPath(),
           inclusion.getTimestamp(),

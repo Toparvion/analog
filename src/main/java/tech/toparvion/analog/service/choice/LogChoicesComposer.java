@@ -10,9 +10,11 @@ import tech.toparvion.analog.model.config.ChoiceGroup;
 import tech.toparvion.analog.model.config.ChoiceProperties;
 import tech.toparvion.analog.model.config.entry.*;
 import tech.toparvion.analog.service.choice.provider.FileSystemScanner;
+import tech.toparvion.analog.service.choice.provider.KubernetesChoicesProvider;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +22,7 @@ import java.util.stream.Stream;
 
 import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toList;
+import static tech.toparvion.analog.model.config.entry.LogType.*;
 import static tech.toparvion.analog.service.choice.LogChoiceUtils.expandTitle;
 import static tech.toparvion.analog.util.AnaLogUtils.nvls;
 import static tech.toparvion.analog.util.PathUtils.convertToUnixStyle;
@@ -34,11 +37,13 @@ public class LogChoicesComposer {
 
   private final List<ChoiceGroup> choices;
   private final FileSystemScanner fileSystemScanner;
+  private final KubernetesChoicesProvider k8sChoicesProvider;
 
   @Autowired
-  public LogChoicesComposer(ChoiceProperties choiceProperties, FileSystemScanner fileSystemScanner) {
+  public LogChoicesComposer(ChoiceProperties choiceProperties, FileSystemScanner fileSystemScanner, KubernetesChoicesProvider k8sChoicesProvider) {
     this.choices = choiceProperties.getChoices();
     this.fileSystemScanner = fileSystemScanner;
+    this.k8sChoicesProvider = k8sChoicesProvider;
   }
 
   public List<LogChoice> provideLogChoices() {
@@ -81,7 +86,7 @@ public class LogChoicesComposer {
     String groupName = group.getGroup();
     for (PlainLogConfigEntry plainEntry : group.getPlainLogs()) {
       // first involve graceful check for non-absolute paths
-      if (plainEntry.getType() == LogType.LOCAL_FILE) {
+      if (plainEntry.getType() == LOCAL_FILE) {
         Path fullPath = Paths.get(plainEntry.getPath().getFullPath());
         if (!fullPath.isAbsolute()) {
           log.warn("Plain log path '{}' in group '{}' is not absolute and thus will be excluded from choices " +
@@ -122,10 +127,20 @@ public class LogChoicesComposer {
   }
 
   private List<String> getInclusions(CompositeLogConfigEntry logConfigEntry) {
-    return logConfigEntry.getIncludes()
-        .stream()
-        .map(CompositeInclusion::getPath)
-        .map(inclusion -> convertToUnixStyle(inclusion.getFullPath()))
-        .collect(toList());
+    log.info("Current K8s choices provider: {}", k8sChoicesProvider);
+    List<String> includedPaths = new ArrayList<>();
+    for (CompositeInclusion compositeInclusion : logConfigEntry.getIncludes()) {
+      LogPath logPath = compositeInclusion.getPath();
+
+      if (List.of(KUBERNETES, K8S).contains(logPath.getType())) {
+        includedPaths.addAll(k8sChoicesProvider.expandPath(logPath));
+        // TODO ну вот теперь давай, доставай, свой k8sChoicesProvider
+
+      } else {
+        String fullPath = logPath.getFullPath();
+        includedPaths.add( convertToUnixStyle(fullPath) );
+      }
+    }
+    return includedPaths;
   }
 }
