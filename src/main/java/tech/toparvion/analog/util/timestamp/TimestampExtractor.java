@@ -113,7 +113,7 @@ public class TimestampExtractor {
       parsedTimestamp = formatter.parse(tsString, LocalDateTime::from);
     } catch (DateTimeException e) {
       log.debug("Unable to parse timestamp string '{}' with formatter '{}'.", tsString, formatter, e);
-      // in case no date specified in timestamp format, AnaLog supposes the date to be equal current time
+      // in case no date specified in timestamp format, AnaLog supposes the date to be equal to the current one
       LocalTime parsedTime = formatter.parse(tsString, LocalTime::from);
       parsedTimestamp = LocalDateTime.of(LocalDate.now(Clock.systemDefaultZone()), parsedTime);
     }
@@ -121,11 +121,11 @@ public class TimestampExtractor {
     return parsedTimestamp;
   }
 
-  private static class PatternAndFormatter {
+  static class PatternAndFormatter {
     private final Pattern pattern;
     private final DateTimeFormatter formatter;
 
-    private PatternAndFormatter(Pattern pattern, DateTimeFormatter formatter) {
+    PatternAndFormatter(Pattern pattern, DateTimeFormatter formatter) {
       this.pattern = pattern;
       this.formatter = formatter;
     }
@@ -139,4 +139,7 @@ public class TimestampExtractor {
     }
   }
 
+  /*public*/ Map<String, PatternAndFormatter> getRegistry() {
+    return registry;
+  }
 }

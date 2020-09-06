@@ -71,19 +71,11 @@ public class DateFormat2RegexConverter {
    *
    * @see DateTimeFormatter
    */
-  private static final Presentation TEXT = lettersCount -> {
-    switch (lettersCount) {
-      case 1:
-      case 2:
-      case 3:
-        return format("[\\w\\x20]{%d}", lettersCount);
-      case 4:
-        return "[\\w\\x20]+";
-      case 5:
-        return "[\\w\\x20]{1}";
-      default:
-        return "[\\w\\x20]+";
-    }
+  private static final Presentation TEXT = lettersCount ->
+      switch (lettersCount) {
+        case 1, 2, 3 -> format("[\\w\\x20]{%d}", lettersCount);
+        case 5 -> "[\\w\\x20]{1}";
+        default -> "[\\w\\x20]+";     // the same as for 4 letters
   };
 
   /**
