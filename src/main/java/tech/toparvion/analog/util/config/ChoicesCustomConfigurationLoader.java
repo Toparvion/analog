@@ -29,6 +29,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
  */
 public class ChoicesCustomConfigurationLoader implements EnvironmentPostProcessor {
   private static final String CHOICES_RESOURCE_NAME = "choicesCustomResource";
+
   private final PropertySourceLoader loader;
 
   @SuppressWarnings("unused") //for Spring
@@ -44,7 +45,7 @@ public class ChoicesCustomConfigurationLoader implements EnvironmentPostProcesso
     }
 
     FileSystemResource resource = new FileSystemResource(choicesPath);
-    if (!resource.isFile() || !resource.isReadable() || !isExtensionCorrect(resource.getFilename())) {
+    if (!resource.isReadable() || !isExtensionCorrect(resource.getFilename())) {
       return;
     }
 

@@ -1,0 +1,11 @@
+this:
+  is:
+    the:
+      first:
+        document: "value"
+---
+this:
+  is:
+    the:
+      second:
+        document: "value"
