@@ -3,6 +3,7 @@ package tech.toparvion.analog.model.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import tech.toparvion.analog.service.choice.ConditionalOnChoicesAutoReloadEnabled;
+import tech.toparvion.analog.util.config.ChoicesCustomConfigurationLoader;
 
 /**
  * @author Polyudov
@@ -14,6 +15,8 @@ import tech.toparvion.analog.service.choice.ConditionalOnChoicesAutoReloadEnable
 public class ChoicesAutoReloadProperties {
   /**
    * Path to custom {@linkplain ChoiceProperties choices} location
+   *
+   * @see ChoicesCustomConfigurationLoader
    */
   private String location;
 
