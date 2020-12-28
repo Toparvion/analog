@@ -21,11 +21,11 @@ public class LocalizedLogger {
   }
 
   public void trace(String key, Object... args) {
-    log.info(resolveTemplate(key), args);
+    log.trace(resolveTemplate(key), args);
   }
 
   public void debug(String key, Object... args) {
-    log.info(resolveTemplate(key), args);
+    log.debug(resolveTemplate(key), args);
   }
 
   public void info(String key, Object... args) {
@@ -33,11 +33,11 @@ public class LocalizedLogger {
   }
 
   public void warn(String key, Object... args) {
-    log.info(resolveTemplate(key), args);
+    log.warn(resolveTemplate(key), args);
   }
 
   public void error(String key, Object... args) {
-    log.info(resolveTemplate(key), args);
+    log.error(resolveTemplate(key), args);
   }
 
 }
