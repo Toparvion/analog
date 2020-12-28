@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 import java.nio.file.*;
 
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
-import static tech.toparvion.analog.service.choice.ChoicesAutoReloadConfiguration.CHOICES_HOT_RELOAD_EXECUTOR;
+import static tech.toparvion.analog.service.choice.ChoicesAutoReloadConfiguration.CHOICES_AUTO_RELOAD_EXECUTOR;
 
 /**
  * @author Polyudov
@@ -37,7 +37,7 @@ class ChoicesPropertiesChangesListener {
     this.fileWatcherProvider = fileWatcherProvider;
   }
 
-  @Async(CHOICES_HOT_RELOAD_EXECUTOR)
+  @Async(CHOICES_AUTO_RELOAD_EXECUTOR)
   @EventListener(ApplicationReadyEvent.class)
   public void watchFile() {
     if (fileWatcherProvider == null) {

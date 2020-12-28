@@ -33,11 +33,11 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 @ConditionalOnChoicesAutoReloadEnabled
 class ChoicesAutoReloadConfiguration {
   private static final Logger log = LoggerFactory.getLogger(ChoicesAutoReloadConfiguration.class);
-  static final String CHOICES_HOT_RELOAD_EXECUTOR = "choicesAutoReloadExecutor";
+  static final String CHOICES_AUTO_RELOAD_EXECUTOR = "choicesAutoReloadExecutor";
 
-  @Bean(CHOICES_HOT_RELOAD_EXECUTOR)
-  Executor choicesHotReloadExecutor() {
-    return newSingleThreadExecutor(new CustomizableThreadFactory("hot-reload-"));
+  @Bean(CHOICES_AUTO_RELOAD_EXECUTOR)
+  Executor choicesAutoReloadExecutor() {
+    return newSingleThreadExecutor(new CustomizableThreadFactory("auto-reload-"));
   }
 
   @Bean
@@ -45,7 +45,7 @@ class ChoicesAutoReloadConfiguration {
   FileWatcherProvider fileWatcherProvider(ChoicesAutoReloadProperties choiceProperties) {
     String choicesPropertiesLocation = choiceProperties.getLocation();
     if (isNullOrEmpty(choicesPropertiesLocation)) {
-      log.info("Custom path for choices list is not present in 'choices.auto-reload.path' property. Hot reload logic won't be applied.");
+      log.info("Custom path for choices list is not present in 'choices.auto-reload.path' property. Auto reload logic won't be applied.");
       return null;
     }
 
@@ -57,7 +57,7 @@ class ChoicesAutoReloadConfiguration {
         return null;
       }
       if (isDirectory(choicesPropertiesPath)) {
-        log.warn("'choices.auto-reload.path' ('{}') is a directory. Please specify a path to a regular file to enable choices hot reloading.", choicesPropertiesLocation);
+        log.warn("'choices.auto-reload.path' ('{}') is a directory. Please specify a path to a regular file to enable choices auto reloading.", choicesPropertiesLocation);
         return null;
       }
       return new FileWatcherProvider(choicesPropertiesPath);
