@@ -47,7 +47,7 @@ class ChoicesCustomConfigurationLoaderTest {
 
     sut.postProcessEnvironment(environment, springApplication);
 
-    verify(environment).getProperty("choices.custom.location");
+    verify(environment).getProperty("choices-source.location");
     verifyNoMoreInteractions(environment);
     verifyNoInteractions(mutablePropertySources);
   }
@@ -68,7 +68,7 @@ class ChoicesCustomConfigurationLoaderTest {
 
     sut.postProcessEnvironment(environment, springApplication);
 
-    verify(environment).getProperty("choices.custom.location");
+    verify(environment).getProperty("choices-source.location");
     verifyNoMoreInteractions(environment);
     verifyNoInteractions(mutablePropertySources);
   }
@@ -80,7 +80,7 @@ class ChoicesCustomConfigurationLoaderTest {
 
     sut.postProcessEnvironment(environment, springApplication);
 
-    verify(environment).getProperty("choices.custom.location");
+    verify(environment).getProperty("choices-source.location");
     verify(environment).getPropertySources();
     verify(mutablePropertySources).addFirst(argThat(propertySource -> propertySource.containsProperty("this.is.the.first.document")
         && !propertySource.containsProperty("this.is.the.second.document")));
@@ -94,7 +94,7 @@ class ChoicesCustomConfigurationLoaderTest {
 
     sut.postProcessEnvironment(environment, springApplication);
 
-    verify(environment).getProperty("choices.custom.location");
+    verify(environment).getProperty("choices-source.location");
     verify(environment).getPropertySources();
     verify(mutablePropertySources).addFirst(argThat(propertySource -> propertySource.containsProperty("this.is.the.custom.choices.properties")));
     verifyNoMoreInteractions(environment, mutablePropertySources);
