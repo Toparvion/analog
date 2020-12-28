@@ -12,31 +12,31 @@ import java.util.List;
 /**
  * @author Toparvion
  */
-@SuppressWarnings({"unused"})     // setters presence are required by Spring Boot
 @Component
 @RefreshScope
-@ConfigurationProperties(prefix = "choices")
+@ConfigurationProperties
+@SuppressWarnings({"unused"})     // setters presence are required by Spring Boot
 public class ChoiceProperties {
-  private List<ChoiceGroup> list = new ArrayList<>();
+  private List<ChoiceGroup> choices = new ArrayList<>();
 
-  public List<ChoiceGroup> getList() {
-    return list;
+  public List<ChoiceGroup> getChoices() {
+    return choices;
   }
 
-  public void setList(List<ChoiceGroup> list) {
-    this.list = list;
+  public void setChoices(List<ChoiceGroup> choices) {
+    this.choices = choices;
   }
 
   @PostConstruct
   public void tuneProperties() {
-    ChoiceValidator.applyPathBase(list);
-    ChoiceValidator.checkAndFixSelectedEntry(list);
+    ChoiceValidator.applyPathBase(choices);
+    ChoiceValidator.checkAndFixSelectedEntry(choices);
   }
 
   @Override
   public String toString() {
     return "ChoiceProperties{" +
-        "groupsCount=" + list.size() +
+        "groupsCount=" + choices.size() +
         '}';
   }
 }

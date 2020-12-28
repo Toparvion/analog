@@ -2,15 +2,25 @@ package tech.toparvion.analog.model.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import tech.toparvion.analog.service.choice.ConditionalOnChoicesAutoReloadEnabled;
 
 /**
  * @author Polyudov
  * @since v0.14
  */
 @Component
-@ConfigurationProperties(prefix = "choices.custom")
+@SuppressWarnings("unused") // setters presence are required by Spring Boot
+@ConfigurationProperties("choices-source")
 public class ChoicesAutoReloadProperties {
+  /**
+   * Path to custom {@linkplain ChoiceProperties choices} location
+   */
   private String location;
+
+  /**
+   * This field {@linkplain ConditionalOnChoicesAutoReloadEnabled used} for enable/disable auto reloading
+   */
+  private Boolean autoReloadEnabled;
 
   public String getLocation() {
     return location;
@@ -18,5 +28,13 @@ public class ChoicesAutoReloadProperties {
 
   public void setLocation(String location) {
     this.location = location;
+  }
+
+  public Boolean isAutoReloadEnabled() {
+    return autoReloadEnabled;
+  }
+
+  public void setAutoReloadEnabled(Boolean autoReloadEnabled) {
+    this.autoReloadEnabled = autoReloadEnabled;
   }
 }

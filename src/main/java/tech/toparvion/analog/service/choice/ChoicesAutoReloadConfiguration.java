@@ -45,7 +45,7 @@ class ChoicesAutoReloadConfiguration {
   FileWatcherProvider fileWatcherProvider(ChoicesAutoReloadProperties choiceProperties) {
     String choicesPropertiesLocation = choiceProperties.getLocation();
     if (isNullOrEmpty(choicesPropertiesLocation)) {
-      log.info("Custom path for choices list is not present in 'choices.auto-reload.path' property. Auto reload logic won't be applied.");
+      log.info("Custom path for choices list is not present in 'choices-source.location' property. Auto reload logic won't be applied.");
       return null;
     }
 
@@ -57,7 +57,7 @@ class ChoicesAutoReloadConfiguration {
         return null;
       }
       if (isDirectory(choicesPropertiesPath)) {
-        log.warn("'choices.auto-reload.path' ('{}') is a directory. Please specify a path to a regular file to enable choices auto reloading.", choicesPropertiesLocation);
+        log.warn("'choices-source.location' ('{}') is a directory. Please specify a path to a regular file to enable choices auto reloading.", choicesPropertiesLocation);
         return null;
       }
       return new FileWatcherProvider(choicesPropertiesPath);

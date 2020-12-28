@@ -4,14 +4,16 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.lang.annotation.*;
 
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
 /**
  * @author Polyudov
  * @since v0.14
  */
 @Documented
-@Retention(RetentionPolicy.RUNTIME)
+@Target(TYPE)
+@Retention(RUNTIME)
 @SuppressWarnings("DefaultAnnotationParam")
-@Target({ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
-@ConditionalOnProperty(name = "choices.custom.auto-reload-enabled", havingValue = "true", matchIfMissing = false)
-@interface ConditionalOnChoicesAutoReloadEnabled {
-}
+@ConditionalOnProperty(name = "choices-source.auto-reload-enabled", havingValue = "true", matchIfMissing = false)
+public @interface ConditionalOnChoicesAutoReloadEnabled {}

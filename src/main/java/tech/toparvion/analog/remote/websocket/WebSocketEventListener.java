@@ -216,7 +216,7 @@ public class WebSocketEventListener {
         "destination for a composite log must start with 'composite://' prefix");
     String typePrefix = LogType.COMPOSITE.getPrefix() + PathUtils.CUSTOM_SCHEMA_SEPARATOR;
     String unprefixedDestination = destination.replace(typePrefix, "");
-    List<CompositeLogConfigEntry> matchingEntries = choiceProperties.getList().stream()
+    List<CompositeLogConfigEntry> matchingEntries = choiceProperties.getChoices().stream()
             .flatMap(choiceGroup -> choiceGroup.getCompositeLogs().stream())
             .filter(entry -> entry.matches(unprefixedDestination))
             .collect(toList());

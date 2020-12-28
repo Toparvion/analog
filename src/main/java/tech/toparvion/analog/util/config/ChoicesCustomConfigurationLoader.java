@@ -39,7 +39,7 @@ public class ChoicesCustomConfigurationLoader implements EnvironmentPostProcesso
 
   @Override
   public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-    String choicesPath = environment.getProperty("choices.custom.location");
+    String choicesPath = environment.getProperty("choices-source.location");
     if (isNullOrEmpty(choicesPath)) {
       return;
     }
@@ -73,6 +73,7 @@ public class ChoicesCustomConfigurationLoader implements EnvironmentPostProcesso
       //because YAML is a multi-document format. But we use only the first document and ignore another ones
       return Optional.ofNullable(propertySources.get(0));
     } catch (Exception e) {
+      e.printStackTrace(); //logging subsystem is not initialized yet
       return Optional.empty();
     }
   }

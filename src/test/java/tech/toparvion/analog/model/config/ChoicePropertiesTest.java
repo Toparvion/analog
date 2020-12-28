@@ -26,7 +26,7 @@ class ChoicePropertiesTest {
 
   @Test
   void getCompositeChoices() {
-    List<ChoiceGroup> groups = choiceProperties.getList();
+    List<ChoiceGroup> groups = choiceProperties.getChoices();
     assertThat(groups).isNotEmpty();
     List<CompositeLogConfigEntry> compositeLogs = groups.get(0).getCompositeLogs();
     assertThat(compositeLogs).isNotEmpty();
