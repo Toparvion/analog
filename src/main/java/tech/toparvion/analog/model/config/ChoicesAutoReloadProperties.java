@@ -10,7 +10,7 @@ import tech.toparvion.analog.util.config.ChoicesCustomConfigurationLoader;
  * @since v0.14
  */
 @Component
-@SuppressWarnings("unused") // setters presence are required by Spring Boot
+@SuppressWarnings("unused") // setters are required by Spring Boot
 @ConfigurationProperties("choices-source")
 public class ChoicesAutoReloadProperties {
   /**
