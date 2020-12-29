@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 @RefreshScope
 @ConfigurationProperties
-@SuppressWarnings({"unused"})     // setters presence are required by Spring Boot
+@SuppressWarnings({"unused"})     // setters are required by Spring Boot
 public class ChoiceProperties {
   private List<ChoiceGroup> choices = new ArrayList<>();
 
