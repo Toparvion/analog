@@ -23,7 +23,7 @@ public class ChoicesAutoReloadProperties {
   /**
    * This field {@linkplain ConditionalOnChoicesAutoReloadEnabled used} for enable/disable auto reloading
    */
-  private Boolean autoReloadEnabled;
+  private boolean autoReloadEnabled = false;
 
   public String getLocation() {
     return location;
@@ -33,11 +33,11 @@ public class ChoicesAutoReloadProperties {
     this.location = location;
   }
 
-  public Boolean isAutoReloadEnabled() {
+  public boolean isAutoReloadEnabled() {
     return autoReloadEnabled;
   }
 
-  public void setAutoReloadEnabled(Boolean autoReloadEnabled) {
+  public void setAutoReloadEnabled(boolean autoReloadEnabled) {
     this.autoReloadEnabled = autoReloadEnabled;
   }
 }

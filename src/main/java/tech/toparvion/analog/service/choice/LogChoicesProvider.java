@@ -43,7 +43,7 @@ public class LogChoicesProvider {
   }
 
   public List<LogChoice> provideLogChoices() {
-    //It is worth to cache the result of choiceProperties.getChoices()
+    //It's not worth to cache the result of choiceProperties.getChoices()
     //because it can be changed in runtime (by auto reloading)
     return choiceProperties.getChoices().stream()
         .flatMap(this::flattenGroup)

@@ -22,7 +22,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
  *
  * @author Polyudov
  * @implNote <ul>
- * <li>There are no logs because the logging subsystem is not initialized yet</li>
+ * <li>There are no logs (by slf4j loggers) because the logging subsystem is not initialized yet</li>
  * <li>Works only with <code>.yaml/.yml</code> files</li>
  * </ul>
  * @since v0.14
@@ -45,7 +45,12 @@ public class ChoicesCustomConfigurationLoader implements EnvironmentPostProcesso
     }
 
     FileSystemResource resource = new FileSystemResource(choicesPath);
-    if (!resource.isReadable() || !isExtensionCorrect(resource.getFilename())) {
+    if (!resource.isReadable()) {
+      System.err.printf("Choices source ('%s') is not readable\n", choicesPath);
+      return;
+    }
+    if (!isExtensionCorrect(resource.getFilename())) {
+      System.err.printf("Choices source ('%s') file extension is not correct. Choices source must be an YAML-file\n", choicesPath);
       return;
     }
 

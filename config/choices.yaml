@@ -1,5 +1,4 @@
 choices:
-  list:
   - group: Examples
     localPlainLogsBase: ${user.dir}\log-samples
     plainLogs:

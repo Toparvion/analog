@@ -1,6 +1,7 @@
 package tech.toparvion.analog.service.choice;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -59,6 +60,7 @@ class ChoicesPropertiesChangesListenerTest {
   }
 
   @Test
+  @DisplayName("Nothing happens if file watcher is null")
   void fileWatcherProviderIsNull() {
     sut = new ChoicesPropertiesChangesListener(refreshEndpoint, null);
 
@@ -73,6 +75,7 @@ class ChoicesPropertiesChangesListenerTest {
   }
 
   @Test
+  @DisplayName("Nothing happens if watchKey is null")
   void watchKeyIsNull() throws InterruptedException {
     when(watchService.take()).thenReturn(null);
 
@@ -86,6 +89,7 @@ class ChoicesPropertiesChangesListenerTest {
   }
 
   @Test
+  @DisplayName("Nothing happens if watchEvent is equal to OVERFLOW")
   void overflowEventKind() throws InterruptedException {
     doReturn(OVERFLOW)
         .when(watchEvent)
@@ -104,6 +108,7 @@ class ChoicesPropertiesChangesListenerTest {
   }
 
   @Test
+  @DisplayName("Nothing happens if event is repeated")
   void eventCountMoreThenOne() throws InterruptedException {
     when(watchEvent.count()).thenReturn(2);
 
@@ -121,6 +126,7 @@ class ChoicesPropertiesChangesListenerTest {
   }
 
   @Test
+  @DisplayName("Nothing happens if event is not assigned with watching file")
   void isNotChoicesPropertiesFileEvent() throws InterruptedException {
     when(fileWatcherProvider.isChoicesPropertiesFileEvent(any())).thenReturn(false);
 
@@ -140,6 +146,7 @@ class ChoicesPropertiesChangesListenerTest {
   }
 
   @Test
+  @DisplayName("Refresh was called if event is correct")
   void callRefresh() throws InterruptedException {
     sut.watchFile();
 
