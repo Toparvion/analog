@@ -6,6 +6,7 @@ import com.bmuschko.gradle.docker.tasks.image.Dockerfile
 buildscript {
     ext {
         springBootVersion = '2.2.5.RELEASE'
+        springCloudVersion = "Hoxton.RELEASE"
     }
     repositories {
         mavenCentral()
@@ -52,10 +53,13 @@ repositories {
 dependencies {
     // Backend compile deps
 //    compile("org.springframework.boot:spring-boot-devtools:${springBootVersion}")
-    implementation platform (group: 'org.springframework.boot', name: 'spring-boot-dependencies', version: springBootVersion)
+    implementation platform(group: 'org.springframework.boot', name: 'spring-boot-dependencies', version: springBootVersion)
+    implementation platform(group: 'org.springframework.cloud', name: 'spring-cloud-dependencies', version: springCloudVersion)
+
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
-    implementation group: 'org.springframework.boot' , name: 'spring-boot-starter-websocket'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-websocket'
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-context'
     implementation group: 'net.bull.javamelody', name: 'javamelody-spring-boot-starter', version: '1.82.0'
 
     implementation group: 'org.springframework.integration', name: 'spring-integration-file'
@@ -91,7 +95,10 @@ dependencies {
 
 test {
     useJUnitPlatform()
-
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+    }
 }
 
 jacocoTestReport {
@@ -158,7 +165,7 @@ task createDockerfile(type: Dockerfile) {
     entryPoint 'java'
     // the command at whole will look like 'java -X... -jar analog.jar'
     defaultCommand '-Xmx256M', '-XX:MaxMetaspaceSize=256M', '-XX:+HeapDumpOnOutOfMemoryError', '--enable-preview',
-                   '-jar', "${bootJar.archiveFileName.get()}"
+            '-jar', "${bootJar.archiveFileName.get()}"
 }
 
 task syncImageFiles(type: Sync) {

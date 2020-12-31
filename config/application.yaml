@@ -10,6 +10,10 @@ nodes:
     name: myself
     agentPort: 7801
 
+choicesSource:
+  location: ./config/choices.yaml
+  autoReloadEnabled: true
+
 choices:
   - group: AnaLog
     plainLogs:

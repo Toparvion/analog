@@ -1,6 +1,7 @@
 package tech.toparvion.analog.model.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import tech.toparvion.analog.util.config.ChoiceValidator;
 
@@ -11,9 +12,10 @@ import java.util.List;
 /**
  * @author Toparvion
  */
-@SuppressWarnings({"unused"})     // setters presence are required by Spring Boot
 @Component
+@RefreshScope
 @ConfigurationProperties
+@SuppressWarnings({"unused"})     // setters are required by Spring Boot
 public class ChoiceProperties {
   private List<ChoiceGroup> choices = new ArrayList<>();
 

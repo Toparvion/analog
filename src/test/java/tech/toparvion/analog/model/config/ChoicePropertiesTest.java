@@ -16,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Toparvion
  * @since v0.11
  */
+@Disabled("Depends on OS specific path handling (see #33)")
 @SpringBootTest//(classes = ChoiceProperties.class)
 class ChoicePropertiesTest {
   private static final Logger log = LoggerFactory.getLogger(ChoicePropertiesTest.class);
@@ -24,7 +25,6 @@ class ChoicePropertiesTest {
   ChoiceProperties choiceProperties;
 
   @Test
-  @Disabled("Unstable")
   void getCompositeChoices() {
     List<ChoiceGroup> groups = choiceProperties.getChoices();
     assertThat(groups).isNotEmpty();

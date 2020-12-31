@@ -1,15 +1,15 @@
 choices:
-  - group: Примеры
-    localPlainLogsBase: E:\Issues\Testing\incubator\analog\log-samples
+  - group: Examples
+    localPlainLogsBase: ${user.dir}\log-samples
     plainLogs:
       - path: generated\core.log
-        title: $f [генерируемый]
+        title: $f [generated]
       - path: generated\micro.log
       - path: source\core-source.log
       - path: source\micro-source.log
         selected: true
     compositeLogs:
-      - title: 'Пробный композит'
+      - title: 'Test Composite'
         uriName: 'test-composite'
         includes:
           - path: k8s://deploy/restorun-test-deployment

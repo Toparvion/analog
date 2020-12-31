@@ -1,4 +1,4 @@
-package tech.toparvion.analog.service;
+package tech.toparvion.analog.service.choice;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,19 +35,19 @@ import static tech.toparvion.analog.util.PathUtils.convertToUnixStyle;
 public class LogChoicesProvider {
   private static final Logger log = LoggerFactory.getLogger(LogChoicesProvider.class);
 
-  private final List<ChoiceGroup> choices;
+  private final ChoiceProperties choiceProperties;
 
   @Autowired
-  public LogChoicesProvider(ChoiceProperties choiceProperties) {
-    this.choices = choiceProperties.getChoices();
+  LogChoicesProvider(ChoiceProperties choiceProperties) {
+    this.choiceProperties = choiceProperties;
   }
 
   public List<LogChoice> provideLogChoices() {
-    return choices.stream()
+    //It's not worth to cache the result of choiceProperties.getChoices()
+    //because it can be changed in runtime (by auto reloading)
+    return choiceProperties.getChoices().stream()
         .flatMap(this::flattenGroup)
         .collect(toList());
-    // Perhaps it's worth to cache the result here as it cannot change over time (during one application session) but
-    // can be potentially asked frequently.
   }
 
   private Stream<LogChoice> flattenGroup(ChoiceGroup group) {
@@ -153,10 +153,10 @@ public class LogChoicesProvider {
   }
 
   private List<String> getInclusions(CompositeLogConfigEntry logConfigEntry) {
-    return logConfigEntry.getIncludes()
-        .stream()
+    return logConfigEntry.getIncludes().stream()
         .map(CompositeInclusion::getPath)
-        .map(inclusion -> convertToUnixStyle(inclusion.getFullPath()))
+        .map(LogPath::getFullPath)
+        .map(PathUtils::convertToUnixStyle)
         .collect(toList());
   }
 }
