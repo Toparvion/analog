@@ -12,7 +12,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Custom {@link Conditional @Conditional} that checks if choices <code>auto reload</code> enabled in <code>properties</code>.<br/>
- * This is some kind of "syntax sugar" witch is designed to add this condition to all required places.
+ * This is some kind of "syntax sugar" which is designed to add this condition to all required places.
  *
  * @author Polyudov
  * @since v0.14
