@@ -51,14 +51,14 @@ In AnaLog terms the *administrator* is a person who installs and configures AnaL
 From the administrator's perspective AnaLog:
 
 * is standalone Java application with built-in web server (based on [Spring Boot](https://spring.io/projects/spring-boot) framework)
-* works on [Java 12](http://jdk.java.net/12/) and above
+* works on [Java 9](http://jdk.java.net/9/) and above
 * has flexible configuration in 2 YAML files: for system settings and log choices (see [examples](https://github.com/Toparvion/analog/wiki))
 * must be installed on every server where the file logs must be fetched from
 * relies on `tail`, `docker` and `kubectl` binaries to fetch logs from corresponding sources
 * has its own access control layer basing on Glob path patterns to log files
 
 ## Installation & Usage
-1. Download `analog.tar.gz` or `analog.zip` from [latest release](https://github.com/Toparvion/analog/releases/latest) page
+1. Download `analog.tar.gz` or `analog.zip` from the [latest release](https://github.com/Toparvion/analog/releases/latest) page
 2. Unpack it and give execution permission to `bin/analog` script (in case of *nix OS)
 3. *[optional]* Configure `config/application.yaml` and `config/choices.yaml` by [examples](https://github.com/Toparvion/analog/wiki)
 4. Run `bin/analog` (*nix OS) or `bin/analog.bat` (Windows)

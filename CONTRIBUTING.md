@@ -10,4 +10,4 @@ Adding description for configuration and functions of the app
 * **Providing feedback**  
 on your own experience of AnaLog usage.
 
-For more info on contribution please [contact the author](mailto:toparvion@gmx.com):email:.
+To get involved you can [contact the author](mailto:toparvion@gmx.com) or [submit an issue](https://github.com/Toparvion/analog/issues/new/choose).

@@ -24,13 +24,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Date;
+import java.util.Objects;
 
 import static java.lang.String.format;
 
 /**
+ * <code><pre>
  * sudo docker logs --follow --tail=0 b181bbb05d49
  * kubectl logs --follow --tail=1 deployment/devrel-restorun
  * kubectl logs --follow --tail=1 devrel-restorun-cbfc8b84f-fch4h
+ * </pre></code>
  *
  * @author Gary Russell
  * @author Gavin Gray
@@ -55,11 +58,7 @@ public class ProcessTailMessageProducer extends FileTailingMessageProducerSuppor
 
 
   public void setOptions(String options) {
-    if (options == null) {
-      this.options = "";
-    } else {
-      this.options = options;
-    }
+    this.options = Objects.requireNonNullElse(options, "");
   }
 
   public void setExecutable(String executable) {

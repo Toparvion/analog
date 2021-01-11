@@ -10,6 +10,7 @@ import org.springframework.util.Assert;
 import tech.toparvion.analog.model.api.CompositeLinesPart;
 import tech.toparvion.analog.model.api.LinesPart;
 import tech.toparvion.analog.model.api.StyledLine;
+import tech.toparvion.analog.service.RecordLevelDetector;
 import tech.toparvion.analog.util.AnaLogUtils;
 
 import java.io.File;
@@ -36,11 +37,15 @@ import static tech.toparvion.analog.remote.RemotingConstants.*;
 public class RecordSender {
   private static final Logger log = LoggerFactory.getLogger(RecordSender.class);
 
+  private final RecordLevelDetector recordLevelDetector; 
   private final SimpMessagingTemplate messagingTemplate;
   private final ColorPicker colorPicker;
 
   @Autowired
-  public RecordSender(SimpMessagingTemplate messagingTemplate, ColorPicker colorPicker) {
+  public RecordSender(RecordLevelDetector recordLevelDetector, 
+                      SimpMessagingTemplate messagingTemplate, 
+                      ColorPicker colorPicker) {
+    this.recordLevelDetector = recordLevelDetector;
     this.messagingTemplate = messagingTemplate;
     this.colorPicker = colorPicker;
   }
@@ -119,12 +124,12 @@ public class RecordSender {
       // check the line for the presence of XML
       String curLine = AnaLogUtils.distinguishXml(payloadAsList, i);
 
-      // вставляем текст строки
+      // insert the text of the line 
       String text = AnaLogUtils.escapeSpecialCharacters(curLine);
-      // определяем и вставляем уровень важности сообщения
-      String style = AnaLogUtils.detectMessageType(curLine);
-
-      // завершаем оформление текущей строки
+      // detect and set the importance level of the line (this also may appear an XML line) 
+      String style = recordLevelDetector.detectLevel(curLine)
+                                        .orElseGet(() -> AnaLogUtils.checkIfXml(curLine));
+      // finish current line construction
       parsedLines.add(new StyledLine(text, style));
     }
     return parsedLines;

@@ -85,8 +85,8 @@ public class WebSocketEventListener {
     boolean isTailNeeded = isTailNeeded(headers);
     String sessionId = headers.getSessionId();
     String destination = headers.getDestination();
-    assert (destination != null) && destination.startsWith(WEBSOCKET_TOPIC_PREFIX)
-        : "Subscriber's 'destination' header is absent or malformed: " + destination;
+    Assert.isTrue((destination != null) && destination.startsWith(WEBSOCKET_TOPIC_PREFIX),
+            "Subscriber's 'destination' header is absent or malformed: " + destination);
     // Remove '/topic/' prefix as it plays a role for websocket communication only and has no effect for the watching
     String path = destination.replace(WEBSOCKET_TOPIC_PREFIX, "");
     // It's important to distinguish plain logs from composite ones because they are different in the config logic
@@ -184,7 +184,7 @@ public class WebSocketEventListener {
     List<String> rawHeaderValue = headers.getNativeHeader(IS_TAIL_NEEDED_HEADER);
     Assert.isTrue((rawHeaderValue != null) && (rawHeaderValue.size() == 1),
         format("'%s' header of SUBSCRIBE command is absent or malformed", IS_TAIL_NEEDED_HEADER));
-    return Boolean.valueOf(rawHeaderValue.get(0));
+    return Boolean.parseBoolean(rawHeaderValue.get(0));
   }
 
   /**
@@ -193,7 +193,7 @@ public class WebSocketEventListener {
    * to watch arbitrary plain logs independently of its configuration. Particularly, it means that a user can set any
    * path into AnaLog's address line and start to watch it the same way as if it was pre-configured as a choice
    * variant in configuration file.
-   * <p>This logic doesn't apply to composite logs (yet), but it would be great to implement it.
+   * <p>This logic doesn't apply to composite logs (yet), but it would be great to implement it someday.
    *
    * @param path full path of log file to watch for
    * @return newly created log config entry for the specified path

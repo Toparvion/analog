@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import tech.toparvion.analog.model.api.StyledLine;
+import tech.toparvion.analog.service.RecordLevelDetector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ class RecordSenderPlainTest {
 
   @BeforeEach
   void setUp() {
-    sut = new RecordSender(mock(SimpMessagingTemplate.class), mock(ColorPicker.class));
+    sut = new RecordSender(mock(RecordLevelDetector.class), mock(SimpMessagingTemplate.class), mock(ColorPicker.class));
   }
 
   @Test

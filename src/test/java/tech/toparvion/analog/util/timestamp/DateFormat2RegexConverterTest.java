@@ -1,5 +1,6 @@
 package tech.toparvion.analog.util.timestamp;
 
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -10,6 +11,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Locale.ENGLISH;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -134,5 +137,25 @@ class DateFormat2RegexConverterTest {
 
     Matcher matcher = convertedPattern.matcher(sampleLogTimestamp);
     assertTrue(matcher.find());
+  }
+
+  @Test
+  void testAmPmFormatter() {
+    var format = "LLL dd, yyyy K:mm:ss";
+    var formatter = DateTimeFormatter.ofPattern(format)
+                                                    .withLocale(ENGLISH);
+    ThrowingCallable sutCall = () -> formatter.parse("Dec 21, 2020 07:05:00");
+//    log.info("Parsed dateTime: {}", parsedDateTime);
+    assertThatCode(sutCall).doesNotThrowAnyException();
+  }
+
+  @Test
+  void testNginxLogFormat() {
+    var format = "dd/LLL/yyyy:HH:mm:ss";
+    var formatter = DateTimeFormatter.ofPattern(format)
+                                                    .withLocale(ENGLISH);
+    ThrowingCallable sutCall = () -> formatter.parse("23/Jun/2020:00:29:42");
+//    log.info("Parsed dateTime: {}", parsedDateTime);
+    assertThatCode(sutCall).doesNotThrowAnyException();
   }
 }

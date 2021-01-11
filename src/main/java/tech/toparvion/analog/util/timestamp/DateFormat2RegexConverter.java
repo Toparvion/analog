@@ -71,19 +71,11 @@ public class DateFormat2RegexConverter {
    *
    * @see DateTimeFormatter
    */
-  private static final Presentation TEXT = lettersCount -> {
-    switch (lettersCount) {
-      case 1:
-      case 2:
-      case 3:
-        return format("[\\w\\x20]{%d}", lettersCount);
-      case 4:
-        return "[\\w\\x20]+";
-      case 5:
-        return "[\\w\\x20]{1}";
-      default:
-        return "[\\w\\x20]+";
-    }
+  private static final Presentation TEXT = lettersCount ->
+      switch (lettersCount) {
+        case 1, 2, 3 -> format("[\\w\\x20]{%d}", lettersCount);
+        case 5 -> "[\\w\\x20]{1}";
+        default -> "[\\w\\x20]+";     // the same as for 4 letters
   };
 
   /**
@@ -122,8 +114,6 @@ public class DateFormat2RegexConverter {
    * The format syntax is a subset of rules specified in {@link DateTimeFormatter}. Namely supported the following
    * symbols only: {@code u,y,M,L,d,E,a,h,K,k,H,m,s,S,n}. Quoting (both single quote and arbitrary text) is also
    * supported.<p>
-   * In order to process timestamp'less log lines as fast as possible, the returned pattern contains a prefix
-   * denoting searching from the start of a line only ({@code ^} symbol).<p>
    * Because log timestamps are not always located at the very beginning of a line, {@code
    * logTimestampFormat} may contain some additional characters. For instance, if log timestamp is wrapped with
    * square braces, the format string may look like {@code [dd.MM.yy HH:mm:ss.SSS}. The opening square bracket will
