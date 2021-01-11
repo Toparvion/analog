@@ -18,7 +18,7 @@ class ContainerTargetFileTest {
   @Test
   @DisplayName("When originalPath isn't set, the absolutePath is 'prefix+target'")
   void fullNameWithoutOriginalPath() {
-    var sut = new ContainerTargetFile(K8S_FULL_PREFIX, K8S_TARGET);
+    ContainerTargetFile sut = new ContainerTargetFile(K8S_FULL_PREFIX, K8S_TARGET);
     assertAll(
         () -> assertEquals(K8S_TARGET, sut.getCanonicalPath()),
         () -> assertEquals(K8S_TARGET, sut.getName()),
@@ -29,8 +29,8 @@ class ContainerTargetFileTest {
   @Test
   @DisplayName("When originalPath is set, the absolutePath equals to it")
   void fullNameWithOriginalPath() {
-    var originalPath = K8S_FULL_PREFIX + "namespace/test/" + K8S_TARGET;
-    var sut = new ContainerTargetFile(K8S_FULL_PREFIX, K8S_TARGET, originalPath);
+    String originalPath = K8S_FULL_PREFIX + "namespace/test/" + K8S_TARGET;
+    ContainerTargetFile sut = new ContainerTargetFile(K8S_FULL_PREFIX, K8S_TARGET, originalPath);
     assertAll(
         () -> assertEquals(K8S_TARGET, sut.getCanonicalPath()),
         () -> assertEquals(K8S_TARGET, sut.getName()),
@@ -41,8 +41,8 @@ class ContainerTargetFileTest {
   @Test
   @DisplayName("Abstract pathName stays empty with any kind of constructor")
   void actualPathIsEmpty() {
-    var sut1 = new ContainerTargetFile(K8S_FULL_PREFIX, K8S_TARGET);
-    var sut2 = new ContainerTargetFile(K8S_FULL_PREFIX, K8S_TARGET, "whatever");
+    ContainerTargetFile sut1 = new ContainerTargetFile(K8S_FULL_PREFIX, K8S_TARGET);
+    ContainerTargetFile sut2 = new ContainerTargetFile(K8S_FULL_PREFIX, K8S_TARGET, "whatever");
     assertEquals("", sut1.getPath());
     assertEquals("", sut2.getPath());
   }

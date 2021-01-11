@@ -1,3 +1,4 @@
+/*
 package tech.toparvion.analog.util.timestamp;
 
 import org.assertj.core.api.Condition;
@@ -22,9 +23,11 @@ import static org.mockito.Mockito.*;
 import static org.springframework.integration.file.FileHeaders.ORIGINAL_FILE;
 import static tech.toparvion.analog.util.timestamp.TimestampExtractor.DEFAULT_TIMESTAMP_PARSER_LOCALE;
 
+*/
 /**
  * @author Toparvion
- */
+ *//*
+
 class TimestampExtractorTest {
 
   DateFormat2RegexConverter converter;
@@ -173,4 +176,4 @@ class TimestampExtractorTest {
     //noinspection ResultOfMethodCallIgnored
     verify(logFile).getAbsolutePath();
   }
-}
+}*/

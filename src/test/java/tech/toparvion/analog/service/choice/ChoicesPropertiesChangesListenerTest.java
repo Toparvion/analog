@@ -8,10 +8,7 @@ import org.mockito.Mock;
 import org.springframework.cloud.endpoint.RefreshEndpoint;
 import tech.toparvion.analog.service.choice.ChoicesAutoReloadConfiguration.FileWatcherProvider;
 
-import java.nio.file.Path;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
+import java.nio.file.*;
 import java.util.List;
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
@@ -44,7 +41,7 @@ class ChoicesPropertiesChangesListenerTest {
   void setUp() throws InterruptedException {
     initMocks(this);
 
-    when(fileWatcherProvider.getChoicesPropertiesPath()).thenReturn(Path.of("\\"));
+    when(fileWatcherProvider.getChoicesPropertiesPath()).thenReturn(Paths.get("\\"));
     when(fileWatcherProvider.getWatchService()).thenReturn(watchService);
     when(fileWatcherProvider.isChoicesPropertiesFileEvent(any())).thenReturn(true);
     when(watchService.take()).thenReturn(watchKey).thenReturn(null);

@@ -1,3 +1,4 @@
+/*
 package tech.toparvion.analog.remote.agent;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -30,10 +31,12 @@ import static tech.toparvion.analog.remote.agent.AgentConstants.*;
 import static tech.toparvion.analog.remote.agent.AgentUtils.composeTrackingFlowId;
 import static tech.toparvion.analog.util.PathUtils.convertToUnixStyle;
 
+*/
 /**
  * @author Toparvion
  * @since v0.14
- */
+ *//*
+
 class TailEventHandlerTest {
 
   @Mock IntegrationFlowContext flowContextMock;
@@ -180,4 +183,4 @@ class TailEventHandlerTest {
     verify(flowContextMock).getRegistrationById(groupTrackingFlowId);
     assertTrue(exception.getMessage().contains(event.toString()));
   }
-}
+}*/

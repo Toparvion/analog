@@ -141,8 +141,8 @@ class DateFormat2RegexConverterTest {
 
   @Test
   void testAmPmFormatter() {
-    var format = "LLL dd, yyyy K:mm:ss";
-    var formatter = DateTimeFormatter.ofPattern(format)
+    String format = "LLL dd, yyyy K:mm:ss";
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format)
                                                     .withLocale(ENGLISH);
     ThrowingCallable sutCall = () -> formatter.parse("Dec 21, 2020 07:05:00");
 //    log.info("Parsed dateTime: {}", parsedDateTime);
@@ -151,8 +151,8 @@ class DateFormat2RegexConverterTest {
 
   @Test
   void testNginxLogFormat() {
-    var format = "dd/LLL/yyyy:HH:mm:ss";
-    var formatter = DateTimeFormatter.ofPattern(format)
+    String format = "dd/LLL/yyyy:HH:mm:ss";
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format)
                                                     .withLocale(ENGLISH);
     ThrowingCallable sutCall = () -> formatter.parse("23/Jun/2020:00:29:42");
 //    log.info("Parsed dateTime: {}", parsedDateTime);
